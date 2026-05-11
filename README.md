@@ -14,7 +14,7 @@ Beating AgentHallu SOTA of 41.1% step localization accuracy.
 |---|---|---|
 | P. Somnath Reddy | Soum-Code | Research Lead and Architect |
 | Ayaan | AyaanO7 | Detection and Attribution |
-| Amano | amano2 | Deployment and UI |
+| Aman | amano2 | Deployment and UI |
 | Dustin | TgoxDustin08 | Data and Evaluation |
 
 ---
