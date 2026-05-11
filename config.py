@@ -1,4 +1,5 @@
-"""
+"""# Member 1 - Core Research Pipeline
+
 AgentTrace — Central Configuration
 ===================================
 Step-Level Hallucination Detection and Attribution
