@@ -603,6 +603,43 @@ Usage across all modules:
 
 
 # ════════════════════════════════════════════════════════════
+# FLAT ALIASES — detection modules import these directly
+# ════════════════════════════════════════════════════════════
+
+SEMANTIC_MODEL_NAME = CONFIG.embedding.model_name
+SEMANTIC_SIMILARITY_THRESHOLD = CONFIG.thresholds.similarity_cutoff
+NLI_MODEL_NAME = CONFIG.nli.model_name
+NLI_CONTRADICTION_THRESHOLD = CONFIG.thresholds.contradiction_cutoff
+NLI_ENTAILMENT_THRESHOLD = 1.0 - CONFIG.thresholds.contradiction_cutoff
+TOOL_CLAIM_SIMILARITY_THRESHOLD = CONFIG.thresholds.tool_mismatch_cutoff
+MAX_CLAIMS_PER_REASONING = 5
+CONTRADICTION_WINDOW_SIZE = CONFIG.thresholds.drift_window
+CAUSAL_MODEL_NAME = CONFIG.classifier.base_model
+CAUSAL_LABELS = CONFIG.classifier.categories
+CAUSAL_CONFIDENCE_THRESHOLD = CONFIG.thresholds.confidence_cutoff
+LOCALIZATION_SIGNAL_WEIGHTS = {
+    "semantic_similarity": 0.35,
+    "tool_claim_match": 0.30,
+    "nli_score": 0.25,
+    "contradiction_with_prev": 0.10,
+}
+TYPE_TOOL_USE = "Tool-Use"
+TYPE_FACTUAL = "Retrieval"
+TYPE_CONTRADICTION = "Reasoning"
+SEVERITY_HIGH = "High"
+SEVERITY_MEDIUM = "Medium"
+SEVERITY_LOW = "Low"
+SEVERITY_HIGH_UPPER = 0.3
+SEVERITY_MEDIUM_UPPER = 0.5
+CORRECTOR_MAX_RETRIES = 3
+CORRECTOR_STRATEGY_ORDER = [
+    "tool_requery",
+    "reasoning_override",
+    "step_rollback"
+]
+
+
+# ════════════════════════════════════════════════════════════
 # TEST BLOCK — run with: python config.py
 # ════════════════════════════════════════════════════════════
 
