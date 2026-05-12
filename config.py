@@ -211,9 +211,9 @@ class ThresholdConfig:
     Example:
         >>> th = ThresholdConfig()
         >>> print(th.similarity_cutoff)
-        0.72
+        0.75
     """
-    similarity_cutoff: float = 0.72       # cosine sim below this = drift
+    similarity_cutoff: float = 0.75       # cosine sim below this = drift
     contradiction_cutoff: float = 0.80    # NLI contradiction prob above this = flag
     confidence_cutoff: float = 0.60       # minimum detector confidence to report
     tool_mismatch_cutoff: float = 0.40    # Jaccard overlap below this = tool hallucination
