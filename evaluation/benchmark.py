@@ -30,6 +30,13 @@ from evaluation.metrics import (
     compute_all_metrics,
 )
 
+# Import real detector pipeline (lazy — only used when explicitly passed)
+try:
+    from detection.pipeline import real_detector, reset_pipeline
+except ImportError:
+    real_detector = None
+    reset_pipeline = None
+
 
 # ════════════════════════════════════════════════════════════
 # MOCK DETECTOR (placeholder until Member 2 finishes)
@@ -202,6 +209,10 @@ class BenchmarkRunner:
             traj_id = traj.get("trajectory_id", f"traj_{i+1:03d}")
             steps = traj.get("steps", [])
             total = len(steps)
+
+            # Reset pipeline history between trajectories
+            if reset_pipeline is not None:
+                reset_pipeline()
 
             # Per-trajectory tracking
             traj_predicted = []
@@ -551,5 +562,9 @@ if __name__ == "__main__":
         print(f"RESULT: ABOVE AgentHallu baseline by {delta:+.4f}")
     else:
         print(f"RESULT: BELOW AgentHallu baseline by {delta:+.4f}")
-    print("(Using mock detector — real results after Member 2 integration)")
+    print("(Using mock detector — pass real_detector for real results)")
+    print("")
+    print("To use the real detection pipeline:")
+    print("  from detection.pipeline import real_detector")
+    print("  runner = BenchmarkRunner(detector_fn=real_detector)")
     print("=" * 60)
