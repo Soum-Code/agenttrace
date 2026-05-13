@@ -40,10 +40,10 @@ class DetectionPipeline:
                      "user_input", "human_input", "ask_human"}
 
     # Fusion threshold — only flag if fused score exceeds this
-    FUSION_THRESHOLD = 0.45
+    FUSION_THRESHOLD = 0.60
 
     # Minimum number of active signals required to make a decision
-    MIN_SIGNALS_FOR_DETECTION = 1
+    MIN_SIGNALS_FOR_DETECTION = 2
 
     def __init__(self):
         """Initializes all detection sub-modules."""
