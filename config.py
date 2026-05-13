@@ -618,10 +618,10 @@ CAUSAL_MODEL_NAME = CONFIG.classifier.base_model
 CAUSAL_LABELS = CONFIG.classifier.categories
 CAUSAL_CONFIDENCE_THRESHOLD = CONFIG.thresholds.confidence_cutoff
 LOCALIZATION_SIGNAL_WEIGHTS = {
-    "semantic_similarity": 0.35,
-    "tool_claim_match": 0.30,
-    "nli_score": 0.25,
-    "contradiction_with_prev": 0.10,
+    "semantic_similarity": 0.25,
+    "tool_claim_match": 0.20,
+    "nli_score": 0.35,
+    "contradiction_with_prev": 0.20,
 }
 TYPE_TOOL_USE = "Tool-Use"
 TYPE_FACTUAL = "Retrieval"

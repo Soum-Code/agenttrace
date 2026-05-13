@@ -1,12 +1,17 @@
 """
-AgentTrace — Real Detection Pipeline
-=====================================
+AgentTrace — Real Detection Pipeline (v2)
+==========================================
 Chains all 4 detection modules (semantic, tool, NLI, contradiction)
 into a single detector function that can replace mock_detector
 in the benchmark runner.
 
-This is the multi-signal fusion approach designed to beat
-AgentHallu's 41.1% step localization accuracy.
+v2 Changes:
+- Replaced OR-fusion with threshold-only fusion (fixes FPR=20%)
+- Multi-signal type classifier covering all 5 categories (fixes 0% Planning/Human-Interaction)
+- Action-aware type routing (fixes Tool-Use over-prediction)
+- No data leakage: never reads ground_truth_label or hallucination_type
+
+Author: P. Somnath Reddy (Research Lead)
 """
 
 import sys
@@ -15,8 +20,6 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import CONFIG, LOCALIZATION_SIGNAL_WEIGHTS
-from detection.semantic_checker import SemanticChecker
-from detection.tool_validator import ToolValidator
 
 
 class DetectionPipeline:
@@ -25,29 +28,53 @@ class DetectionPipeline:
     detection result per step.
 
     Loads models once at init, then runs all detectors on each step.
-    Fuses signals using weighted scoring from config.
+    Fuses signals using weighted scoring — no OR logic.
     """
+
+    # Action categories for type inference
+    TOOL_ACTIONS = {"web_search", "api_call", "database_query", "calculator",
+                    "code_exec", "file_read", "search", "lookup"}
+    PLANNING_ACTIONS = {"plan", "decompose", "schedule", "prioritize",
+                        "strategize", "outline", "task_decomposition"}
+    HUMAN_ACTIONS = {"ask_user", "human_feedback", "clarify", "confirm",
+                     "user_input", "human_input", "ask_human"}
+
+    # Fusion threshold — only flag if fused score exceeds this
+    FUSION_THRESHOLD = 0.45
+
+    # Minimum number of active signals required to make a decision
+    MIN_SIGNALS_FOR_DETECTION = 1
 
     def __init__(self):
         """Initializes all detection sub-modules."""
-        print("Loading detection pipeline models...")
+        print("Loading detection pipeline v2...")
 
         # Semantic checker (sentence-transformers)
-        self.semantic_checker = SemanticChecker()
-        print("  ✓ SemanticChecker loaded")
+        self.semantic_checker = None
+        try:
+            from detection.semantic_checker import SemanticChecker
+            self.semantic_checker = SemanticChecker()
+            print("  ✓ SemanticChecker loaded")
+        except Exception as e:
+            print(f"  ✗ SemanticChecker failed: {e}")
 
-        # Tool validator (sentence-transformers, shared model possible)
-        self.tool_validator = ToolValidator()
-        print("  ✓ ToolValidator loaded")
+        # Tool validator (sentence-transformers)
+        self.tool_validator = None
+        try:
+            from detection.tool_validator import ToolValidator
+            self.tool_validator = ToolValidator()
+            print("  ✓ ToolValidator loaded")
+        except Exception as e:
+            print(f"  ✗ ToolValidator failed: {e}")
 
-        # NLI-based modules — lazy load to save memory if not needed
+        # NLI-based modules
         self.factual_grounder = None
         self.contradiction_detector = None
         self._load_nli_modules()
 
         self.weights = LOCALIZATION_SIGNAL_WEIGHTS
         self._history = []  # tracks previous steps for contradiction detection
-        print("Detection pipeline ready.\n")
+        print("Detection pipeline v2 ready.\n")
 
     def _load_nli_modules(self):
         """Lazy-loads NLI-based modules with error handling."""
@@ -69,44 +96,54 @@ class DetectionPipeline:
         """
         Runs the full multi-signal detection pipeline on a single step.
 
-        This function matches the signature expected by BenchmarkRunner:
-        takes a step dict, returns a detection_result dict.
+        IMPORTANT: This method NEVER reads ground_truth_label or
+        hallucination_type from the step. It only uses observable
+        fields: action, tool_input, tool_output, agent_reasoning.
 
         Args:
-            step: A single step dict from a trajectory. Expected keys:
-                  step, action, tool_input, tool_output, agent_reasoning,
-                  ground_truth_label, hallucination_type.
+            step: A single step dict from a trajectory.
 
         Returns:
             dict: Detection result with hallucination_detected, confidence,
                   hallucination_type_predicted, severity.
         """
         # Build the step_data format our detectors expect
+        # ONLY uses observable fields — no ground truth leakage
         step_data = self._normalize_step(step)
 
         # ── Run all 4 detectors ─────────────────────────────────────────
         signals = {}
+        detector_results = {}
 
-        # 1. Semantic similarity
-        sem_result = self.semantic_checker.check(step_data)
-        signals["semantic_similarity"] = sem_result.get("detection_signals", {}).get(
-            "semantic_similarity"
-        )
+        # 1. Semantic similarity (reasoning vs tool_output)
+        if self.semantic_checker:
+            sem_result = self.semantic_checker.check(step_data)
+            signals["semantic_similarity"] = sem_result.get(
+                "detection_signals", {}
+            ).get("semantic_similarity")
+            detector_results["semantic"] = sem_result
+        else:
+            detector_results["semantic"] = {}
 
         # 2. Tool claim validation
-        tool_result = self.tool_validator.validate(step_data)
-        signals["tool_claim_match"] = tool_result.get("detection_signals", {}).get(
-            "tool_claim_match"
-        )
+        if self.tool_validator:
+            tool_result = self.tool_validator.validate(step_data)
+            signals["tool_claim_match"] = tool_result.get(
+                "detection_signals", {}
+            ).get("tool_claim_match")
+            detector_results["tool"] = tool_result
+        else:
+            detector_results["tool"] = {}
 
         # 3. NLI factual grounding
         if self.factual_grounder:
             nli_result = self.factual_grounder.ground(step_data)
-            signals["nli_score"] = nli_result.get("detection_signals", {}).get(
-                "nli_score"
-            )
+            signals["nli_score"] = nli_result.get(
+                "detection_signals", {}
+            ).get("nli_score")
+            detector_results["nli"] = nli_result
         else:
-            nli_result = {}
+            detector_results["nli"] = {}
             signals["nli_score"] = None
 
         # 4. Contradiction with previous steps
@@ -117,44 +154,44 @@ class DetectionPipeline:
             signals["contradiction_with_prev"] = contra_result.get(
                 "detection_signals", {}
             ).get("contradiction_with_prev")
+            detector_results["contradiction"] = contra_result
         else:
-            contra_result = {}
+            detector_results["contradiction"] = {}
             signals["contradiction_with_prev"] = None
 
         # Track history for contradiction detection
         self._history.append(step_data)
 
-        # ── Fuse signals ────────────────────────────────────────────────
+        # ── Fuse signals (THRESHOLD ONLY — no OR logic) ─────────────────
         fused_score = self._fuse_signals(signals)
-
-        # Decision: hallucination if fused score exceeds threshold
-        # or if any individual detector strongly flags it
-        hallucination_detected = (
-            fused_score > 0.5
-            or sem_result.get("hallucination_detected", False)
-            or tool_result.get("hallucination_detected", False)
-            or nli_result.get("hallucination_detected", False)
-            or contra_result.get("hallucination_detected", False)
+        active_signal_count = sum(
+            1 for v in signals.values() if v is not None
         )
 
-        # Confidence = fused score (bounded)
+        # STRICT threshold decision — no OR fallback
+        hallucination_detected = (
+            fused_score > self.FUSION_THRESHOLD
+            and active_signal_count >= self.MIN_SIGNALS_FOR_DETECTION
+        )
+
+        # Confidence = fused score
         confidence = round(min(max(fused_score, 0.0), 1.0), 4)
 
-        # Determine type from the strongest signal
-        hallucination_type = self._determine_type(
-            sem_result, tool_result, nli_result, contra_result
-        )
+        # Determine type using multi-signal classification
+        hallucination_type = None
+        if hallucination_detected:
+            hallucination_type = self._classify_type(
+                step_data, signals, detector_results
+            )
 
-        # Severity from confidence
+        # Severity
         severity = self._determine_severity(confidence, hallucination_detected)
 
         return {
             "hallucination_detected": hallucination_detected,
             "confidence": confidence,
-            "hallucination_type_predicted": hallucination_type if hallucination_detected else None,
+            "hallucination_type_predicted": hallucination_type,
             "severity": severity,
-            "fused_score": fused_score,
-            "signals": signals,
         }
 
     def reset_history(self):
@@ -164,6 +201,7 @@ class DetectionPipeline:
     def _normalize_step(self, step: dict) -> dict:
         """
         Converts benchmark trajectory step format to detector input format.
+        ONLY uses observable fields — never reads ground_truth_label.
 
         Args:
             step: Raw trajectory step dict.
@@ -184,66 +222,132 @@ class DetectionPipeline:
 
     def _fuse_signals(self, signals: dict) -> float:
         """
-        Weighted fusion of detection signals, same logic as Localizer.
+        Weighted fusion of detection signals.
+
+        Converts each signal to a "hallucination risk" score [0,1] then
+        computes a weighted average. Only uses signals that are available.
 
         Args:
             signals: Dict with semantic_similarity, tool_claim_match,
                      nli_score, contradiction_with_prev.
 
         Returns:
-            float: Fused hallucination score [0, 1].
+            float: Fused hallucination risk score [0, 1].
         """
-        values = {}
+        risk_scores = {}
         total_weight = 0.0
 
+        # Semantic: low similarity = high risk
         sem = signals.get("semantic_similarity")
         if sem is not None:
-            values["semantic_similarity"] = 1.0 - sem
+            risk_scores["semantic_similarity"] = 1.0 - sem
             total_weight += self.weights["semantic_similarity"]
 
+        # Tool: no match = high risk
         tcm = signals.get("tool_claim_match")
         if tcm is not None:
-            values["tool_claim_match"] = 0.0 if tcm else 1.0
+            risk_scores["tool_claim_match"] = 0.0 if tcm else 1.0
             total_weight += self.weights["tool_claim_match"]
 
+        # NLI: high contradiction score = high risk
         nli = signals.get("nli_score")
         if nli is not None:
-            values["nli_score"] = nli
+            risk_scores["nli_score"] = nli
             total_weight += self.weights["nli_score"]
 
+        # Contradiction: contradiction found = high risk
         contra = signals.get("contradiction_with_prev")
         if contra is not None:
-            values["contradiction_with_prev"] = 1.0 if contra else 0.0
+            risk_scores["contradiction_with_prev"] = 1.0 if contra else 0.0
             total_weight += self.weights["contradiction_with_prev"]
 
         if total_weight == 0:
             return 0.0
 
-        return sum(values[k] * self.weights[k] for k in values) / total_weight
+        weighted_sum = sum(
+            risk_scores[k] * self.weights[k] for k in risk_scores
+        )
+        return weighted_sum / total_weight
 
-    def _determine_type(self, sem, tool, nli, contra) -> str:
+    def _classify_type(
+        self, step_data: dict, signals: dict, results: dict
+    ) -> str:
         """
-        Picks the hallucination type from the strongest detector signal.
+        Multi-signal hallucination type classifier.
+        Covers all 5 categories using action context + signal patterns.
+
+        Classification logic (no ground truth leakage):
+        1. Tool-Use: tool_claim_match=False AND action is a tool action
+        2. Human-Interaction: action involves human/user input
+        3. Planning: action involves planning/decomposition OR
+                     multiple reasoning steps with contradictions
+        4. Retrieval: high NLI contradiction score (factual mismatch)
+        5. Reasoning: semantic drift without tool/retrieval issues
 
         Args:
-            sem: SemanticChecker result.
-            tool: ToolValidator result.
-            nli: FactualGrounder result.
-            contra: ContradictionDetector result.
+            step_data: Normalized step data.
+            signals: Raw signal values.
+            results: Full detector result dicts.
 
         Returns:
-            str: Hallucination type label.
+            str: One of the 5 hallucination categories.
         """
-        # Priority: Tool-Use > Contradiction > Factual > Reasoning
-        if tool.get("hallucination_detected"):
+        action = step_data.get("action", "").lower().strip()
+        reasoning = step_data.get("agent_reasoning", "").lower()
+
+        tcm = signals.get("tool_claim_match")
+        nli = signals.get("nli_score")
+        contra = signals.get("contradiction_with_prev")
+        sem = signals.get("semantic_similarity")
+
+        # ── Rule 1: Human-Interaction ────────────────────────────────────
+        # If the action involves human/user interaction
+        if action in self.HUMAN_ACTIONS or any(
+            kw in action for kw in ["user", "human", "ask", "clarif"]
+        ):
+            return "Human-Interaction"
+
+        # ── Rule 2: Planning ─────────────────────────────────────────────
+        # If the action involves planning, OR the reasoning mentions
+        # planning-related keywords with contradictions
+        if action in self.PLANNING_ACTIONS or any(
+            kw in action for kw in ["plan", "decompos", "schedul", "strateg"]
+        ):
+            return "Planning"
+
+        # Planning from reasoning context: multi-step reasoning with
+        # contradictions suggests a planning failure
+        planning_keywords = ["first", "then", "next", "step", "plan",
+                             "approach", "strategy", "break down", "subtask"]
+        planning_score = sum(1 for kw in planning_keywords if kw in reasoning)
+        if planning_score >= 3 and contra:
+            return "Planning"
+
+        # ── Rule 3: Tool-Use ─────────────────────────────────────────────
+        # Tool claim mismatch AND action is a tool action
+        if tcm is False and (
+            action in self.TOOL_ACTIONS
+            or any(kw in action for kw in ["search", "calc", "api", "query",
+                                           "look", "fetch", "read"])
+        ):
             return "Tool-Use"
-        if contra.get("hallucination_detected"):
-            return "Reasoning"
-        if nli.get("hallucination_detected"):
+
+        # ── Rule 4: Retrieval ────────────────────────────────────────────
+        # High NLI contradiction = factual mismatch from retrieval
+        if nli is not None and nli > 0.6:
             return "Retrieval"
-        if sem.get("hallucination_detected"):
+
+        # Semantic drift without tool issues also suggests retrieval error
+        if sem is not None and sem < 0.5 and tcm is not False:
+            return "Retrieval"
+
+        # ── Rule 5: Reasoning (default) ──────────────────────────────────
+        # Contradictions between steps = reasoning failure
+        if contra:
             return "Reasoning"
-        return "Reasoning"  # default
+
+        # General semantic drift = reasoning error
+        return "Reasoning"
 
     def _determine_severity(self, confidence: float, detected: bool) -> str:
         """
@@ -276,7 +380,7 @@ def real_detector(step: dict) -> dict:
     Drop-in replacement for mock_detector in BenchmarkRunner.
 
     Initializes the pipeline on first call, then reuses it.
-    Call real_detector.reset() between trajectories.
+    GUARANTEED: never reads ground_truth_label or hallucination_type.
 
     Args:
         step: A single step dict from a trajectory.
@@ -304,15 +408,25 @@ if __name__ == "__main__":
 
     pipeline = DetectionPipeline()
 
-    test_step = {
-        "step": 2,
+    # Test 1: Tool-Use hallucination (action=web_search, claim mismatch)
+    test_tool = {
+        "step": 1,
         "action": "web_search",
         "tool_input": "FIFA 2022 winner",
         "tool_output": "Argentina won FIFA World Cup 2022",
         "agent_reasoning": "France won FIFA 2022, capital is Paris",
-        "ground_truth_label": True,
-        "hallucination_type": "Tool-Use",
     }
 
-    result = pipeline.detect(test_step)
-    print(json.dumps(result, indent=2))
+    # Test 2: Clean step (no hallucination)
+    test_clean = {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "80 - 65",
+        "tool_output": "15",
+        "agent_reasoning": "The calculator returns 15, so the difference is 15 years.",
+    }
+
+    for name, step in [("Tool-Use halluc", test_tool), ("Clean step", test_clean)]:
+        result = pipeline.detect(step)
+        print(f"\n{name}:")
+        print(json.dumps(result, indent=2))
