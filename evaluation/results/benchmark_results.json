@@ -1,57 +1,57 @@
 {
-  "benchmark_id": "bench_20260511_223918",
-  "timestamp": "2026-05-11T22:39:18.918426",
-  "num_trajectories": 3,
-  "total_steps": 12,
-  "detector": "mock_detector",
-  "step_localization_accuracy": 1.0,
-  "precision": 0.75,
-  "recall": 1.0,
-  "false_positive_rate": 0.25,
-  "precision_at_1": 1.0,
-  "precision_at_3": 0.3333,
-  "precision_at_5": 0.4,
+  "benchmark_id": "bench_20260514_132332",
+  "timestamp": "2026-05-14T13:23:32.260639",
+  "num_trajectories": 200,
+  "total_steps": 976,
+  "detector": "real_detector",
+  "step_localization_accuracy": 0.0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "false_positive_rate": 0.0,
+  "precision_at_1": 0.0,
+  "precision_at_3": 0.0,
+  "precision_at_5": 0.0,
   "f1_per_category": {
     "Planning": {
       "precision": 0.0,
       "recall": 0.0,
       "f1": 0.0,
-      "support": 0
+      "support": 15
     },
     "Retrieval": {
       "precision": 0.0,
       "recall": 0.0,
       "f1": 0.0,
-      "support": 1
+      "support": 41
     },
     "Reasoning": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
-      "support": 1
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 120
     },
     "Tool-Use": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
-      "support": 1
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 50
     },
     "Human-Interaction": {
       "precision": 0.0,
       "recall": 0.0,
       "f1": 0.0,
-      "support": 0
+      "support": 19
     },
     "macro_avg": {
-      "f1": 0.6667
+      "f1": 0.0
     }
   },
-  "macro_f1": 0.6667,
-  "avg_latency_ms": 0.01,
-  "min_latency_ms": 0.0,
-  "max_latency_ms": 0.02,
-  "p95_latency_ms": 0.02,
+  "macro_f1": 0.0,
+  "avg_latency_ms": 0.13,
+  "min_latency_ms": 0.01,
+  "max_latency_ms": 117.29,
+  "p95_latency_ms": 0.01,
   "agenthallu_baseline": 0.411,
   "agenthallu_tool_baseline": 0.116,
-  "delta_vs_baseline": 0.589
+  "delta_vs_baseline": -0.411
 }

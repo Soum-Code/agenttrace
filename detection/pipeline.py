@@ -40,7 +40,7 @@ class DetectionPipeline:
                      "user_input", "human_input", "ask_human"}
 
     # Fusion threshold — only flag if fused score exceeds this
-    FUSION_THRESHOLD = 0.60
+    FUSION_THRESHOLD = 0.35
 
     # Minimum number of active signals required to make a decision
     MIN_SIGNALS_FOR_DETECTION = 2
@@ -54,18 +54,18 @@ class DetectionPipeline:
         try:
             from detection.semantic_checker import SemanticChecker
             self.semantic_checker = SemanticChecker()
-            print("  ✓ SemanticChecker loaded")
+            print("  [+] SemanticChecker loaded")
         except Exception as e:
-            print(f"  ✗ SemanticChecker failed: {e}")
+            print(f"  [-] SemanticChecker failed: {e}")
 
         # Tool validator (sentence-transformers)
         self.tool_validator = None
         try:
             from detection.tool_validator import ToolValidator
             self.tool_validator = ToolValidator()
-            print("  ✓ ToolValidator loaded")
+            print("  [+] ToolValidator loaded")
         except Exception as e:
-            print(f"  ✗ ToolValidator failed: {e}")
+            print(f"  [-] ToolValidator failed: {e}")
 
         # NLI-based modules
         self.factual_grounder = None
@@ -81,16 +81,16 @@ class DetectionPipeline:
         try:
             from detection.factual_grounding import FactualGrounder
             self.factual_grounder = FactualGrounder()
-            print("  ✓ FactualGrounder loaded")
+            print("  [+] FactualGrounder loaded")
         except Exception as e:
-            print(f"  ✗ FactualGrounder failed: {e}")
+            print(f"  [-] FactualGrounder failed: {e}")
 
         try:
             from detection.contradiction import ContradictionDetector
             self.contradiction_detector = ContradictionDetector()
-            print("  ✓ ContradictionDetector loaded")
+            print("  [+] ContradictionDetector loaded")
         except Exception as e:
-            print(f"  ✗ ContradictionDetector failed: {e}")
+            print(f"  [-] ContradictionDetector failed: {e}")
 
     def detect(self, step: dict) -> dict:
         """
@@ -162,17 +162,29 @@ class DetectionPipeline:
         # Track history for contradiction detection
         self._history.append(step_data)
 
-        # ── Fuse signals (THRESHOLD ONLY — no OR logic) ─────────────────
+        # ── Context-Aware Hybrid Fusion ─────────────────────────────────
         fused_score = self._fuse_signals(signals)
         active_signal_count = sum(
             1 for v in signals.values() if v is not None
         )
 
-        # STRICT threshold decision — no OR fallback
-        hallucination_detected = (
-            fused_score > self.FUSION_THRESHOLD
-            and active_signal_count >= self.MIN_SIGNALS_FOR_DETECTION
-        )
+        action = step_data.get("action", "").lower().strip()
+        is_tool_action = action in self.TOOL_ACTIONS or any(kw in action for kw in ["search", "calc", "api", "query", "look", "fetch", "read"])
+        
+        # 1. Base threshold
+        base_flag = (fused_score > self.FUSION_THRESHOLD and active_signal_count >= self.MIN_SIGNALS_FOR_DETECTION)
+        
+        # 2. Definitive tool-use hallucination
+        tool_flag = (signals.get("tool_claim_match") is False) and is_tool_action
+        
+        # 3. High-confidence factual contradiction
+        nli_score = signals.get("nli_score")
+        nli_flag = (nli_score is not None and nli_score > 0.65)
+        
+        # 4. Contradiction with previous steps
+        contra_flag = (signals.get("contradiction_with_prev") is True) and not is_tool_action
+
+        hallucination_detected = base_flag or tool_flag or nli_flag or contra_flag
 
         # Confidence = fused score
         confidence = round(min(max(fused_score, 0.0), 1.0), 4)
