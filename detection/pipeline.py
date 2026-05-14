@@ -40,7 +40,7 @@ class DetectionPipeline:
                      "user_input", "human_input", "ask_human"}
 
     # Fusion threshold — only flag if fused score exceeds this
-    FUSION_THRESHOLD = 0.35
+    FUSION_THRESHOLD = 0.45
 
     # Minimum number of active signals required to make a decision
     MIN_SIGNALS_FOR_DETECTION = 2
@@ -162,29 +162,16 @@ class DetectionPipeline:
         # Track history for contradiction detection
         self._history.append(step_data)
 
-        # ── Context-Aware Hybrid Fusion ─────────────────────────────────
+        # ── Pure Threshold Fusion ───────────────────────────────────────
         fused_score = self._fuse_signals(signals)
         active_signal_count = sum(
             1 for v in signals.values() if v is not None
         )
 
-        action = step_data.get("action", "").lower().strip()
-        is_tool_action = action in self.TOOL_ACTIONS or any(kw in action for kw in ["search", "calc", "api", "query", "look", "fetch", "read"])
-        
-        # 1. Base threshold
-        base_flag = (fused_score > self.FUSION_THRESHOLD and active_signal_count >= self.MIN_SIGNALS_FOR_DETECTION)
-        
-        # 2. Definitive tool-use hallucination
-        tool_flag = (signals.get("tool_claim_match") is False) and is_tool_action
-        
-        # 3. High-confidence factual contradiction
-        nli_score = signals.get("nli_score")
-        nli_flag = (nli_score is not None and nli_score > 0.65)
-        
-        # 4. Contradiction with previous steps
-        contra_flag = (signals.get("contradiction_with_prev") is True) and not is_tool_action
-
-        hallucination_detected = base_flag or tool_flag or nli_flag or contra_flag
+        hallucination_detected = (
+            fused_score > self.FUSION_THRESHOLD
+            and active_signal_count >= self.MIN_SIGNALS_FOR_DETECTION
+        )
 
         # Confidence = fused score
         confidence = round(min(max(fused_score, 0.0), 1.0), 4)
