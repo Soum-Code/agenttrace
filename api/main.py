@@ -22,7 +22,18 @@ import logging
 import random
 import time
 import uuid
+import sys
+import os
+import json
 from datetime import datetime, timezone
+from typing import Any
+
+# Real Pipeline Imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from detection.pipeline import DetectionPipeline
+from attribution.localizer import Localizer
+from attribution.causal_classifier import CausalClassifier
+from intervention.corrector import Corrector
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
@@ -162,11 +173,23 @@ class ErrorResponse(BaseModel):
 _start_time: float = 0.0
 
 
+_pipeline = None
+_localizer = None
+_classifier = None
+_corrector = None
+
 @app.on_event("startup")
 async def _on_startup() -> None:
     """Record server start time and log readiness."""
-    global _start_time
+    global _start_time, _pipeline, _localizer, _classifier, _corrector
     _start_time = time.monotonic()
+    
+    logger.info("Initializing AgentTrace ML Pipeline...")
+    _pipeline = DetectionPipeline()
+    _localizer = Localizer()
+    _classifier = CausalClassifier()
+    _corrector = Corrector()
+    
     logger.info("AgentTrace API started  --  docs at /docs")
 
 
@@ -190,129 +213,27 @@ async def _log_requests(request: Request, call_next):
 
 
 # ---------------------------------------------------------------------------
-# Mock detection pipeline
+# Real trajectory data loader
 # ---------------------------------------------------------------------------
-# These functions simulate the real pipeline that another team member is
-# building.  They will be swapped out for imports from `detection/`,
-# `attribution/`, and `intervention/` once those modules are ready.
 
-_MOCK_TOOLS = [
-    ("web_search", "search the web"),
-    ("calculator", "compute a numeric result"),
-    ("wikipedia_lookup", "look up a Wikipedia article"),
-    ("code_interpreter", "run a Python snippet"),
-    ("knowledge_base", "query internal knowledge base"),
-]
-
-_HALLUCINATION_TYPES = [
-    "tool_use",
-    "fact_fabrication",
-    "entity_substitution",
-    "numeric_error",
-    "temporal_error",
-]
-
-
-def _mock_generate_trajectory(task: str) -> list[dict[str, Any]]:
-    """
-    Generate a fake multi-step agent trajectory for a given task.
-
-    Each step includes a mock tool call and randomised hallucination
-    scores.  Roughly 30-40 % of steps are flagged as hallucinated
-    so the UI always has something interesting to display.
-
-    Args:
-        task: The user's natural-language task description.
-
-    Returns:
-        List of step dictionaries ready for ``StepResult`` validation.
-    """
-    num_steps = random.randint(4, 8)
-    steps: list[dict[str, Any]] = []
-
-    for i in range(num_steps):
-        tool_name, tool_desc = random.choice(_MOCK_TOOLS)
-        score = round(random.uniform(0.0, 1.0), 3)
-        is_hall = score >= 0.65
-
-        hall_type = random.choice(_HALLUCINATION_TYPES) if is_hall else None
-        explanation = None
-
-        if is_hall:
-            if hall_type == "tool_use":
-                explanation = (
-                    f"Tool-Use Hallucination at Step {i} -- "
-                    f"agent claimed {tool_name} returned a result, "
-                    f"but the actual API response was empty."
-                )
-            elif hall_type == "fact_fabrication":
-                explanation = (
-                    f"Fact Fabrication at Step {i} -- "
-                    f"agent generated a statistic not present in any source."
-                )
-            elif hall_type == "entity_substitution":
-                explanation = (
-                    f"Entity Substitution at Step {i} -- "
-                    f"agent confused 'Tokyo' with 'Osaka' in the output."
-                )
-            elif hall_type == "numeric_error":
-                explanation = (
-                    f"Numeric Error at Step {i} -- "
-                    f"agent reported 14.2 M but source says 13.96 M."
-                )
-            elif hall_type == "temporal_error":
-                explanation = (
-                    f"Temporal Error at Step {i} -- "
-                    f"agent used 2019 data when 2024 data is available."
-                )
-
-        steps.append(
-            {
-                "step_index": i,
-                "action": f"Step {i}: {tool_desc} for subtask of '{task[:60]}'",
-                "tool_name": tool_name,
-                "tool_input": f'{{"query": "{task[:40]}..."}}',
-                "tool_output": f'{{"result": "mock output for step {i}"}}',
-                "reasoning": (
-                    f"The agent decided to use {tool_name} because the "
-                    f"task requires information about '{task[:30]}...'."
-                ),
-                "hallucination_score": score,
-                "is_hallucinated": is_hall,
-                "hallucination_type": hall_type,
-                "explanation": explanation,
-            }
-        )
-
-    return steps
-
-
-def _mock_correct_step(step: dict[str, Any]) -> dict[str, Any]:
-    """
-    Simulate intervention on a hallucinated step.
-
-    In production this would re-run the tool call or rephrase the
-    agent's reasoning.  For now we return a plausible "fixed" version.
-
-    Args:
-        step: The original step dictionary.
-
-    Returns:
-        Dictionary with original + corrected fields.
-    """
-    return {
-        "trajectory_id": "",  # filled by caller
-        "step_index": step["step_index"],
-        "original_action": step["action"],
-        "original_output": step["tool_output"],
-        "corrected_action": step["action"].replace("mock", "verified"),
-        "corrected_output": '{"result": "corrected and verified output"}',
-        "intervention_type": (
-            "tool_rerun" if step.get("hallucination_type") == "tool_use"
-            else "reasoning_patch"
-        ),
-        "confidence_after": round(random.uniform(0.85, 0.99), 3),
-    }
+def _get_real_trajectory(task: str) -> list[dict[str, Any]]:
+    """Fetch a real synthetic trajectory from data/trajectories."""
+    traj_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "data", "trajectories", "synthetic_trajectories.json"
+    )
+    if not os.path.exists(traj_path):
+        # Fallback to a single dummy step if no dataset exists
+        return [{
+            "step": 0, "action": "dummy", "tool_input": "dummy", 
+            "tool_output": "No data found", "agent_reasoning": "dummy"
+        }]
+    
+    with open(traj_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+        
+    traj = random.choice(data)
+    return traj.get("steps", [])
 
 
 # ---------------------------------------------------------------------------
@@ -366,11 +287,38 @@ async def analyze(payload: AnalyzeRequest) -> TrajectoryResponse:
         Full trajectory with per-step hallucination scores.
     """
     try:
-        # Simulate pipeline latency (0.5-1.5 s)
-        await asyncio.sleep(random.uniform(0.5, 1.5))
-
-        steps_raw = _mock_generate_trajectory(payload.task)
-        steps = [StepResult(**s) for s in steps_raw]
+        steps_raw = _get_real_trajectory(payload.task)
+        
+        if _pipeline:
+            _pipeline.reset_history()
+            
+        steps = []
+        for i, step_raw in enumerate(steps_raw):
+            result = _pipeline.detect(step_raw) if _pipeline else {}
+            is_hall = result.get("hallucination_detected", False)
+            h_score = result.get("confidence", 0.0)
+            h_type = result.get("hallucination_type")
+            explanation = None
+            
+            if is_hall and _classifier:
+                causal_res = _classifier.classify(step_raw, result)
+                h_type = causal_res.get("causal_label", h_type)
+                explanation = f"Root Cause: {h_type} (Confidence: {causal_res.get('causal_confidence', 0.0):.2f})"
+            elif is_hall:
+                explanation = f"Detected by Pipeline (Score: {h_score:.2f})"
+                
+            steps.append(StepResult(
+                step_index=i,
+                action=step_raw.get("action", f"Step {i}"),
+                tool_name=step_raw.get("action", "unknown"),
+                tool_input=str(step_raw.get("tool_input", "")),
+                tool_output=str(step_raw.get("tool_output", ""))[:300],
+                reasoning=step_raw.get("agent_reasoning", ""),
+                hallucination_score=h_score,
+                is_hallucinated=is_hall,
+                hallucination_type=h_type,
+                explanation=explanation
+            ))
 
         trajectory_id = str(uuid.uuid4())
         num_hallucinated = sum(1 for s in steps if s.is_hallucinated)
@@ -451,11 +399,27 @@ async def correct(payload: CorrectRequest) -> CorrectedStepResponse:
 
         target_step = steps_raw[payload.step]
 
-        # Simulate intervention latency
-        await asyncio.sleep(random.uniform(0.3, 0.8))
-
-        corrected = _mock_correct_step(target_step)
-        corrected["trajectory_id"] = payload.trajectory_id
+        if _pipeline:
+            _pipeline.reset_history()
+            for prev in steps_raw[:payload.step]:
+                _pipeline.detect(prev)
+            det_res = _pipeline.detect(target_step)
+        else:
+            det_res = {}
+            
+        causal_res = _classifier.classify(target_step, det_res) if _classifier else {}
+        correction = _corrector.correct(target_step, causal_res) if _corrector else {}
+        
+        corrected = {
+            "trajectory_id": payload.trajectory_id,
+            "step_index": payload.step,
+            "original_action": target_step.get("action", ""),
+            "original_output": str(target_step.get("tool_output", "")),
+            "corrected_action": correction.get("strategy", "unknown"),
+            "corrected_output": correction.get("corrected_reasoning", "No correction available"),
+            "intervention_type": correction.get("strategy", "none"),
+            "confidence_after": 0.95
+        }
 
         logger.info(
             "Corrected step=%d in trajectory=%s",
