@@ -1,0 +1,36 @@
+{
+  "task": "What is the capital of the country with the largest population in Africa, and what is its current population?",
+  "steps": [
+    {
+      "step": 1,
+      "action": "web_search",
+      "tool_input": "largest population country in Africa",
+      "tool_output": "Nigeria has the largest population in Africa.",
+      "agent_reasoning": "Nigeria has the largest population in Africa, so I need to find its capital and the capital's population.",
+      "ground_truth_label": false,
+      "hallucination_type": null
+    },
+    {
+      "step": 2,
+      "action": "web_search",
+      "tool_input": "capital of Nigeria population",
+      "tool_output": "Abuja is the capital of Nigeria. The current estimated population of Abuja is 3.6 million.",
+      "agent_reasoning": "The capital of Nigeria is Abuja and its population is 3.6 million. I can now answer the user's question.",
+      "ground_truth_label": true,
+      "hallucination_type": "Retrieval"
+    },
+    {
+      "step": 3,
+      "action": "calculator",
+      "tool_input": "3.6 million * 1000000",
+      "tool_output": "3600000",
+      "agent_reasoning": "Double checking the population of Abuja in numerical form, it is indeed 3,600,000.",
+      "ground_truth_label": false,
+      "hallucination_type": null
+    }
+  ],
+  "final_answer": "The capital of the country with the largest population in Africa is Abuja. Its population is 1.6 million.",
+  "final_answer_correct": false,
+  "trajectory_id": "traj_001",
+  "total_steps": 3
+}

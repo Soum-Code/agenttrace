@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentHallu — Research Deep Dive</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafaf7;
+    --surface: #f0efe8;
+    --surface2: #e5e3d8;
+    --ink: #1c1b16;
+    --muted: #7a786a;
+    --border: #d8d6c8;
+    --border2: #c4c2b0;
+    --red: #c0392b;
+    --red-dim: #5a1a14;
+    --red-lite: #fdf0ee;
+    --amber: #c07000;
+    --amber-dim: #5a3800;
+    --amber-lite: #fdf5e0;
+    --green: #1e6b3a;
+    --green-dim: #0d3a1e;
+    --green-lite: #eaf5ee;
+    --blue: #1a5276;
+    --blue-dim: #0d2d40;
+    --blue-lite: #eaf2f8;
+    --purple: #6c3483;
+    --purple-dim: #3a1a48;
+    --purple-lite: #f4eef8;
+    --mono: 'Space Mono', monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --serif: 'Lora', serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  /* MASTHEAD */
+  .masthead {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 3.5rem 4rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 40px,
+      rgba(255,255,255,0.015) 40px,
+      rgba(255,255,255,0.015) 41px
+    );
+  }
+  .masthead::after {
+    content: 'HALLUCINATION → ATTRIBUTION → LOCALIZATION → EXPLANATION';
+    position: absolute;
+    bottom: 1rem;
+    right: 4rem;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: rgba(255,255,255,0.08);
+    letter-spacing: 0.15em;
+    white-space: nowrap;
+  }
+  .tag-row {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #e84040;
+    margin-bottom: 1.2rem;
+  }
+  .masthead h1 {
+    font-family: var(--display);
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.03em;
+  }
+  .h1-agent { color: var(--bg); }
+  .h1-hallu { color: #e84040; }
+  .masthead-sub {
+    font-family: var(--display);
+    font-size: clamp(0.9rem, 1.8vw, 1.3rem);
+    font-weight: 400;
+    color: #aaa;
+    margin-top: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+  .masthead-meta {
+    margin-top: 1.5rem;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #666;
+    letter-spacing: 0.08em;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 4rem;
+    display: flex;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  nav a {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.85rem 0.85rem;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+    margin-bottom: -2px;
+  }
+  nav a:hover { color: var(--red); border-bottom-color: var(--red); }
+
+  /* LAYOUT */
+  main { max-width: 940px; margin: 0 auto; padding: 0 2rem 5rem; }
+
+  /* SECTIONS */
+  .step {
+    margin-top: 4.5rem;
+    padding-top: 2.5rem;
+    border-top: 2px solid var(--border);
+  }
+  .step-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.4rem;
+  }
+  .step h2 {
+    font-family: var(--display);
+    font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.75rem;
+  }
+
+  /* PROSE */
+  p { margin-bottom: 1rem; color: #2e2c24; line-height: 1.85; }
+  strong { color: var(--ink); font-family: var(--mono); font-size: 0.88em; }
+
+  h3 {
+    font-family: var(--display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 2.25rem 0 0.75rem;
+    letter-spacing: -0.01em;
+  }
+  h4 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  ul.clean { padding-left: 1.3rem; margin: 0.75rem 0 1rem; }
+  ul.clean li { margin-bottom: 0.5rem; line-height: 1.75; color: #2e2c24; }
+  ol.clean { padding-left: 1.5rem; margin: 0.75rem 0 1rem; }
+  ol.clean li { margin-bottom: 0.5rem; line-height: 1.75; color: #2e2c24; }
+
+  /* CODE */
+  pre {
+    background: var(--ink);
+    color: #ccc8bc;
+    border-left: 4px solid var(--red);
+    padding: 1.5rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.85;
+    border-radius: 0 3px 3px 0;
+  }
+  pre.green-code { border-left-color: var(--green); }
+  pre.blue-code { border-left-color: var(--blue); }
+  pre.neutral { border-left-color: var(--border2); }
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .cm { color: #4a5568; font-style: italic; }
+  .num { color: #f78c6c; }
+  .cls { color: #ffcb6b; }
+  .red-t { color: #ff6b6b; }
+  .green-t { color: #69db7c; }
+  .amber-t { color: #ffd43b; }
+
+  /* CALLOUTS */
+  .box {
+    border: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    background: var(--surface);
+  }
+  .box.red { border-color: var(--red); background: var(--red-lite); }
+  .box.amber { border-color: var(--amber); background: var(--amber-lite); }
+  .box.green { border-color: var(--green); background: var(--green-lite); }
+  .box.blue { border-color: var(--blue); background: var(--blue-lite); }
+  .box.purple { border-color: var(--purple); background: var(--purple-lite); }
+  .box-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    color: var(--muted);
+  }
+  .box-label.red { color: var(--red); }
+  .box-label.amber { color: var(--amber); }
+  .box-label.green { color: var(--green); }
+  .box-label.blue { color: var(--blue); }
+  .box-label.purple { color: var(--purple); }
+
+  /* TABLES */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 13px;
+  }
+  th {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 0.65rem 1rem;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: #3a3830;
+    font-size: 13.5px;
+  }
+  td:first-child { font-family: var(--mono); font-size: 12px; color: var(--ink); }
+  tr:nth-child(even) td { background: var(--surface); }
+
+  /* TRAJECTORY VISUALIZER */
+  .traj {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .traj-title {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .traj-steps {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+  .traj-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .traj-box {
+    border: 1px solid var(--border2);
+    background: var(--bg);
+    padding: 0.7rem 0.9rem;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-align: center;
+    min-width: 90px;
+    max-width: 120px;
+    line-height: 1.4;
+    position: relative;
+  }
+  .traj-box.bad { border-color: var(--red); background: var(--red-lite); color: var(--red-dim); }
+  .traj-box.prop { border-color: var(--amber); background: var(--amber-lite); color: var(--amber-dim); border-style: dashed; }
+  .traj-box.good { border-color: var(--green); background: var(--green-lite); color: var(--green-dim); }
+  .traj-sub { font-size: 8px; color: var(--muted); letter-spacing: 0.1em; text-align: center; margin-top: 0.3rem; }
+  .traj-arrow {
+    font-size: 16px;
+    color: var(--border2);
+    padding: 0.5rem 0.2rem;
+    margin-top: 0.4rem;
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .hallu-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--red);
+    color: white;
+    font-size: 8px;
+    padding: 0.1rem 0.35rem;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+
+  /* FORMULA */
+  .formula {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-left: 4px solid var(--amber);
+    padding: 1rem 1.5rem;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    margin: 1.25rem 0;
+    line-height: 2;
+  }
+  .formula .flabel { font-size: 9px; color: var(--amber); letter-spacing: 0.2em; text-transform: uppercase; display: block; margin-bottom: 0.3rem; }
+
+  /* TAXONOMY GRID */
+  .tax-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+  .tax-cat {
+    background: var(--bg);
+    padding: 1rem;
+  }
+  .tax-cat.hdr {
+    background: var(--ink);
+    color: var(--bg);
+    text-align: center;
+  }
+  .tax-name {
+    font-family: var(--display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+  }
+  .tax-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); line-height: 1.6; }
+  .tax-pct { font-family: var(--mono); font-size: 11px; font-weight: 700; margin-top: 0.4rem; }
+
+  /* PROBLEM CARDS */
+  .prob {
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    position: relative;
+    background: var(--bg);
+  }
+  .prob-level {
+    position: absolute;
+    top: 0; right: 0;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    padding: 0.25rem 0.6rem;
+    text-transform: uppercase;
+  }
+  .prob-level.easy { background: var(--green-lite); color: var(--green); border-left: 1px solid var(--green); border-bottom: 1px solid var(--green); }
+  .prob-level.med { background: var(--amber-lite); color: var(--amber); border-left: 1px solid var(--amber); border-bottom: 1px solid var(--amber); }
+  .prob-level.hard { background: var(--blue-lite); color: var(--blue); border-left: 1px solid var(--blue); border-bottom: 1px solid var(--blue); }
+  .prob-level.research { background: var(--surface2); color: var(--muted); border-left: 1px solid var(--border2); border-bottom: 1px solid var(--border2); }
+  .prob-q {
+    font-family: var(--display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    padding-right: 7rem;
+    line-height: 1.3;
+  }
+
+  .sol {
+    background: var(--green-lite);
+    border-top: 2px solid var(--green);
+    padding: 1.25rem 1.5rem;
+    margin-top: 1rem;
+  }
+  .sol-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--green);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  /* EXTENSIONS */
+  .ext {
+    display: grid;
+    grid-template-columns: 55px 1fr;
+    gap: 1.25rem;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    padding: 1.25rem;
+    margin: 1rem 0;
+    background: var(--bg);
+    align-items: start;
+  }
+  .ext-num {
+    font-family: var(--display);
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--border2);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+  .ext-title { font-family: var(--display); font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem; }
+  .ext-desc { font-size: 13.5px; color: #7a786a; line-height: 1.7; }
+
+  /* QUOTE */
+  .quote {
+    border-left: 3px solid var(--red);
+    padding: 1rem 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* PERF TABLE */
+  .perf-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.4rem 0;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .perf-lbl { width: 180px; flex-shrink: 0; color: var(--muted); font-size: 10px; }
+  .perf-bg { flex: 1; height: 20px; background: var(--surface2); border: 1px solid var(--border); position: relative; }
+  .perf-fill { height: 100%; display: flex; align-items: center; padding-left: 0.4rem; font-size: 10px; font-weight: 700; white-space: nowrap; color: white; }
+  .perf-fill.r { background: var(--red); }
+  .perf-fill.g { background: var(--green); }
+  .perf-fill.b { background: var(--blue); }
+  .perf-fill.a { background: var(--amber); color: var(--ink); }
+  .perf-fill.gr { background: var(--surface2); color: var(--muted); border: none; }
+
+  /* TWO COL */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin: 1.5rem 0;
+  }
+
+  .footnote {
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 640px) {
+    main { padding: 0 1rem 3rem; }
+    nav { padding: 0 1rem; }
+    .masthead { padding: 2rem 1.5rem; }
+    .two-col { grid-template-columns: 1fr; }
+    .tax-grid { grid-template-columns: 1fr; }
+    .perf-lbl { width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="tag-row">// Research Mentorship · Liu et al. · BUPT / Tsinghua / UCSB / CASIA · arXiv:2601.06818</div>
+  <h1>
+    <span class="h1-agent">Agent</span><span class="h1-hallu">Hallu</span>
+  </h1>
+  <div class="masthead-sub">Benchmarking Automated Hallucination Attribution of LLM-based Agents</div>
+  <div class="masthead-meta">// 8-Step Research Breakdown · Where & Why Hallucinations Originate · Step Localization · Causal Explanation</div>
+</div>
+
+<nav>
+  <a href="#overview">01 Overview</a>
+  <a href="#concepts">02 Concepts</a>
+  <a href="#technical">03 Technical</a>
+  <a href="#implementation">04 Implementation</a>
+  <a href="#critical">05 Analysis</a>
+  <a href="#problems">06 Problems</a>
+  <a href="#solutions">07 Solutions</a>
+  <a href="#extensions">08 Extensions</a>
+</nav>
+
+<main>
+
+<!-- STEP 1 -->
+<section id="overview" class="step">
+  <div class="step-label">Step 01 — High Level Overview</div>
+  <h2>The Problem: Hallucinations Propagate — and We Can't Find the Source</h2>
+
+  <div class="quote">
+    Knowing that an agent hallucinated is not enough. You need to know which step caused it, and why — because only then can you fix it. That's what AgentHallu is about.
+  </div>
+
+  <h3>The Core Problem</h3>
+  <p>Existing hallucination benchmarks (HaluEval, FELM, RAGTruth) treat hallucination as a binary property of a single-turn LLM response. You ask a model something, it answers, you check if the answer is factual. Simple. But LLM agents don't work like this.</p>
+
+  <p>Agents execute <strong>multi-step trajectories</strong> — sequences of thought, action, and observation steps that can span 10, 20, even 43 steps. When step 3 introduces a wrong assumption, steps 4 through 20 all build on that assumption. By the time you see the wrong final answer, the original error is buried under 17 layers of plausible-looking reasoning. Binary hallucination detection tells you the answer is wrong. It cannot tell you where the error first appeared or why.</p>
+
+  <div class="traj">
+    <div class="traj-title">Error Propagation in an Agent Trajectory — Planning Hallucination</div>
+    <div class="traj-steps">
+      <div class="traj-step">
+        <div class="traj-box bad">
+          <div class="hallu-badge">ROOT CAUSE</div>
+          Step 1<br>Planning<br><small>Guesses "Elsevier" in task plan</small>
+        </div>
+        <div class="traj-sub">PLANNING HALLU</div>
+      </div>
+      <div class="traj-arrow">→</div>
+      <div class="traj-step">
+        <div class="traj-box prop">Step 2<br>Search<br><small>Query biased by step 1 plan</small></div>
+        <div class="traj-sub">PROPAGATION</div>
+      </div>
+      <div class="traj-arrow">→</div>
+      <div class="traj-step">
+        <div class="traj-box prop">Step 3<br>Observe<br><small>Interprets results through Elsevier lens</small></div>
+        <div class="traj-sub">PROPAGATION</div>
+      </div>
+      <div class="traj-arrow">→</div>
+      <div class="traj-step">
+        <div class="traj-box prop">Step 4<br>Answer<br><small>"Publisher is Elsevier"</small></div>
+        <div class="traj-sub">SYMPTOM</div>
+      </div>
+    </div>
+    <p style="font-size:11px; color:var(--muted); margin-top:0.75rem; font-family:var(--mono);">// Models typically blame Step 4. The true source is Step 1. Attribution = finding Step 1.</p>
+  </div>
+
+  <h3>What AgentHallu Proposes</h3>
+  <p>A new task: <strong>automated hallucination attribution</strong>. Two objectives: (1) <em>Where</em> — identify the specific trajectory step that first introduced the hallucination, and (2) <em>Why</em> — provide a causal explanation of what went wrong at that step.</p>
+
+  <p>To support this task, the paper builds AgentHallu: 693 high-quality annotated trajectories from 7 agent frameworks, 5 domains, with a 5-category hallucination taxonomy, human-curated multi-level annotations, and evaluation of 13 LLMs.</p>
+
+  <h3>The Headline Numbers</h3>
+  <p>Even the best model (Gemini-2.5-Pro) achieves only <strong>41.1% step localization accuracy</strong>. On tool-use hallucinations specifically, accuracy drops to <strong>11.6%</strong> — barely above random (9.6%). The gap between proprietary and open-source models is enormous: open-source models average 10.9% vs 35.7% for proprietary. This is a genuinely hard, unsolved task.</p>
+</section>
+
+<!-- STEP 2 -->
+<section id="concepts" class="step">
+  <div class="step-label">Step 02 — Core Concept Breakdown</div>
+  <h2>Taxonomy, Task Formulation, and Dataset Design</h2>
+
+  <h3>1. The Hallucination Taxonomy — 5 Categories, 14 Subcategories</h3>
+
+  <div class="tax-grid">
+    <div class="tax-cat hdr"><div class="tax-name" style="font-size:0.75rem;">Planning<br>(9.7%)</div></div>
+    <div class="tax-cat hdr"><div class="tax-name" style="font-size:0.75rem;">Retrieval<br>(11.8%)</div></div>
+    <div class="tax-cat hdr"><div class="tax-name" style="font-size:0.75rem;">Reasoning<br>(17.0%)</div></div>
+    <div class="tax-cat hdr"><div class="tax-name" style="font-size:0.75rem;">Human<br>Interaction<br>(10.5%)</div></div>
+    <div class="tax-cat hdr"><div class="tax-name" style="font-size:0.75rem;">Tool-Use<br>(14.9%)</div></div>
+    <div class="tax-cat">
+      <div class="tax-sub">
+        Fact Derive — introduces nonexistent/misleading facts<br><br>
+        Task Decompose — produces task-misaligned subgoals
+      </div>
+    </div>
+    <div class="tax-cat">
+      <div class="tax-sub">
+        Query Misalign — wrong retrieval query<br><br>
+        Context Misalign — retrieves wrong facts<br><br>
+        Summarize Misalign — bad summarization
+      </div>
+    </div>
+    <div class="tax-cat">
+      <div class="tax-sub">
+        Factual Reasoning<br>Math Reasoning<br>Science Reasoning<br>General Reasoning<br><br>
+        <em>Most localizable category</em>
+      </div>
+    </div>
+    <div class="tax-cat">
+      <div class="tax-sub">
+        Agent accepts unverified or incorrect information from the human without cross-checking external sources
+      </div>
+    </div>
+    <div class="tax-cat">
+      <div class="tax-sub">
+        Missing Tool<br>Incorrect Argument<br>Parallel Conflict<br>Unnecessary Tool<br><br>
+        <em>Hardest to localize</em>
+      </div>
+    </div>
+  </div>
+
+  <p>This taxonomy was built using <strong>grounded theory</strong> — not designed top-down but induced from empirical data. Researchers analyzed 140 trajectories with open coding, then refined categories via constant comparative analysis. This is the correct methodology for a new phenomenon — it lets the failure modes emerge from data rather than preconceived notions.</p>
+
+  <h3>2. Formal Task Definition</h3>
+  <p>An agent trajectory τ is a sequence of interaction units u_t = (c_t, a_t, o_t) where c_t is the thought (internal reasoning), a_t is the action (tool call), and o_t is the observation (tool response).</p>
+
+  <div class="formula">
+    <span class="flabel">Hallucination Judgment</span>
+    is_hallucination(τ) = 1{y(τ) ≠ y_gt}
+    <br><small style="color:var(--muted);">Binary: does the trajectory's final answer diverge from ground truth?</small>
+  </div>
+
+  <div class="formula">
+    <span class="flabel">Hallucination Attribution — Counterfactual Definition</span>
+    H(τ) = { t | y(τ) ≠ y_gt ∧ y(τ^(t)) = y_gt }
+    <br>t* = argmin_{t∈H(τ)} t
+    <br><small style="color:var(--muted);">τ^(t) is the counterfactual: replace step t with its correct version, re-execute. A step t is hallucinated if its correction is causally sufficient to fix the trajectory. t* is the earliest such step.</small>
+  </div>
+
+  <div class="box amber">
+    <div class="box-label amber">The Counterfactual Definition — Why it Matters</div>
+    <p style="margin:0;">The paper defines a responsible step not as "the step that contains an error" but as "the step whose <em>correction</em> would fix the outcome." This is a causal definition, not a descriptive one. It's stronger than pointing at a wrong statement — it requires that correcting that step is <em>sufficient</em> to make the whole trajectory correct. This formalism properly handles cascading errors: if step 3 is wrong and step 7 echoes that error, only step 3 is the responsible step because fixing step 3 propagates forward and prevents step 7's error.</p>
+  </div>
+
+  <h3>3. What Makes AgentHallu Hard — Three Filtering Stages</h3>
+  <p>The dataset goes through three quality filters before a trajectory is kept:</p>
+  <ol class="clean">
+    <li><strong>Exclude failure trajectories:</strong> Remove trajectories that fail non-deceptively (token overflow, tool permission errors). These are easy to identify and don't require attribution.</li>
+    <li><strong>Exclude short trajectories:</strong> Remove 1-2 step trajectories. They degrade into single-turn responses with no attribution depth.</li>
+    <li><strong>Exclude trivial trajectories:</strong> Remove any trajectory where GPT-5, Gemini-2.5-Pro, DeepSeek-V3.1, and Qwen3-32B all agree on the label and step. If four frontier models agree, it's too easy to be useful for benchmarking.</li>
+  </ol>
+
+  <p>This third filter is particularly important — it guarantees the benchmark contains only cases where current frontier models fail or disagree. The remaining 693 trajectories represent the hard frontier of the task.</p>
+
+  <h3>4. The Systematic Bias Revealed by Case Studies</h3>
+
+  <div class="box red">
+    <div class="box-label red">The Dominant Failure Pattern Across All Model Families</div>
+    <p>Every case study in the paper (Figures 17–21) shows the same error: <strong>models correctly identify the hallucination but blame the wrong step</strong>. Specifically, they consistently attribute the error to the <em>last step where the incorrect claim is verbalized</em> (the symptom step) rather than the <em>first step where the error is introduced</em> (the root cause step).</p>
+    <p style="margin:0;">Retrieval example: agent gets bad search results in Step 3 and states incorrect conclusion in Step 4. Models blame Step 4. Correct answer: Step 3 (the retrieval decision that injected unverified evidence). This confusion of error manifestation with error origin is the central challenge of hallucination attribution.</p>
+  </div>
+</section>
+
+<!-- STEP 3 -->
+<section id="technical" class="step">
+  <div class="step-label">Step 03 — Technical Deep Dive</div>
+  <h2>Evaluation Framework, Metrics, and Key Experimental Findings</h2>
+
+  <h3>1. Two Prompting Methods</h3>
+
+  <div class="two-col">
+    <div class="box blue">
+      <div class="box-label blue">Standard Prompting</div>
+      <p style="margin:0; font-size:13.5px;">Feed the full trajectory to the model in a single call. Ask it to simultaneously: (1) judge whether hallucination occurred, (2) identify the responsible step, (3) provide causal explanation. One LLM call. Sees all context at once. Advantage: binary judgment benefits from full context. Weakness: responsible step gets lost in long trajectories.</p>
+    </div>
+    <div class="box purple">
+      <div class="box-label purple">Step-by-Step Prompting</div>
+      <p style="margin:0; font-size:13.5px;">Process trajectory incrementally. Present steps 1..i, ask "does hallucination occur by this step?" Stop at first detected hallucination — that step is the responsible step. Multiple LLM calls. Sees focused context at each step. Advantage: improves localization significantly. Weakness: 2.8× higher token cost on average.</p>
+    </div>
+  </div>
+
+  <p>The tradeoff is clear from Table 5: GPT-5 standard prompting achieves 32.7% localization; step-by-step achieves 42.7% — a 10-point gain at 3.4× the token cost (7,426 → 25,454 tokens). The incremental context window forces the model to commit to a judgment at each step rather than retrospectively assigning blame to the most salient wrong statement.</p>
+
+  <h3>2. Evaluation Metrics</h3>
+
+  <div class="formula">
+    <span class="flabel">Step Localization Accuracy</span>
+    Acc_step = (1/|H_hal|) · Σ_{i∈H_hal} 1{t̂_i = t*_i}
+    <br><small style="color:var(--muted);">Exact match: predicted step must equal the ground-truth responsible step. Computed only on hallucinated samples. No partial credit for adjacent steps.</small>
+  </div>
+
+  <p>G-EVAL scores explanation quality using GPT-5 as judge on a 1–5 ordinal scale. The rubric has 5 levels: (1) Fabricated, (2) Mislocalized, (3) Wrong Cause at Correct Step, (4) Mostly Correct, (5) Exact Grounded. Table 6 validates G-EVAL-GPT5 with Spearman 0.86 and Kendall-Tau 0.76 vs human ratings — significantly better than ROUGE-L (0.44) and BERTScore (0.32).</p>
+
+  <h3>3. Key Results — Localization Performance</h3>
+
+  <div class="perf-row"><div class="perf-lbl">Random baseline</div><div class="perf-bg"><div class="perf-fill gr" style="width:8.7%;">8.7%</div></div></div>
+  <div class="perf-row"><div class="perf-lbl">Llama 3.1-8B</div><div class="perf-bg"><div class="perf-fill r" style="width:1.6%;">1.6%</div></div></div>
+  <div class="perf-row"><div class="perf-lbl">Qwen2.5-7B</div><div class="perf-bg"><div class="perf-fill r" style="width:6.6%;">6.6%</div></div></div>
+  <div class="perf-row"><div class="perf-lbl">Llama 3.3-70B</div><div class="perf-bg"><div class="perf-fill r" style="width:7.2%;">7.2%</div></div></div>
+  <div class="perf-row"><div class="perf-lbl">DeepSeek-V3.1</div><div class="perf-bg"><div class="perf-fill a" style="width:19%;">19.0%</div></div></div>
+  <div class="perf-row"><div class="perf-lbl">Qwen3-32B</div><div class="perf-bg"><div class="perf-fill a" style="width:21.2%;">21.2%</div></div></div>
+  <div class="perf-row"><div class="perf-lbl">GPT-5</div><div class="perf-bg"><div class="perf-fill b" style="width:32.7%;">32.7%</div></div></div>
+  <div class="perf-row"><div class="perf-lbl">Claude-4.5-Sonnet</div><div class="perf-bg"><div class="perf-fill b" style="width:33.4%;">33.4%</div></div></div>
+  <div class="perf-row"><div class="perf-lbl">GPT-5-mini</div><div class="perf-bg"><div class="perf-fill b" style="width:35%;">35.0%</div></div></div>
+  <div class="perf-row"><div class="perf-lbl">Gemini-2.5-Flash</div><div class="perf-bg"><div class="perf-fill b" style="width:36.3%;">36.3%</div></div></div>
+  <div class="perf-row"><div class="perf-lbl">Gemini-2.5-Pro (best)</div><div class="perf-bg"><div class="perf-fill g" style="width:41.1%;">41.1%</div></div></div>
+  <p style="font-size:10px; color:var(--muted); margin-top:0.3rem; font-family:var(--mono);">// Step localization accuracy (%) — standard prompting. Tool-use subcategory: best model achieves only 11.6%.</p>
+
+  <h3>4. The Trajectory Length Effect</h3>
+  <p>Performance degrades sharply with trajectory length. GPT-5 localization drops from 40.3% (≤5 steps) to 23.9% (≥11 steps) — a 16-point loss. Qwen3-8B drops from 23.1% to just 2.3%. This is the <strong>context dilution problem</strong>: more steps introduce more plausible-but-wrong candidate steps, making it harder to identify which one is causally responsible. The model's attention spreads over a longer context and loses the thread of the causal chain.</p>
+
+  <h3>5. Category-level Analysis</h3>
+  <table>
+    <tr><th>Category</th><th>Best Model Acc</th><th>Why it's hard or easy</th></tr>
+    <tr><td>Reasoning</td><td>64.4% (Gemini)</td><td>Errors are often explicit in intermediate computations — visible as wrong numbers or logic steps that contradict the trajectory's own internal state</td></tr>
+    <tr><td>Retrieval</td><td>45.1% (Gemini)</td><td>Need to distinguish between a bad query (Step N) and a bad observation (Step N+1) — models often blame the wrong layer</td></tr>
+    <tr><td>Human-Interaction</td><td>19.4% (Claude)</td><td>Unverified human input enters the trajectory as observation — hard to flag because it looks like legitimate external evidence</td></tr>
+    <tr><td>Planning</td><td>26.8% (GPT-5)</td><td>Error is in the planning step before any execution — models look for errors in execution, not in the plan that precedes it</td></tr>
+    <tr><td>Tool-Use</td><td>15.5% (Gemini Flash)</td><td>Requires tracking the environment state across action-observation loops — purely linguistic analysis of the trajectory text is insufficient</td></tr>
+  </table>
+</section>
+
+<!-- STEP 4 -->
+<section id="implementation" class="step">
+  <div class="step-label">Step 04 — Implementation Thinking</div>
+  <h2>How to Build an AgentHallu-style Evaluation System</h2>
+
+  <h3>1. The Annotation Pipeline</h3>
+
+<pre><span class="cm"># Three-stage annotation pipeline for hallucination attribution</span>
+
+<span class="kw">class</span> <span class="cls">HalluAnnotator</span>:
+    <span class="kw">def</span> <span class="fn">stage1_oracle_paths</span>(self, trajectory, ground_truth):
+        <span class="cm">"""
+        Build oracle reasoning path using LLM conditioned on:
+        - The question
+        - The ground truth answer
+        - Any dataset-provided solution annotation
+        Independently drafted by TWO different LLMs to reduce model bias.
+        These become reference paths for human annotators.
+        """</span>
+        gpt5_path  = self.llm_gpt5.generate(trajectory, ground_truth)
+        gemini_path = self.llm_gemini.generate(trajectory, ground_truth)
+        <span class="kw">return</span> gpt5_path, gemini_path
+
+    <span class="kw">def</span> <span class="fn">stage2_human_annotation</span>(self, trajectory, oracle_paths):
+        <span class="cm">"""
+        Human annotators receive:
+        1. The trajectory
+        2. Ground truth answer
+        3. Oracle paths (as reference)
+        4. LLM-generated attribution hints (verified by humans)
+
+        Annotators produce:
+        - binary_label: is_hallucinated (bool)
+        - responsible_step: t* (int, earliest causally-sufficient step)
+        - category: one of 5 primary / 14 sub
+        - causal_explanation: free-text description of why step t* is wrong
+
+        Validation criteria:
+        - Does step t* introduce a factual error that directly distorts outcome?
+        - OR does step t* propagate an error seeded in an earlier step?
+          If so, trace BACK to the root step.
+        """</span>
+        <span class="kw">return</span> binary_label, responsible_step, category, causal_explanation
+
+    <span class="kw">def</span> <span class="fn">stage3_consensus</span>(self, annotations_from_10_annotators):
+        <span class="cm">"""
+        Disagreement resolution:
+        - Initial inter-annotator agreement: ~77.9% on step, ~81.9% on category
+        - Disagreements resolved through structured discussion
+        - All annotators must be convinced by the final rationale
+        - Cross-validation: each annotator reviews peers' annotations
+        """</span>
+        <span class="kw">pass</span></pre>
+
+  <h3>2. Automated Evaluation System</h3>
+
+<pre class="blue-code"><span class="cm"># Standard prompting implementation</span>
+STANDARD_PROMPT = <span class="str">"""
+Given a question and an agent trajectory containing all reasoning and action steps.
+Determine whether the agent's final answer contains hallucinated content.
+If hallucinated, identify the FIRST step that introduced the hallucination and explain why.
+
+<Question>{question}</Question>
+<Agent Trajectory>{trajectory}</Agent Trajectory>
+
+Return ONLY a JSON object:
+{
+  "is_hallucination": bool,
+  "hallucination_step": int | null,  // 1-indexed, earliest responsible step
+  "hallucination_reason": str | null  // max 1000 chars
+}
+"""</span>
+
+<span class="cm"># Step-by-step prompting implementation</span>
+<span class="kw">def</span> <span class="fn">step_by_step_attribution</span>(model, question, trajectory_steps):
+    <span class="kw">for</span> i, step <span class="kw">in</span> enumerate(trajectory_steps):
+        prefix = trajectory_steps[:i+<span class="num">1</span>]
+        response = model.generate(
+            STEPBYSTEP_PROMPT.format(
+                question=question,
+                trajectory=format_trajectory(prefix)
+            )
+        )
+        <span class="kw">if</span> response[<span class="str">"is_hallucination"</span>]:
+            <span class="kw">return</span> i+<span class="num">1</span>, response[<span class="str">"hallucination_reason"</span>]
+    <span class="kw">return</span> <span class="kw">None</span>, <span class="kw">None</span>   <span class="cm"># No hallucination found</span>
+
+<span class="cm"># G-EVAL scoring for explanation quality
+# Uses GPT-5 as judge with 5-point rubric:
+# 1=Fabricated, 2=Mislocalized, 3=Wrong Cause, 4=Mostly Correct, 5=Exact</span>
+<span class="kw">def</span> <span class="fn">geval_score</span>(judge_model, question, trajectory, expected_expl, generated_expl):
+    score = judge_model.generate(
+        GEVAL_PROMPT.format(
+            question=question,
+            trajectory=trajectory,
+            expected_explanation=expected_expl,
+            generated_explanation=generated_expl
+        )
+    )
+    <span class="kw">return</span> int(score)  <span class="cm"># 1-5</span></pre>
+
+  <h3>3. Dataset Construction — What You'd Replicate</h3>
+  <table>
+    <tr><th>Component</th><th>Choice</th><th>Rationale</th></tr>
+    <tr><td>Query sources</td><td>SimpleQA, GPQA, MATH-500, AIME 2024/25, GAIA, BFCL V3, HLE</td><td>Covers world knowledge, science, math, general assistant, tool-use — 5 distinct domains</td></tr>
+    <tr><td>Agent frameworks</td><td>SmolAgents, OpenDeepSearch, OpenManus, OctoTools, Magentic-One, OWL, Function-calling Agent</td><td>7 frameworks with diverse reasoning paradigms (CodeAct, ReAct, multi-agent, tool-calling)</td></tr>
+    <tr><td>LLM backbones</td><td>GPT-4o, GPT-4.1, GPT-5, Claude-3.7-Sonnet, Qwen2.5-Coder-32B</td><td>Multi-backbone diversity reduces backbone-specific bias</td></tr>
+    <tr><td>Trajectory filtering</td><td>Exclude failures, short (≤2 steps), trivial (all 4 judges agree)</td><td>Ensures benchmark tests attribution, not detection of obvious failures</td></tr>
+    <tr><td>Annotation protocol</td><td>10 graduate AI annotators, 3-stage process, consensus resolution</td><td>Labor-intensive but ensures annotation quality — 98.9% binary agreement, 77.9% step agreement</td></tr>
+    <tr><td>Evaluated models</td><td>5 proprietary + 8 open-source across the benchmark</td><td>Broad coverage of the current model landscape</td></tr>
+  </table>
+
+  <h3>4. The Thinking Mode Effect</h3>
+  <p>Enabling "thinking mode" (extended internal reasoning before output) in Qwen3 improves both judgment and attribution. Qwen3-32B with thinking: judgment F1 goes from 51.8 → 58.6, localization from 21.2 → 23.5. The mechanism: thinking mode enables <strong>self-verification</strong> — the model checks its own step-level reasoning before committing, catching plausible-but-incorrect claims. This is essentially building step-by-step reasoning into the model rather than prompting for it.</p>
+</section>
+
+<!-- STEP 5 -->
+<section id="critical" class="step">
+  <div class="step-label">Step 05 — Critical Analysis</div>
+  <h2>Strengths, Weaknesses, and What the Results Actually Tell Us</h2>
+
+  <h3>Strengths</h3>
+  <div class="box green">
+    <div class="box-label green">What AgentHallu Gets Right</div>
+    <ul class="clean">
+      <li><strong>The counterfactual attribution definition is rigorous:</strong> Defining the responsible step as the earliest step whose correction is causally sufficient to fix the trajectory is the correct formalization. It prevents the common mistake of blaming the step that verbalizes an error rather than the step that caused it.</li>
+      <li><strong>Grounded theory for taxonomy:</strong> Inducing categories from data rather than imposing them top-down is the right approach for a new phenomenon. The resulting 5+14 taxonomy captures real patterns.</li>
+      <li><strong>The trivial-case filtering is methodologically important:</strong> A benchmark where all frontier models agree is measuring detection, not attribution difficulty. Filtering those cases out keeps the benchmark at the genuine frontier.</li>
+      <li><strong>G-EVAL with human validation:</strong> The paper validates G-EVAL against human judgments (0.86 Spearman) rather than just using it as a proxy. This is methodological rigor that many NLP papers skip.</li>
+      <li><strong>Multi-backbone and multi-framework diversity:</strong> Using 5 LLM backbones and 7 agent frameworks significantly reduces the risk that results are artifacts of one implementation style.</li>
+    </ul>
+  </div>
+
+  <h3>Weaknesses</h3>
+  <div class="box red">
+    <div class="box-label red">What AgentHallu Understates or Gets Wrong</div>
+    <ul class="clean">
+      <li><strong>The counterfactual definition is difficult to operationalize at scale:</strong> To verify that t* is the responsible step, you need to replace step t* with its "correct counterpart" and re-execute. But what is the correct counterpart? For planning steps, this is ambiguous. The paper uses human judgment to resolve this, which introduces annotator-specific assumptions about what "correct" planning looks like.</li>
+      <li><strong>693 samples is small for 5 categories:</strong> The tool-use category has 103 samples, split across 4 subcategories. Parallel Conflict has only 12 samples. Statistical conclusions about category-level differences have high variance at these sample sizes.</li>
+      <li><strong>Trajectories are primarily GPT-4o/GPT-4.1 generated:</strong> Most trajectories come from GPT-based agents. Hallucination patterns in GPT-family models may differ from other architectures. A benchmark built from GPT failures may not generalize to evaluating hallucinations in Claude or Llama agents.</li>
+      <li><strong>Text-only — multimodal agents excluded:</strong> Vision-based agents, audio agents, and agents interacting with structured data (spreadsheets, databases) are entirely absent. This is acknowledged in limitations but significantly limits the benchmark's scope.</li>
+      <li><strong>The gap between judgment and attribution is not fully explained:</strong> GPT-5 achieves 70.2% F1 on judgment but only 32.7% on localization. The paper attributes this to "task difficulty" but doesn't systematically analyze <em>why</em> models that correctly identify hallucinations fail to trace their origin.</li>
+    </ul>
+  </div>
+
+  <h3>The Most Important Finding — and What It Implies</h3>
+  <div class="box amber">
+    <div class="box-label amber">Tool-Use at 11.6% — A Qualitatively Different Problem</div>
+    <p style="margin-bottom:0.75rem;">Tool-use hallucinations are the hardest category at 11.6% accuracy — barely above random. The paper explains this as the challenge of "verifying environmental state within action-observation loops rather than purely linguistic factual errors."</p>
+    <p style="margin:0;">This is a deeper point than it appears. For reasoning hallucinations, a model reading the trajectory can evaluate whether a logical inference is correct by examining the text. For tool-use hallucinations (missing a required call, specifying wrong arguments, making unnecessary calls), the evaluator must track <em>the state of the external environment</em> across steps — what functions have been called, what state changes they produced, what the valid state transitions should have been. This is not a language understanding problem. It requires a model of the external environment, which LLMs trained on text trajectories fundamentally lack.</p>
+  </div>
+</section>
+
+<!-- STEP 6 -->
+<section id="problems" class="step">
+  <div class="step-label">Step 06 — Challenge Problems</div>
+  <h2>Problems to Build Researcher Intuition on AgentHallu</h2>
+
+  <div class="prob">
+    <div class="prob-level easy">Conceptual</div>
+    <div class="prob-q">P1. The paper defines the responsible step as the earliest step in H(τ) — the earliest step whose correction is causally sufficient to fix the trajectory. Construct a concrete trajectory where two different steps are both individually sufficient to fix the outcome. Which is the responsible step by the paper's definition, and is that the right choice?</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level easy">Conceptual</div>
+    <div class="prob-q">P2. The paper finds that step-by-step prompting significantly improves localization (24.3% → 36.6% average) but slightly hurts judgment F1. Explain the mechanism behind both effects. What property of the full-trajectory context helps judgment but hurts localization?</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level med">Algorithm</div>
+    <div class="prob-q">P3. Design an improved prompting strategy beyond the two baselines in the paper. Your strategy should address the core failure mode identified in every case study: models blame the symptom step rather than the root cause step. Write the prompt template and explain the mechanism by which it addresses this specific failure.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level med">Algorithm</div>
+    <div class="prob-q">P4. The paper uses exact match for step localization accuracy — the predicted step must equal the annotated step exactly. For a trajectory with 15 steps, a prediction of step 4 when the true step is step 3 scores 0. Design an alternative metric that gives partial credit for near-misses while still heavily penalizing large step errors. Justify your design choices.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level hard">Implementation</div>
+    <div class="prob-q">P5. Tool-use hallucinations are nearly impossible for LLMs to detect (11.6% accuracy) because they require tracking environment state across action-observation loops. Design a non-LLM system component that maintains a formal model of tool state and can flag when a tool call violates preconditions or produces an invalid state transition. What data structures and checks would this require?</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level hard">Implementation</div>
+    <div class="prob-q">P6. The benchmark uses GPT-5 as the G-EVAL judge to evaluate explanations generated by GPT-5. This creates a potential self-preference bias. The paper addresses this by showing the GPT-5 judge scores GPT-5 outputs only 0.15 points higher than human annotators do. Design a more rigorous test for judge bias and characterize when self-preference is and isn't a problem for LLM-as-a-judge evaluation.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level research">Research</div>
+    <div class="prob-q">P7. The counterfactual attribution definition (replace step t with its correct version, re-execute) requires knowing what "correct" looks like for step t. For planning hallucinations (e.g., the agent encodes a wrong assumption in its plan), the correct version of step t is not unique — many different correct plans exist. Formalize this ambiguity and propose a principled method for handling trajectories where the responsible step's "correct counterpart" is not uniquely defined.</div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level research">Research</div>
+    <div class="prob-q">P8. The paper treats hallucination attribution as finding a single responsible step. But in many trajectories, errors compound: step 3 makes a mistake, step 7 fails to catch it and reinforces it. Design a multi-attribution framework that can represent shared responsibility across steps, assign weights to each contributing step, and enable more informative debugging than single-step attribution.</div>
+  </div>
+</section>
+
+<!-- STEP 7 -->
+<section id="solutions" class="step">
+  <div class="step-label">Step 07 — Solutions</div>
+  <h2>Working Through the Problems</h2>
+
+  <div class="prob">
+    <div class="prob-level easy">Conceptual</div>
+    <div class="prob-q">P1. Multiple steps individually sufficient to fix the trajectory — which is responsible?</div>
+    <div class="sol">
+      <div class="sol-label">Solution</div>
+      <p><strong>Concrete trajectory:</strong> Query — "What is the capital of the country that hosted the 1964 Summer Olympics?" Step 1 (planning): "I'll assume the 1964 Summer Olympics were in Mexico City and look up Mexico's capital." Step 3 (reasoning): "Mexico's capital is Guadalajara." Correct answer: Tokyo → Japan → Tokyo.</p>
+      <p>Both Step 1 (wrong country) and Step 3 (wrong capital) are individually sufficient to cause the wrong answer. Correcting either one produces a correct trajectory. By the paper's definition t* = argmin t∈H(τ) — the earliest element — Step 1 is the responsible step.</p>
+      <p><strong>Is this the right choice?</strong> Yes, for debugging purposes. If you can only fix one step, fixing the earliest error prevents all downstream errors from occurring. Step 3's error only exists because Step 1 was wrong. The causality flows forward from Step 1. Fixing Step 3 in isolation still leaves Step 1's wrong assumption in the plan, which would corrupt any future re-execution. The earliest step is the true causal root.</p>
+    </div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level easy">Conceptual</div>
+    <div class="prob-q">P2. Why step-by-step helps localization but hurts judgment</div>
+    <div class="sol">
+      <div class="sol-label">Solution</div>
+      <p><strong>Why it helps localization:</strong> When you present the trajectory prefix up to step i and ask "has a hallucination occurred by this step?", the model must commit to a judgment based on limited context. The later steps that verbalize the error haven't been seen yet, so the model can't retroactively blame them. It's forced to examine each step independently and ask whether <em>this specific step</em> introduces an error — the right question for attribution.</p>
+      <p><strong>Why it hurts judgment:</strong> Binary hallucination judgment benefits from full-trajectory context because whether a trajectory is hallucinated depends on the final answer, which only exists at the end. With step-by-step prompting, the model makes a binary decision before seeing the conclusion. Some trajectories appear to be going wrong mid-stream but self-correct — the step-by-step approach would incorrectly flag these. The full-trajectory approach lets the model aggregate evidence from all steps, including how observations resolve earlier uncertainties.</p>
+      <p>This is an inherent tradeoff: localization requires early commitment (before later steps contaminate the judgment), but judgment requires late commitment (after all evidence is collected).</p>
+    </div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level med">Algorithm</div>
+    <div class="prob-q">P3. A prompting strategy that specifically addresses symptom-vs-root-cause confusion</div>
+    <div class="sol">
+      <div class="sol-label">Solution</div>
+<pre class="green-code" style="font-size:11px; margin:0.5rem 0;">CAUSAL_CHAIN_PROMPT = <span class="str">"""
+Given a hallucinated agent trajectory. Your task is to find the ROOT CAUSE step
+— the step that INTRODUCED the error, not the step where the error APPEARS.
+
+Key distinction:
+- A step that INTRODUCES an error: the agent makes a wrong assumption,
+  retrieves wrong information, or misspecifies a tool call HERE.
+- A step that PROPAGATES an error: the agent repeats or builds on an error
+  made in an EARLIER step. This is NOT the responsible step.
+- A step that MANIFESTS an error: the agent states the final wrong answer.
+  This is NEVER the responsible step.
+
+To find the root cause, trace BACKWARDS from the final wrong answer:
+1. What information in the final answer is incorrect?
+2. Where did that incorrect information first ENTER the trajectory?
+3. Was it present in an observation (retrieval error), a thought (reasoning error),
+   or a planning step (planning error)?
+4. Continue tracing back until you find a step that introduced information
+   not derived from any earlier step.
+
+<Question>{question}</Question>
+<Agent Trajectory>{trajectory}</Agent Trajectory>
+<Correct Answer>{ground_truth}</Correct Answer>
+
+Trace the causal chain backwards, then return JSON.
+"""</span></pre>
+      <p>The key mechanism: explicitly teaching the distinction between introduction, propagation, and manifestation. The backward tracing instruction forces the model to follow the causal chain from the error back to its origin, rather than stopping at the first visible wrong statement.</p>
+    </div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level med">Algorithm</div>
+    <div class="prob-q">P4. A partial-credit step localization metric</div>
+    <div class="sol">
+      <div class="sol-label">Solution</div>
+      <p>The metric should penalize step distance but account for trajectory length (a 3-step error in a 15-step trajectory is worse than a 3-step error in a 40-step trajectory):</p>
+<pre class="green-code" style="font-size:11px; margin:0.5rem 0;"><span class="kw">def</span> <span class="fn">normalized_step_score</span>(t_pred, t_true, n_steps, penalty=<span class="num">2.0</span>):
+    <span class="cm">"""
+    Score ∈ [0,1]. Exact match = 1. Decays with step distance.
+    Normalized by trajectory length so distance-2 error in 5-step
+    trajectory is penalized more than in 20-step trajectory.
+    """</span>
+    <span class="kw">if</span> t_pred == t_true: <span class="kw">return</span> <span class="num">1.0</span>
+    normalized_dist = abs(t_pred - t_true) / n_steps
+    <span class="kw">return</span> max(<span class="num">0</span>, <span class="num">1</span> - penalty * normalized_dist)
+
+<span class="cm"># Design choices:
+# - Asymmetric penalty: blaming a LATER step (symptom confusion)
+#   is arguably worse than blaming an EARLIER step (over-attribution).
+#   Multiply by 1.5 for positive (t_pred > t_true) errors.
+# - Cutoff: distance > 0.4 of trajectory length → score 0 (too far off)
+# - No credit for off-by-one errors may be too strict for trajectories
+#   with 20+ steps where step boundaries are ambiguous</span></pre>
+    </div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level hard">Implementation</div>
+    <div class="prob-q">P5. A formal environment state tracker for tool-use hallucination detection</div>
+    <div class="sol">
+      <div class="sol-label">Solution</div>
+<pre class="green-code" style="font-size:11px; margin:0.5rem 0;"><span class="kw">class</span> <span class="cls">ToolStateTracker</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, tool_specs):
+        <span class="cm"># tool_specs: {tool_name: {preconditions, postconditions, valid_args}}</span>
+        self.tool_specs = tool_specs
+        self.env_state = {}     <span class="cm"># Current state of the environment</span>
+        self.call_log = []      <span class="cm"># History of all tool calls</span>
+        self.violations = []    <span class="cm"># Detected hallucination events</span>
+
+    <span class="kw">def</span> <span class="fn">check_call</span>(self, tool_name, args, step_idx):
+        spec = self.tool_specs.get(tool_name)
+        <span class="cm"># Check 1: Does this tool exist?</span>
+        <span class="kw">if not</span> spec:
+            self.violations.append({<span class="str">"step"</span>: step_idx, <span class="str">"type"</span>: <span class="str">"missing_tool"</span>})
+            <span class="kw">return</span>
+        <span class="cm"># Check 2: Are preconditions satisfied?</span>
+        <span class="kw">for</span> pre <span class="kw">in</span> spec[<span class="str">"preconditions"</span>]:
+            <span class="kw">if not</span> pre(self.env_state, args):
+                self.violations.append({<span class="str">"step"</span>: step_idx, <span class="str">"type"</span>: <span class="str">"precondition_violated"</span>})
+        <span class="cm"># Check 3: Are arguments valid?</span>
+        <span class="kw">if not</span> spec[<span class="str">"valid_args"</span>](args):
+            self.violations.append({<span class="str">"step"</span>: step_idx, <span class="str">"type"</span>: <span class="str">"incorrect_argument"</span>})
+        <span class="cm"># Check 4: Is this call necessary (not a duplicate or irrelevant)?</span>
+        <span class="kw">if</span> self.<span class="fn">_is_redundant</span>(tool_name, args):
+            self.violations.append({<span class="str">"step"</span>: step_idx, <span class="str">"type"</span>: <span class="str">"unnecessary_tool"</span>})
+        <span class="cm"># Update state with postconditions</span>
+        spec[<span class="str">"postconditions"</span>](self.env_state, args)
+        self.call_log.append((step_idx, tool_name, args))
+
+<span class="cm"># This catches: missing calls, wrong arguments, unnecessary calls.
+# Parallel conflict requires additionally tracking concurrent call graphs.
+# Key insight: this is a formal verification problem, not an NLP problem.
+# LLMs can't do this reliably because it requires maintaining exact state.</span></pre>
+    </div>
+  </div>
+
+  <div class="prob">
+    <div class="prob-level research">Research</div>
+    <div class="prob-q">P8. Multi-attribution framework with shared responsibility</div>
+    <div class="sol">
+      <div class="sol-label">Solution</div>
+      <p>Model hallucination attribution as a <strong>causal graph over trajectory steps</strong>. Define a directed graph G = (V, E) where V = {u_1, ..., u_n} are trajectory steps and (u_i, u_j) ∈ E if u_j's content is causally influenced by u_i's content.</p>
+      <p>Then define a hallucination influence score for each step t:</p>
+<pre class="green-code" style="font-size:11px; margin:0.5rem 0;"><span class="cm"># Influence score: how much would fixing step t reduce overall hallucination?
+# Computed via do-calculus on the causal graph</span>
+
+influence(t) = P(y_correct | do(u_t = u_t_correct))
+             - P(y_correct)
+
+<span class="cm"># Approximation: estimate via counterfactual perturbation
+# For each step t, replace with correct version, measure downstream impact
+# Normalized influence score: influence(t) / Σ_i influence(i)
+
+# Multi-attribution output:
+# {step_1: 0.65, step_3: 0.28, step_7: 0.07}
+# Interpretation: step_1 is the primary cause (65% of hallucination influence),
+# step_3 reinforces it, step_7 has minor additional contribution</span></pre>
+      <p><strong>Advantages over single-step attribution:</strong> Better reflects complex trajectories where errors compound. Enables prioritized debugging (fix highest-influence step first). Handles the case where no single step correction is sufficient (compound errors).</p>
+      <p><strong>Key challenge:</strong> Estimating influence scores requires re-executing the trajectory N times (once per step). For long trajectories with expensive tool calls, this is computationally prohibitive. The paper's single-step approach is a computationally tractable approximation of this richer framework.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STEP 8 -->
+<section id="extensions" class="step">
+  <div class="step-label">Step 08 — Research Extensions</div>
+  <h2>New Directions Inspired by AgentHallu</h2>
+
+  <div class="ext">
+    <div class="ext-num">01</div>
+    <div>
+      <div class="ext-title">Process Reward Models for Agent Attribution</div>
+      <div class="ext-desc">Train a discriminative process reward model (PRM) that scores each step in an agent trajectory for hallucination likelihood. Unlike the LLM-as-judge approach, a trained PRM can learn step-specific hallucination signals from AgentHallu data. Key research question: does fine-tuning on step-level hallucination labels produce better attribution than prompting frontier LLMs?</div>
+    </div>
+  </div>
+
+  <div class="ext">
+    <div class="ext-num">02</div>
+    <div>
+      <div class="ext-title">Causal Graph Attribution</div>
+      <div class="ext-desc">Extend the counterfactual attribution framework to a full causal graph representation. Build a graph over trajectory steps where edges represent information dependencies. Use do-calculus to compute influence scores for each step. This enables multi-attribution output and handles compound errors that the current single-step definition cannot represent.</div>
+    </div>
+  </div>
+
+  <div class="ext">
+    <div class="ext-num">03</div>
+    <div>
+      <div class="ext-title">Online Hallucination Detection — Interrupt Before Propagation</div>
+      <div class="ext-desc">AgentHallu frames attribution as post-hoc analysis. A more valuable application is real-time detection: flag a hallucination at step t before it propagates. Train a lightweight classifier on AgentHallu data to run after each step and decide whether to continue, retry the step, or escalate to human review. Evaluate the precision-recall tradeoff for early termination vs false alarm rate.</div>
+    </div>
+  </div>
+
+  <div class="ext">
+    <div class="ext-num">04</div>
+    <div>
+      <div class="ext-title">Tool-Use Hallucination via Formal Verification</div>
+      <div class="ext-desc">Tool-use hallucinations at 11.6% accuracy represent a fundamentally different problem from linguistic hallucinations. Build a hybrid system: LLM for planning/reasoning/retrieval attribution + formal state tracker for tool-use attribution. The formal tracker maintains the environment state machine and flags constraint violations that LLMs cannot reliably detect from text alone.</div>
+    </div>
+  </div>
+
+  <div class="ext">
+    <div class="ext-num">05</div>
+    <div>
+      <div class="ext-title">Multimodal AgentHallu</div>
+      <div class="ext-desc">The paper explicitly acknowledges that multimodal agents are excluded. Extend AgentHallu to vision-language agents (browser agents, GUI agents, vision-based reasoning). New hallucination categories emerge: visual grounding errors (misidentifying objects in screenshots), spatial reasoning failures, and OCR errors that propagate into text-based reasoning. The taxonomy will need significant extension.</div>
+    </div>
+  </div>
+
+  <div class="ext">
+    <div class="ext-num">06</div>
+    <div>
+      <div class="ext-title">Attribution-Guided Agent Training</div>
+      <div class="ext-desc">Use AgentHallu annotations as training signal to make agents less prone to propagating errors. Two approaches: (1) DPO on (hallucinated trajectory, corrected trajectory) pairs where the correction targets the responsible step, (2) RLHF with a reward model that penalizes trajectories proportional to how early their hallucination step appears. Evaluate whether trained agents show reduced hallucination rates on AgentHallu.</div>
+    </div>
+  </div>
+
+  <div class="ext">
+    <div class="ext-num">07</div>
+    <div>
+      <div class="ext-title">Human-Interaction Hallucination Robustness</div>
+      <div class="ext-desc">Human-Interaction hallucinations (10.5% of cases) occur when agents uncritically accept user-provided information that is wrong. This is an under-studied failure mode — most alignment work focuses on model-generated errors. Research direction: train agents to verify high-stakes user claims against external sources before incorporating them into the trajectory state, without being adversarially resistant to all user input.</div>
+    </div>
+  </div>
+
+  <div class="box blue" style="margin-top:3rem;">
+    <div class="box-label blue">Mentor's Synthesis — What AgentHallu Is Really Revealing</div>
+    <p style="margin-bottom:0.75rem;">The 41.1% ceiling is not a benchmark artifact — it reflects something deep about the current state of LLMs as meta-reasoners. To do hallucination attribution correctly, a model must simultaneously: (1) maintain a causal model of the trajectory (which steps influence which), (2) evaluate factual claims at each step against external world knowledge, (3) track tool environment state through action-observation loops, and (4) resist the pull of the final wrong answer when tracing errors backward. This is not one capability but four, and current LLMs don't have them all.</p>
+    <p style="margin-bottom:0.75rem;">The most striking finding is the tool-use result at 11.6%. This tells us that LLMs fundamentally lack the ability to maintain a formal model of external environment state over multi-step tool interactions. Text-based trajectory analysis is insufficient for this task — you need something closer to program analysis or formal verification.</p>
+    <p style="margin:0;">The research agenda this opens up: attribution is not just a benchmark challenge, it's a foundation for making agentic systems trustworthy. An agent that can explain <em>where and why</em> it went wrong has taken the first step toward self-correction. The path from AgentHallu to reliable agentic systems runs through process reward models, causal graph representations, and hybrid LLM + formal verification systems.</p>
+  </div>
+</section>
+
+<div class="footnote">
+  AgentHallu: Benchmarking Automated Hallucination Attribution of LLM-based Agents · Liu et al. · BUPT / Tsinghua / UCSB / CASIA · arXiv:2601.06818v1 · January 2026
+</div>
+
+</main>
+</body>
+</html>

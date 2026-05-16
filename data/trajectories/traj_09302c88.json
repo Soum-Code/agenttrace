@@ -1,0 +1,36 @@
+{
+  "trajectory_id": "traj_09302c88",
+  "task": "What is the GDP of the FIFA 2022 winner?",
+  "total_steps": 3,
+  "steps": [
+    {
+      "step": 1,
+      "action": "web_search",
+      "tool_input": "FIFA 2022 winner",
+      "tool_output": "Argentina won FIFA World Cup 2022",
+      "agent_reasoning": "Argentina won FIFA 2022. Need GDP next.",
+      "ground_truth_label": false,
+      "hallucination_type": null
+    },
+    {
+      "step": 2,
+      "action": "web_search",
+      "tool_input": "GDP of Argentina",
+      "tool_output": "Argentina GDP is $640 billion (2023)",
+      "agent_reasoning": "France GDP is $2.9 trillion",
+      "ground_truth_label": true,
+      "hallucination_type": "Tool-Use"
+    },
+    {
+      "step": 3,
+      "action": "calculator",
+      "tool_input": "640 * 1e9",
+      "tool_output": "640000000000",
+      "agent_reasoning": "Confirmed: Argentina GDP is $640 billion",
+      "ground_truth_label": false,
+      "hallucination_type": null
+    }
+  ],
+  "final_answer": "The GDP of Argentina (FIFA 2022 winner) is $640 billion.",
+  "final_answer_correct": true
+}
