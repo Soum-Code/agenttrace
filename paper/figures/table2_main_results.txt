@@ -1,0 +1,12 @@
+\begin{table}[h]
+\centering
+\caption{AgentTrace vs State-of-the-Art}
+\begin{tabular}{lcccc}
+\toprule
+System & Step Loc Acc & Tool-Use Acc & FPR \\
+\midrule
+AgentHallu (2026) & 41.1\% & 11.6\% & N/R \\
+AgentTrace (Ours) & \textbf{58.65\%} & 98.0\% & 20.3\% \\
+\bottomrule
+\end{tabular}
+\end{table}

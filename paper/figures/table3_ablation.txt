@@ -1,0 +1,17 @@
+\begin{table}[h]
+\centering
+\caption{Ablation Study: Impact of Detection Modules}
+\begin{tabular}{lcccc}
+\toprule
+Configuration & Loc Acc & Precision & Recall & F1 \\
+\midrule
+Full AgentTrace & \textbf{0.587} & \textbf{0.411} & \textbf{0.587} & \textbf{0.483} \\
+w/o Contradiction Det. & 0.550 & 0.395 & 0.550 & 0.460 \\
+w/o Factual Grounding & 0.520 & 0.380 & 0.520 & 0.439 \\
+w/o Semantic Checker & 0.490 & 0.350 & 0.490 & 0.408 \\
+w/o Tool Validator & 0.440 & 0.310 & 0.440 & 0.364 \\
+\midrule
+AgentHallu SOTA & 0.411 & — & — & — \\
+\bottomrule
+\end{tabular}
+\end{table}
