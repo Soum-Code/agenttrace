@@ -40,7 +40,7 @@ class DetectionPipeline:
                      "user_input", "human_input", "ask_human"}
 
     # Fusion threshold — only flag if fused score exceeds this
-    FUSION_THRESHOLD = 0.45
+    FUSION_THRESHOLD = 0.40
 
     # Minimum number of active signals required to make a decision
     MIN_SIGNALS_FOR_DETECTION = 2
@@ -162,16 +162,31 @@ class DetectionPipeline:
         # Track history for contradiction detection
         self._history.append(step_data)
 
-        # ── Pure Threshold Fusion ───────────────────────────────────────
+        # ── Tuned Hybrid Fusion ─────────────────────────────────────────
         fused_score = self._fuse_signals(signals)
         active_signal_count = sum(
             1 for v in signals.values() if v is not None
         )
 
-        hallucination_detected = (
-            fused_score > self.FUSION_THRESHOLD
-            and active_signal_count >= self.MIN_SIGNALS_FOR_DETECTION
-        )
+        action = step_data.get("action", "").lower().strip()
+        is_tool_action = action in self.TOOL_ACTIONS or any(kw in action for kw in ["search", "calc", "api", "query", "look", "fetch", "read"])
+        is_reasoning_action = action in self.PLANNING_ACTIONS or any(kw in action for kw in ["plan", "think", "reason", "decompose"])
+
+        # 1. Base threshold
+        base_flag = (fused_score > self.FUSION_THRESHOLD and active_signal_count >= self.MIN_SIGNALS_FOR_DETECTION)
+        
+        # 2. Strict Tool-Use hallucination
+        sem_sim = signals.get("semantic_similarity")
+        tool_flag = (signals.get("tool_claim_match") is False) and is_tool_action and (sem_sim is not None and sem_sim < 0.65)
+        
+        # 3. High-confidence factual contradiction
+        nli_score = signals.get("nli_score")
+        nli_flag = (nli_score is not None and nli_score > 0.75)
+        
+        # 4. Contradiction with previous steps
+        contra_flag = (signals.get("contradiction_with_prev") is True) and is_reasoning_action
+
+        hallucination_detected = base_flag or tool_flag or nli_flag or contra_flag
 
         # Confidence = fused score
         confidence = round(min(max(fused_score, 0.0), 1.0), 4)
