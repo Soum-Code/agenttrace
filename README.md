@@ -1,3 +1,12 @@
+---
+title: AgentTrace Demo
+emoji: 🚀
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+pinned: false
+app_port: 7860
+---
 # AgentTrace
 
 Step-Level Hallucination Detection and Attribution
