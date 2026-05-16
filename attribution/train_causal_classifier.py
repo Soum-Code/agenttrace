@@ -143,7 +143,7 @@ def main():
         per_device_eval_batch_size=16,
         num_train_epochs=3,
         weight_decay=0.01,
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         save_strategy="epoch",
         load_best_model_at_end=True,
         logging_dir=str(project_root / "logs" / "causal_classifier"),
@@ -155,7 +155,7 @@ def main():
         args=training_args,
         train_dataset=tokenized_train,
         eval_dataset=tokenized_eval,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         compute_metrics=compute_metrics,
     )
 
