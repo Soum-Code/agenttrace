@@ -13,9 +13,21 @@ jobs:
           fetch-depth: 0
           lfs: true
       
+      - name: Install dependencies
+        run: pip install huggingface_hub
+        
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git remote add space https://ayaanO7:$HF_TOKEN@huggingface.co/spaces/ayaanO7/AgentTrace-Demo
-          git push --force space main
+          python -c "
+          import os
+          from huggingface_hub import HfApi
+          api = HfApi(token=os.environ['HF_TOKEN'])
+          api.upload_folder(
+              folder_path='.',
+              repo_id='ayaanO7/AgentTrace-Demo',
+              repo_type='space',
+              ignore_patterns=['.git/*', '__pycache__/*', '.github/*', '.venv/*', '.vscode/*']
+          )
+          "
