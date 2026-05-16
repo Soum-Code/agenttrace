@@ -204,8 +204,10 @@ class DetectionPipeline:
         return {
             "hallucination_detected": hallucination_detected,
             "confidence": confidence,
+            "hallucination_type": hallucination_type,
             "hallucination_type_predicted": hallucination_type,
             "severity": severity,
+            "detection_signals": signals,
         }
 
     def reset_history(self):
