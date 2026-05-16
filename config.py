@@ -72,6 +72,11 @@ class PathConfig:
         return os.path.join(self.project_root, ".model_cache")
 
     @property
+    def models_dir(self) -> str:
+        """Directory for fine-tuned local models."""
+        return os.path.join(self.project_root, "models")
+
+    @property
     def paper_dir(self) -> str:
         """LaTeX paper source directory."""
         return os.path.join(self.project_root, "paper")
@@ -96,6 +101,7 @@ class PathConfig:
             self.results_dir,
             self.index_dir,
             self.model_cache_dir,
+            self.models_dir,
             self.paper_dir,
             self.log_dir,
         ]:
@@ -188,6 +194,11 @@ class ClassifierConfig:
     )
     max_seq_length: int = 512         # longer context for full-step input
     device: str = "cuda"
+
+    @property
+    def finetuned_model_path(self) -> str:
+        """Path to local fine-tuned model checkpoint."""
+        return os.path.join(PathConfig().models_dir, "causal_classifier_finetuned")
 
 
 # ════════════════════════════════════════════════════════════

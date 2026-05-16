@@ -1,32 +1,9 @@
-# ═══════════════════════════════════════════════
-# AgentTrace — Requirements
-# ═══════════════════════════════════════════════
-
-# Core ML
-torch>=2.0.0
-transformers>=4.36.0
-sentence-transformers>=2.2.0
-datasets>=2.14.0
-scikit-learn>=1.3.0
-
-# LLM API (synthetic data generation)
-openai>=1.12.0
-
-# API
 fastapi>=0.111.0
 uvicorn[standard]>=0.29.0
 pydantic>=2.5.0
 httpx>=0.27.0
 python-multipart>=0.0.9
-
-# UI
 streamlit>=1.35.0
-
-# Experiment tracking (optional)
-# wandb>=0.16.0
-
-# Evaluation & Visualization
-matplotlib>=3.7.0
-seaborn>=0.12.0
-pandas>=2.0.0
-accelerate>=1.1.0
+torch>=2.0.0
+transformers>=4.40.0
+sentence-transformers>=2.7.0

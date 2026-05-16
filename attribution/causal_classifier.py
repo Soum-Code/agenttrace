@@ -35,10 +35,16 @@ class CausalClassifier:
         """Loads the causal classification model from config."""
         self.labels = config.CAUSAL_LABELS
         self.confidence_threshold = config.CAUSAL_CONFIDENCE_THRESHOLD
+        
+        model_path = config.CONFIG.classifier.finetuned_model_path
+        if not os.path.exists(model_path):
+            print(f"Local model not found at {model_path}. Falling back to base model.")
+            model_path = config.CAUSAL_MODEL_NAME
+
         try:
-            self.tokenizer = AutoTokenizer.from_pretrained(config.CAUSAL_MODEL_NAME)
+            self.tokenizer = AutoTokenizer.from_pretrained(model_path)
             self.model = AutoModelForSequenceClassification.from_pretrained(
-                config.CAUSAL_MODEL_NAME,
+                model_path,
                 num_labels=len(self.labels),
                 ignore_mismatched_sizes=True,
             )
