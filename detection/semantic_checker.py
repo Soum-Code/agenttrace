@@ -106,7 +106,7 @@ class SemanticChecker:
             "confidence": 0.0,
             "error": error_msg,
             "detection_signals": {
-                "semantic_similarity": 0.0,
+                "semantic_similarity": None,
                 "tool_claim_match": None,
                 "nli_score": None,
                 "contradiction_with_prev": None

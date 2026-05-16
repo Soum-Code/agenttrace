@@ -53,8 +53,12 @@ class DetectionPipeline:
         self.semantic_checker = None
         try:
             from detection.semantic_checker import SemanticChecker
-            self.semantic_checker = SemanticChecker()
-            print("  [+] SemanticChecker loaded")
+            sc = SemanticChecker()
+            if sc.model is not None:  # verify model actually loaded
+                self.semantic_checker = sc
+                print("  [+] SemanticChecker loaded")
+            else:
+                print("  [-] SemanticChecker: model failed to load")
         except Exception as e:
             print(f"  [-] SemanticChecker failed: {e}")
 
@@ -62,8 +66,12 @@ class DetectionPipeline:
         self.tool_validator = None
         try:
             from detection.tool_validator import ToolValidator
-            self.tool_validator = ToolValidator()
-            print("  [+] ToolValidator loaded")
+            tv = ToolValidator()
+            if tv.model is not None:  # verify model actually loaded
+                self.tool_validator = tv
+                print("  [+] ToolValidator loaded")
+            else:
+                print("  [-] ToolValidator: model failed to load")
         except Exception as e:
             print(f"  [-] ToolValidator failed: {e}")
 
@@ -74,21 +82,37 @@ class DetectionPipeline:
 
         self.weights = LOCALIZATION_SIGNAL_WEIGHTS
         self._history = []  # tracks previous steps for contradiction detection
-        print("Detection pipeline v2 ready.\n")
+
+        # Count how many models actually loaded
+        self._loaded_count = sum(1 for m in [
+            self.semantic_checker, self.tool_validator,
+            self.factual_grounder, self.contradiction_detector
+        ] if m is not None)
+        print(f"\nDetection pipeline v2 ready. Models loaded: {self._loaded_count}/4")
+        if self._loaded_count == 0:
+            print("  WARNING: No models loaded! Install: pip install sentence-transformers transformers torch")
 
     def _load_nli_modules(self):
-        """Lazy-loads NLI-based modules with error handling."""
+        """Lazy-loads NLI-based modules with model health verification."""
         try:
             from detection.factual_grounding import FactualGrounder
-            self.factual_grounder = FactualGrounder()
-            print("  [+] FactualGrounder loaded")
+            fg = FactualGrounder()
+            if fg.model is not None:  # verify model actually loaded
+                self.factual_grounder = fg
+                print("  [+] FactualGrounder loaded")
+            else:
+                print("  [-] FactualGrounder: model failed to load")
         except Exception as e:
             print(f"  [-] FactualGrounder failed: {e}")
 
         try:
             from detection.contradiction import ContradictionDetector
-            self.contradiction_detector = ContradictionDetector()
-            print("  [+] ContradictionDetector loaded")
+            cd = ContradictionDetector()
+            if cd.model is not None:  # verify model actually loaded
+                self.contradiction_detector = cd
+                print("  [+] ContradictionDetector loaded")
+            else:
+                print("  [-] ContradictionDetector: model failed to load")
         except Exception as e:
             print(f"  [-] ContradictionDetector failed: {e}")
 
@@ -172,8 +196,12 @@ class DetectionPipeline:
         is_tool_action = action in self.TOOL_ACTIONS or any(kw in action for kw in ["search", "calc", "api", "query", "look", "fetch", "read"])
         is_reasoning_action = action in self.PLANNING_ACTIONS or any(kw in action for kw in ["plan", "think", "reason", "decompose"])
 
+        # Adaptive MIN_SIGNALS: require at least 1 if few models loaded,
+        # 2 if 3+ models loaded (prevents single-signal false positives)
+        min_signals_required = 1 if self._loaded_count <= 2 else self.MIN_SIGNALS_FOR_DETECTION
+
         # 1. Base threshold
-        base_flag = (fused_score > self.FUSION_THRESHOLD and active_signal_count >= self.MIN_SIGNALS_FOR_DETECTION)
+        base_flag = (fused_score > self.FUSION_THRESHOLD and active_signal_count >= min_signals_required)
         
         # 2. Strict Tool-Use hallucination
         sem_sim = signals.get("semantic_similarity")
@@ -208,6 +236,19 @@ class DetectionPipeline:
             "hallucination_type_predicted": hallucination_type,
             "severity": severity,
             "detection_signals": signals,
+            # Diagnostics — helps debug zero-detection issues
+            "_debug": {
+                "fused_score": round(fused_score, 4),
+                "active_signal_count": active_signal_count,
+                "min_signals_required": min_signals_required,
+                "models_loaded": self._loaded_count,
+                "flags": {
+                    "base": base_flag,
+                    "tool": tool_flag,
+                    "nli": nli_flag,
+                    "contra": contra_flag,
+                },
+            },
         }
 
     def reset_history(self):

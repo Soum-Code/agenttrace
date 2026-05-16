@@ -139,18 +139,18 @@ class CausalClassifier:
         signals = detection_result.get("detection_signals", {})
         h_type = detection_result.get("hallucination_type", "")
 
-        # Heuristic rules
+        # Heuristic rules — uses official taxonomy labels from config
         if signals.get("tool_claim_match") is False:
-            label = "Tool-Misuse"
+            label = config.TYPE_TOOL_USE      # "Tool-Use"
             conf = 0.7
         elif h_type == config.TYPE_CONTRADICTION:
-            label = "Reasoning-Error"
+            label = config.TYPE_REASONING     # "Reasoning"
             conf = 0.65
         elif signals.get("nli_score") and signals["nli_score"] > 0.8:
-            label = "Retrieval-Error"
+            label = config.TYPE_RETRIEVAL     # "Retrieval"
             conf = 0.6
         else:
-            label = "Reasoning-Error"
+            label = config.TYPE_REASONING     # "Reasoning"
             conf = 0.5
 
         return {

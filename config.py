@@ -626,6 +626,11 @@ LOCALIZATION_SIGNAL_WEIGHTS = {
 TYPE_TOOL_USE = "Tool-Use"
 TYPE_FACTUAL = "Retrieval"
 TYPE_CONTRADICTION = "Reasoning"
+# Explicit aliases for all 5 taxonomy categories (used by train_causal_classifier.py)
+TYPE_PLANNING = "Planning"
+TYPE_RETRIEVAL = "Retrieval"
+TYPE_REASONING = "Reasoning"
+TYPE_HUMAN_INTERACTION = "Human-Interaction"
 SEVERITY_HIGH = "High"
 SEVERITY_MEDIUM = "Medium"
 SEVERITY_LOW = "Low"

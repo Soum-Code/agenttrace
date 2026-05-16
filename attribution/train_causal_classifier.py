@@ -23,15 +23,17 @@ except ImportError:
 import config
 
 def get_causal_label(hallucination_type: str) -> str:
-    """Map Detection hallucination_type to Attribution causal label."""
-    mapping = {
-        config.TYPE_TOOL_USE: "Tool-Misuse",
-        config.TYPE_REASONING: "Reasoning-Error",
-        config.TYPE_RETRIEVAL: "Retrieval-Error",
-        config.TYPE_PLANNING: "Planning-Failure",
-        config.TYPE_HUMAN_INTERACTION: "Human-Interaction-Error",
-    }
-    return mapping.get(hallucination_type, "Reasoning-Error")
+    """Map Detection hallucination_type to Attribution causal label.
+    
+    The hallucination types from the detection pipeline match the
+    5-category taxonomy in CAUSAL_LABELS directly.
+    """
+    # The taxonomy categories are the causal labels themselves
+    valid_labels = set(config.CAUSAL_LABELS)
+    if hallucination_type in valid_labels:
+        return hallucination_type
+    # Fallback for any non-standard types
+    return "Reasoning"
 
 def build_feature_text(step: dict) -> str:
     """Replicates _build_feature_text from CausalClassifier."""
