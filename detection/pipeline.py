@@ -88,9 +88,26 @@ class DetectionPipeline:
             self.semantic_checker, self.tool_validator,
             self.factual_grounder, self.contradiction_detector
         ] if m is not None)
-        print(f"\nDetection pipeline v2 ready. Models loaded: {self._loaded_count}/4")
+        print(f"\nDetection pipeline v2 (SLM Ensemble) ready. Models loaded: {self._loaded_count}/4")
         if self._loaded_count == 0:
             print("  WARNING: No models loaded! Install: pip install sentence-transformers transformers torch")
+
+        print("Initializing Hybrid Layers...")
+        try:
+            from attribution.llama_classifier import LlamaClassifier
+            self.llama_classifier = LlamaClassifier()
+            print("  [+] LlamaClassifier initialized")
+        except Exception as e:
+            print(f"  [-] LlamaClassifier failed: {e}")
+            self.llama_classifier = None
+            
+        try:
+            from attribution.nemotron_judge import NemotronJudge
+            self.nemotron_judge = NemotronJudge()
+            print("  [+] NemotronJudge initialized")
+        except Exception as e:
+            print(f"  [-] NemotronJudge failed: {e}")
+            self.nemotron_judge = None
 
     def _load_nli_modules(self):
         """Lazy-loads NLI-based modules with model health verification."""
@@ -116,7 +133,7 @@ class DetectionPipeline:
         except Exception as e:
             print(f"  [-] ContradictionDetector failed: {e}")
 
-    def detect(self, step: dict) -> dict:
+    def _slm_detect(self, step: dict) -> dict:
         """
         Runs the full multi-signal detection pipeline on a single step.
 
@@ -249,6 +266,61 @@ class DetectionPipeline:
                     "contra": contra_flag,
                 },
             },
+        }
+
+    def detect(self, step: dict) -> dict:
+        """
+        3-Layer Hybrid Detection:
+        Layer 1: SLM ensemble (always runs)
+        Layer 2: Llama 8B classifier (always runs)
+        Layer 3: Nemotron judge (only if confidence < 0.70)
+        """
+        # Layer 1: Run SLM ensemble
+        slm_result = self._slm_detect(step)
+        
+        # Layer 2: Llama classification
+        llama_result = None
+        if self.llama_classifier:
+            llama_result = self.llama_classifier.classify(step, slm_result)
+            
+        primary_confidence = llama_result.get("confidence", slm_result.get("confidence", 0.0)) if llama_result else slm_result.get("confidence", 0.0)
+        
+        # Layer 3: Nemotron verification (conditional)
+        nemotron_result = None
+        if self.nemotron_judge:
+            nemotron_result = self.nemotron_judge.judge(step, primary_confidence)
+            
+        # Final decision fusing layers
+        if nemotron_result:
+            # Nemotron was called — use weighted average
+            final_confidence = (primary_confidence * 0.4) + (nemotron_result.get("confidence", primary_confidence) * 0.6)
+            final_detected = final_confidence > 0.45
+            final_type = nemotron_result.get("hallucination_type")
+        else:
+            # Nemotron skipped or unavailable — trust Llama/SLM
+            final_confidence = primary_confidence
+            final_detected = slm_result.get("hallucination_detected", False)
+            final_type = llama_result.get("causal_label") if llama_result else slm_result.get("hallucination_type_predicted")
+            
+        # Severity from base SLM
+        severity = slm_result.get("severity")
+        if final_detected and not severity:
+            severity = self._determine_severity(final_confidence, final_detected)
+
+        return {
+            "hallucination_detected": final_detected,
+            "confidence": round(final_confidence, 4),
+            "hallucination_type": final_type,
+            "hallucination_type_predicted": final_type,
+            "severity": severity,
+            "detection_signals": slm_result.get("detection_signals", {}),
+            "_debug": slm_result.get("_debug", {}),
+            "nemotron_called": nemotron_result is not None,
+            "layers_used": {
+                "slm_ensemble": True,
+                "llama_8b": self.llama_classifier is not None,
+                "nemotron_340b": nemotron_result is not None
+            }
         }
 
     def reset_history(self):
