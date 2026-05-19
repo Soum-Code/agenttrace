@@ -3,7 +3,7 @@ AgentTrace - Quick Inference Verification Script
 Verifies that the fine-tuned Llama-3.1-8B QLoRA model actually works.
 Runs on Kaggle with GPU T4 x2.
 """
-import subprocess, sys
+import subprocess, sys, os
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-q",
     "bitsandbytes>=0.46.1", "peft", "accelerate", "transformers"])
 
@@ -15,7 +15,7 @@ from peft import PeftModel
 # ============================================
 # CONFIG
 # ============================================
-HF_TOKEN = "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"
+HF_TOKEN = os.environ.get("HF_TOKEN", "")  # Set via Kaggle Secrets
 MODEL_NAME = "meta-llama/Llama-3.1-8B"
 # The fine-tuned LoRA weights from the training notebook output
 PEFT_PATH = "/kaggle/input/notebooks/somnath26/agenttrace-llama-3-1-8b-fine-tuning/llama_causal_lora"
@@ -26,6 +26,7 @@ LABEL2ID = {
     "context_fabrication": 2,
     "tool_misuse": 3,
     "knowledge_gap": 4,
+    "no_hallucination": 5,
 }
 ID2LABEL = {v: k for k, v in LABEL2ID.items()}
 NUM_LABELS = len(LABEL2ID)
@@ -160,6 +161,7 @@ results = [r1, r2, r3, r4, r5]
 for i, r in enumerate(results, 1):
     print(f"  Test {i}: {r['predicted_label']:25s} (conf={r['confidence']:.4f})")
 print("=" * 60)
+print("Expected: Test 2 should predict 'no_hallucination' (6th class).")
 print("If model outputs varied labels with >0.20 confidence,")
 print("the fine-tuning is working correctly!")
 print("=" * 60)

@@ -171,18 +171,18 @@ class ClassifierConfig:
 
     Attributes:
         base_model: Pre-trained base model identifier.
-        num_labels: Number of hallucination cause categories.
-        categories: The 5 hallucination cause types from the taxonomy.
+        num_labels: Number of classification categories (5 hallucination + 1 clean).
+        categories: The 6 classification categories (5 hallucination types + No-Hallucination).
         max_seq_length: Maximum input length for classification.
         device: Compute device.
 
     Example:
         >>> clf = ClassifierConfig()
         >>> print(clf.categories)
-        ['Planning', 'Retrieval', 'Reasoning', 'Tool-Use', 'Human-Interaction']
+        ['Planning', 'Retrieval', 'Reasoning', 'Tool-Use', 'Human-Interaction', 'No-Hallucination']
     """
     base_model: str = "distilbert-base-uncased"
-    num_labels: int = 5               # matches len(categories)
+    num_labels: int = 6               # 5 hallucination types + 1 clean class
     categories: List[str] = field(
         default_factory=lambda: [
             "Planning",
@@ -190,6 +190,7 @@ class ClassifierConfig:
             "Reasoning",
             "Tool-Use",
             "Human-Interaction",
+            "No-Hallucination",
         ]
     )
     max_seq_length: int = 512         # longer context for full-step input
@@ -637,11 +638,12 @@ LOCALIZATION_SIGNAL_WEIGHTS = {
 TYPE_TOOL_USE = "Tool-Use"
 TYPE_FACTUAL = "Retrieval"
 TYPE_CONTRADICTION = "Reasoning"
-# Explicit aliases for all 5 taxonomy categories (used by train_causal_classifier.py)
+# Explicit aliases for all 6 taxonomy categories (used by train_causal_classifier.py)
 TYPE_PLANNING = "Planning"
 TYPE_RETRIEVAL = "Retrieval"
 TYPE_REASONING = "Reasoning"
 TYPE_HUMAN_INTERACTION = "Human-Interaction"
+TYPE_NO_HALLUCINATION = "No-Hallucination"
 SEVERITY_HIGH = "High"
 SEVERITY_MEDIUM = "Medium"
 SEVERITY_LOW = "Low"

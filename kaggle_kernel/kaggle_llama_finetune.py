@@ -106,14 +106,16 @@ train_texts, val_texts, train_labels, val_labels = train_test_split(texts, label
 # ==========================================
 # CELL 4: Tokenization
 # ==========================================
+HF_TOKEN = os.environ.get("HF_TOKEN", "")  # Set via Kaggle Secrets
+
 print("Loading Tokenizer...")
 from huggingface_hub import login
 try:
-    login("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")
+    login(HF_TOKEN)
 except Exception as e:
     print(f"Failed to login to HF: {e}")
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, token="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")
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, token=HF_TOKEN)
 # Llama doesn't have a default pad token, so we use eos_token
 tokenizer.pad_token = tokenizer.eos_token
 
@@ -147,7 +149,7 @@ model = AutoModelForSequenceClassification.from_pretrained(
     label2id=LABEL2ID,
     quantization_config=bnb_config,
     device_map="auto",
-    token="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"
+    token=HF_TOKEN
 )
 model.config.pad_token_id = tokenizer.pad_token_id
 
