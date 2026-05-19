@@ -21,12 +21,12 @@ MODEL_NAME = "meta-llama/Llama-3.1-8B"
 PEFT_PATH = "/kaggle/input/notebooks/somnath26/agenttrace-llama-3-1-8b-fine-tuning/llama_causal_lora"
 
 LABEL2ID = {
-    "reasoning_error": 0,
-    "instruction_deviation": 1,
-    "context_fabrication": 2,
-    "tool_misuse": 3,
-    "knowledge_gap": 4,
-    "no_hallucination": 5,
+    "Planning": 0,
+    "Retrieval": 1,
+    "Reasoning": 2,
+    "Tool-Use": 3,
+    "Human-Interaction": 4,
+    "No-Hallucination": 5,
 }
 ID2LABEL = {v: k for k, v in LABEL2ID.items()}
 NUM_LABELS = len(LABEL2ID)
@@ -69,7 +69,7 @@ def classify_step(action, tool_output, agent_reasoning):
     text = (
         f"Action: {action}\n"
         f"Reasoning: {agent_reasoning}\n"
-        f"Tool Output: {tool_output}\n"
+        f"Tool Output: {tool_output}"
     )
     inputs = tokenizer(text, return_tensors="pt", truncation=True, max_length=512)
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
@@ -161,7 +161,7 @@ results = [r1, r2, r3, r4, r5]
 for i, r in enumerate(results, 1):
     print(f"  Test {i}: {r['predicted_label']:25s} (conf={r['confidence']:.4f})")
 print("=" * 60)
-print("Expected: Test 2 should predict 'no_hallucination' (6th class).")
+print("Expected: Test 2 should predict 'No-Hallucination' (6th class).")
 print("If model outputs varied labels with >0.20 confidence,")
 print("the fine-tuning is working correctly!")
 print("=" * 60)

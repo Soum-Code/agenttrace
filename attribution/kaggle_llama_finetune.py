@@ -50,8 +50,8 @@ MODEL_NAME = "meta-llama/Llama-3.1-8B"
 DATA_PATH = "/kaggle/input/agenttrace-synthetic-data-v1/synthetic_trajectories.json"
 OUTPUT_DIR = "./llama_causal_lora"
 
-# Our 5 taxonomy labels mapped to integers
-LABELS = ["Planning", "Retrieval", "Reasoning", "Tool-Use", "Human-Interaction"]
+# Our 6 taxonomy labels mapped to integers
+LABELS = ["Planning", "Retrieval", "Reasoning", "Tool-Use", "Human-Interaction", "No-Hallucination"]
 LABEL2ID = {label: i for i, label in enumerate(LABELS)}
 ID2LABEL = {i: label for label, i in LABEL2ID.items()}
 
@@ -67,18 +67,23 @@ def load_and_format_data(json_path):
     
     for traj in trajectories:
         for step in traj.get("steps", []):
-            if step.get("ground_truth_label") == True:
-                # Ensure the type is one of our 5 classes
+            is_hallucinated = step.get("ground_truth_label", False)
+            if is_hallucinated:
                 h_type = step.get("hallucination_type")
                 if h_type in LABEL2ID:
-                    # Format exactly like our LlamaClassifier expects
-                    text = (
-                        f"Action: {step.get('action', '')}\n"
-                        f"Reasoning: {step.get('agent_reasoning', '')}\n"
-                        f"Tool Output: {step.get('tool_output', '')}"
-                    )
-                    texts.append(text)
-                    labels.append(LABEL2ID[h_type])
+                    label = h_type
+                else:
+                    label = "Reasoning"
+            else:
+                label = "No-Hallucination"
+                
+            text = (
+                f"Action: {step.get('action', '')}\n"
+                f"Reasoning: {step.get('agent_reasoning', '')}\n"
+                f"Tool Output: {step.get('tool_output', '')}"
+            )
+            texts.append(text)
+            labels.append(LABEL2ID[label])
                     
     return texts, labels
 
@@ -98,7 +103,17 @@ if not DATA_PATH:
 
 print(f"Dataset found at: {DATA_PATH}")
 texts, labels = load_and_format_data(DATA_PATH)
-print(f"Found {len(texts)} hallucinated steps for training.")
+
+# Print distribution of classes to verify they are all there
+print("Training Data Class Distribution:")
+from collections import Counter
+class_counts = Counter(labels)
+for label_id, count in sorted(class_counts.items()):
+    label_name = ID2LABEL[label_id]
+    pct = (count / len(labels)) * 100
+    print(f"  {label_name:20s}: {count:5d} ({pct:.1f}%)")
+
+print(f"Found {len(texts)} total steps for training.")
 
 # Split and create HuggingFace Dataset
 train_texts, val_texts, train_labels, val_labels = train_test_split(texts, labels, test_size=0.1, random_state=42)
@@ -193,7 +208,33 @@ training_args = TrainingArguments(
     optim="paged_adamw_8bit"            # Memory efficient optimizer
 )
 
-trainer = Trainer(
+class WeightedTrainer(Trainer):
+    def __init__(self, class_weights=None, **kwargs):
+        super().__init__(**kwargs)
+        if class_weights is not None:
+            self.class_weights = torch.tensor(class_weights, dtype=torch.float32)
+        else:
+            self.class_weights = None
+
+    def compute_loss(self, model, inputs, return_outputs=False, **kwargs):
+        labels = inputs.pop("labels")
+        outputs = model(**inputs)
+        logits = outputs.logits
+
+        if self.class_weights is not None:
+            weight = self.class_weights.to(logits.device)
+            loss_fn = torch.nn.CrossEntropyLoss(weight=weight)
+        else:
+            loss_fn = torch.nn.CrossEntropyLoss()
+
+        loss = loss_fn(logits.view(-1, self.model.config.num_labels), labels.view(-1))
+        return (loss, outputs) if return_outputs else loss
+
+# Weights for our 6 classes: Planning, Retrieval, Reasoning, Tool-Use, Human-Interaction, No-Hallucination
+weights = [3.0, 2.0, 1.5, 3.0, 3.0, 1.0]
+
+trainer = WeightedTrainer(
+    class_weights=weights,
     model=model,
     args=training_args,
     train_dataset=train_dataset,
