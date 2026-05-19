@@ -1,0 +1,14 @@
+{
+  "id": "somnath26/agenttrace-verify-inference",
+  "title": "AgentTrace Verify Inference",
+  "code_file": "verify_inference.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "dataset_sources": [],
+  "kernel_data_sources": [
+    "somnath26/agenttrace-llama-3-1-8b-fine-tuning"
+  ]
+}

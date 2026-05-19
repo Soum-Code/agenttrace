@@ -1,0 +1,15 @@
+{
+  "id": "somnath26/agenttrace-llama-3-1-8b-fine-tuning",
+  "title": "AgentTrace Llama-3.1-8B Fine-tuning",
+  "code_file": "kaggle_llama_finetune.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": ["somnath26/agenttrace-synthetic-data-v1"],
+  "competition_sources": [],
+  "kernel_sources": [],
+  "model_sources": []
+}

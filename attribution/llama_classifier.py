@@ -40,8 +40,10 @@ class LlamaClassifier:
         self.model = None
         self.tokenizer = None
         
-        # We only try loading if the PEFT weights exist, otherwise we skip to avoid downloading 8B locally
-        if os.path.exists(self.peft_path):
+        # We only try loading if the PEFT weights exist AND a CUDA GPU is available
+        # (4-bit quantized Llama requires GPU — no point downloading 16GB on CPU-only machines)
+        has_cuda = torch.cuda.is_available()
+        if os.path.exists(self.peft_path) and has_cuda:
             print(f"Loading fine-tuned Llama from {self.peft_path}...")
             try:
                 bnb_config = BitsAndBytesConfig(
@@ -65,6 +67,8 @@ class LlamaClassifier:
                 print(f"Error loading Llama classifier: {e}")
                 self.model = None
                 self.tokenizer = None
+        elif os.path.exists(self.peft_path) and not has_cuda:
+            print("Llama LoRA weights found but no CUDA GPU available. Using fallback heuristic.")
         else:
             print("Llama-3.1-8B LoRA weights not found. Using fallback heuristic.")
 
