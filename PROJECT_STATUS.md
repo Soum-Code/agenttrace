@@ -16,41 +16,41 @@
 
 ## 2. Module-by-Module Status
 
-### ✅ Implemented & Functional
+### Implemented & Functional
 
 | Module | File(s) | Lines | Status | Notes |
 |---|---|---|---|---|
-| **Config** | [config.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/config.py) | 752 | ✅ Complete | 12 dataclass configs, flat aliases, validation, test block |
-| **Step Logger** | [tracer/step_logger.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/tracer/step_logger.py) | 607 | ✅ Complete | Logging, replay, step diff, drift window, intermediate saves |
-| **Semantic Checker** | [detection/semantic_checker.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/detection/semantic_checker.py) | 133 | ✅ Complete | Cosine sim via `all-MiniLM-L6-v2` |
-| **Tool Validator** | [detection/tool_validator.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/detection/tool_validator.py) | 192 | ✅ Complete | Claim extraction + per-claim similarity |
-| **Factual Grounding** | [detection/factual_grounding.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/detection/factual_grounding.py) | 189 | ✅ Complete | NLI via `nli-deberta-v3-small` |
-| **Contradiction** | [detection/contradiction.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/detection/contradiction.py) | 138 | ✅ Complete | Sliding-window NLI against previous steps |
-| **Detection Pipeline** | [detection/pipeline.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/detection/pipeline.py) | 449 | ✅ Complete | v2: threshold fusion, 5-category classifier, action-aware routing |
-| **Localizer** | [attribution/localizer.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/attribution/localizer.py) | 142 | ✅ Complete | Weighted signal fusion + step ranking |
-| **Causal Classifier** | [attribution/causal_classifier.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/attribution/causal_classifier.py) | 183 | ✅ Complete | DistilBERT with heuristic fallback |
-| **Classifier Training** | [attribution/train_causal_classifier.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/attribution/train_causal_classifier.py) | 170 | ✅ Complete | Fine-tuning script with HuggingFace Trainer |
-| **Corrector** | [intervention/corrector.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/intervention/corrector.py) | 163 | ✅ Complete | 3 strategies: tool_requery, reasoning_override, step_rollback |
-| **Metrics** | [evaluation/metrics.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/evaluation/metrics.py) | 562 | ✅ Complete | SLA, Precision@K, Recall, F1/category, FPR, latency, task completion |
-| **Benchmark Runner** | [evaluation/benchmark.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/evaluation/benchmark.py) | 571 | ✅ Complete | Full pipeline with WandB integration |
-| **Synthetic Generator** | [data/synthetic_generator.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/data/synthetic_generator.py) | 442 | ✅ Complete | OpenRouter API, resume support, validation |
-| **FastAPI Backend** | [api/main.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/api/main.py) | 500 | ✅ Complete | Integrates real pipeline for `/analyze` and `/correct` |
-| **API Tests** | [api/test_api.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/api/test_api.py) | 154 | ✅ Complete | 6 smoke tests covering happy & error paths |
-| **Streamlit UI** | [ui/app.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/ui/app.py) | 748 | ✅ Complete | Premium UI complete, connected to real FastAPI pipeline |
-| **Benchmark Runner Script** | [run_benchmark.py](file:///c:/job/AgentTrace/run_benchmark.py) | 42 | ✅ Complete | Entry point using `real_detector` |
+| **Config** | [config.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/config.py) | 752 | Complete | 12 dataclass configs, flat aliases, validation, test block |
+| **Step Logger** | [tracer/step_logger.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/tracer/step_logger.py) | 607 | Complete | Logging, replay, step diff, drift window, intermediate saves |
+| **Semantic Checker** | [detection/semantic_checker.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/detection/semantic_checker.py) | 133 | Complete | Cosine sim via `all-MiniLM-L6-v2` |
+| **Tool Validator** | [detection/tool_validator.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/detection/tool_validator.py) | 192 | Complete | Claim extraction + per-claim similarity |
+| **Factual Grounding** | [detection/factual_grounding.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/detection/factual_grounding.py) | 189 | Complete | NLI via `nli-deberta-v3-small` |
+| **Contradiction** | [detection/contradiction.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/detection/contradiction.py) | 138 | Complete | Sliding-window NLI against previous steps |
+| **Detection Pipeline** | [detection/pipeline.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/detection/pipeline.py) | 449 | Complete | v2: threshold fusion, 5-category classifier, action-aware routing |
+| **Localizer** | [attribution/localizer.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/attribution/localizer.py) | 142 | Complete | Weighted signal fusion + step ranking |
+| **Causal Classifier** | [attribution/causal_classifier.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/attribution/causal_classifier.py) | 183 | Complete | DistilBERT with heuristic fallback |
+| **Classifier Training** | [attribution/train_causal_classifier.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/attribution/train_causal_classifier.py) | 170 | Complete | Fine-tuning script with HuggingFace Trainer |
+| **Corrector** | [intervention/corrector.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/intervention/corrector.py) | 163 | Complete | 3 strategies: tool_requery, reasoning_override, step_rollback |
+| **Metrics** | [evaluation/metrics.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/evaluation/metrics.py) | 562 | Complete | SLA, Precision@K, Recall, F1/category, FPR, latency, task completion |
+| **Benchmark Runner** | [evaluation/benchmark.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/evaluation/benchmark.py) | 571 | Complete | Full pipeline with WandB integration |
+| **Synthetic Generator** | [data/synthetic_generator.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/data/synthetic_generator.py) | 442 | Complete | OpenRouter API, resume support, validation |
+| **FastAPI Backend** | [api/main.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/api/main.py) | 500 | Complete | Integrates real pipeline for `/analyze` and `/correct` |
+| **API Tests** | [api/test_api.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/api/test_api.py) | 154 | Complete | 6 smoke tests covering happy & error paths |
+| **Streamlit UI** | [ui/app.py](file:///c:/Users/KIIT/OneDrive/Desktop/AgentHallu/agenttrace/ui/app.py) | 748 | Complete | Premium UI complete, connected to real FastAPI pipeline |
+| **Benchmark Runner Script** | [run_benchmark.py](file:///c:/job/AgentTrace/run_benchmark.py) | 42 | Complete | Entry point using `real_detector` |
 
-### ❌ Missing Files (Listed in README but not created)
+### Missing Files (Listed in README but not created)
 
 | File | Owner | Status |
 |---|---|---|
-| `evaluation/ablation.py` | Member 3 (Aman) | ✅ Complete | Runs ablation configurations and generates results |
-| `evaluation/visualizer.py` | Member 3 (Aman) | ✅ Complete | Generates 5 paper figures and 3 LaTeX tables |
-| `data/agenthallu_loader.py` | Member 3 (Aman) | ✅ Complete | Loads and splits synthetic fallback |
-| `data/real_trajectory_generator.py` | Member 3 (Aman) | ✅ Complete | Captures real LLM agent interactions |
-| `requirements.txt` (root-level) | — | ✅ Updated | Added evaluation & visualization dependencies |
-| `paper/` directory | Member 3 (Aman) | ✅ Created | Contains `figures/` with 5 PNGs, 5 PDFs, and 3 TXT files |
-| `Dockerfile` | Aman | ✅ Created | Prepared for Hugging Face Spaces |
-| `start.sh` | Aman | ✅ Created | Startup script for HF Spaces |
+| `evaluation/ablation.py` | Member 3 (Aman) | Complete | Runs ablation configurations and generates results |
+| `evaluation/visualizer.py` | Member 3 (Aman) | Complete | Generates 5 paper figures and 3 LaTeX tables |
+| `data/agenthallu_loader.py` | Member 3 (Aman) | Complete | Loads and splits synthetic fallback |
+| `data/real_trajectory_generator.py` | Member 3 (Aman) | Complete | Captures real LLM agent interactions |
+| `requirements.txt` (root-level) | — | Updated | Added evaluation & visualization dependencies |
+| `paper/` directory | Member 3 (Aman) | Created | Contains `figures/` with 5 PNGs, 5 PDFs, and 3 TXT files |
+| `Dockerfile` | Aman | Created | Prepared for Hugging Face Spaces |
+| `start.sh` | Aman | Created | Startup script for HF Spaces |
 
 ---
 
@@ -58,11 +58,11 @@
 
 | Asset | Status | Details |
 |---|---|---|
-| **Synthetic Trajectories** | ✅ Generated | `data/trajectories/synthetic_trajectories.json` — **543 KB**, 200 trajectories |
-| **Benchmark Results** | ✅ Generated | `evaluation/results/benchmark_results.json` + per-trajectory results |
-| **Fine-tuned Classifier** | ✅ Trained | `models/causal_classifier_finetuned/` created locally and ready |
-| **FAISS Index** | ✅ Created | Built via `indexes/build_index.py` from 651 unique facts and integrated as dynamic RAG fallback in factual grounding |
-| **Deployment Manifest** | ✅ Ready | `Dockerfile` and `start.sh` prepared |
+| **Synthetic Trajectories** | Generated | `data/trajectories/synthetic_trajectories.json` — **543 KB**, 200 trajectories |
+| **Benchmark Results** | Generated | `evaluation/results/benchmark_results.json` + per-trajectory results |
+| **Fine-tuned Classifier** | Trained | `models/causal_classifier_finetuned/` created locally and ready |
+| **FAISS Index** | Created | Built via `indexes/build_index.py` from 651 unique facts and integrated as dynamic RAG fallback in factual grounding |
+| **Deployment Manifest** | Ready | `Dockerfile` and `start.sh` prepared |
 
 ---
 
@@ -84,22 +84,22 @@
 
 ## 5. Identified Bugs & Issues
 
-### 🔴 Critical
+### Critical
 
-1. ~~**All-zero benchmark scores**~~ ✅ **FIXED** — Fusion logic calibrated, zero-detection fixed. Beated AgentHallu SOTA by **+0.2415**.
-2. ~~**Missing config constants**~~ ✅ **FIXED** — Added `TYPE_PLANNING`, `TYPE_RETRIEVAL`, `TYPE_REASONING`, `TYPE_HUMAN_INTERACTION` to `config.py`.
-3. ~~**API uses only mock detection**~~ ✅ **FIXED** — Exposes live FastAPI backend connected to the real `DetectionPipeline`.
+1. ~~**All-zero benchmark scores**~~ [Yes] **FIXED** — Fusion logic calibrated, zero-detection fixed. Beated AgentHallu SOTA by **+0.2415**.
+2. ~~**Missing config constants**~~ [Yes] **FIXED** — Added `TYPE_PLANNING`, `TYPE_RETRIEVAL`, `TYPE_REASONING`, `TYPE_HUMAN_INTERACTION` to `config.py`.
+3. ~~**API uses only mock detection**~~ [Yes] **FIXED** — Exposes live FastAPI backend connected to the real `DetectionPipeline`.
 
-### 🟡 Moderate
+### Moderate
 
-4. ~~**NLI label order mismatch**~~ ✅ **FIXED** — Standardized factual grounding labels with model-specific config schemas.
-5. ~~**Causal classifier fallback labels mismatch**~~ ✅ **FIXED** — Unified taxonomy fallback with config taxonomies.
-6. ~~**No root-level `requirements.txt`**~~ ✅ **FIXED** — Unified dependencies at project root.
+4. ~~**NLI label order mismatch**~~ [Yes] **FIXED** — Standardized factual grounding labels with model-specific config schemas.
+5. ~~**Causal classifier fallback labels mismatch**~~ [Yes] **FIXED** — Unified taxonomy fallback with config taxonomies.
+6. ~~**No root-level `requirements.txt`**~~ [Yes] **FIXED** — Unified dependencies at project root.
 
-### 🟢 Minor
+### Minor
 
-7. ~~**Deprecated FastAPI event**~~ ✅ **FIXED** — Modernized startup hooks.
-8. ~~**`sys.path` manipulation**~~ ✅ **FIXED** — Setup smooth package imports for reliable local and cloud container execution.
+7. ~~**Deprecated FastAPI event**~~ [Yes] **FIXED** — Modernized startup hooks.
+8. ~~**`sys.path` manipulation**~~ [Yes] **FIXED** — Setup smooth package imports for reliable local and cloud container execution.
 
 ---
 
@@ -177,11 +177,11 @@ graph TB
 
 ## 8. Recommended Next Steps (Phase 2 Roadmap)
 
-### 🔴 P0 — Scientific Publication & Paper Writing
+### P0 — Scientific Publication & Paper Writing
 1. **Draft LaTeX Manuscript** — Draft EMNLP 2026/ICLR 2027 paper inside the `paper/` directory, detailing the 3-Layer Hybrid Architecture.
 2. **Tabulate Ablation Results** — Add empirical analysis and tables demonstrating the +24% performance delta over baselines.
 
-### 🟡 P1 — Cloud Optimization
+### P1 — Cloud Optimization
 3. **Nemotron OpenRouter Config** — Configure the user's `OPENROUTER_API_KEY` for active hybrid cascading on production queries.
 4. **Hugging Face Space Live Tracking** — Maintain and track user-facing dashboard sync on Hugging Face Spaces.
 

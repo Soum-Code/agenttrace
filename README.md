@@ -1,19 +1,17 @@
 ---
 title: AgentTrace Demo
-emoji: 🚀
 colorFrom: indigo
 colorTo: purple
 sdk: docker
 pinned: false
 app_port: 7860
 ---
+
 # AgentTrace
 
-Step-Level Hallucination Detection and Attribution
-in Multi-Step LLM Agent Workflows
+Step-level hallucination detection and attribution in multi-step LLM agent workflows.
 
-Research project targeting EMNLP 2026 / ICLR 2027.
-Beating AgentHallu SOTA of 41.1% step localization accuracy.
+This is a research project designed to identify and trace hallucinations back to their root causes within complex agent pathways, aiming for publication at EMNLP 2026 or ICLR 2027. The framework surpasses the AgentHallu SOTA step localization accuracy baseline of 41.1%.
 
 ---
 
@@ -22,8 +20,8 @@ Beating AgentHallu SOTA of 41.1% step localization accuracy.
 | Member | GitHub | Role |
 |---|---|---|
 | P. Somnath Reddy | Soum-Code | Research Lead and Architect |
-| Ayaan | AyaanO7 | Detection and Attribution |
-| Aman | amano2 | Deployment, UI, Data and Evaluation |
+| Ayaan | AyaanO7 | Detection and Attribution Lead |
+| Aman | amano2 | Deployment, UI, Data, and Evaluation Lead |
 
 ---
 
@@ -36,48 +34,48 @@ AgentTrace/
 ├── README.md                          # Project documentation
 ├── PROJECT_STATUS.md                  # Comprehensive module status report
 │
-├── api/                               # FastAPI Backend Core (Aman)
-│   └── main.py                        # Analysis & correction API endpoints
+├── api/                               # FastAPI backend core
+│   └── main.py                        # Analysis and correction API endpoints
 │
-├── ui/                                # Streamlit Frontend Dashboard (Aman)
-│   └── app.py                         # Premium live visualization interface
+├── ui/                                # Streamlit frontend dashboard
+│   └── app.py                         # Web interface for live visualization
 │
-├── tracer/                            # Execution Tracer (Somnath)
-│   └── step_logger.py                 # Real-time logging & step replay engine
+├── tracer/                            # Execution tracer
+│   └── step_logger.py                 # Real-time logging and step replay engine
 │
-├── detection/                         # Step Hallucination Detection (Ayaan)
+├── detection/                         # Step hallucination detection
 │   ├── semantic_checker.py            # Cosine similarity validation
 │   ├── tool_validator.py              # Structured tool claim verification
-│   ├── factual_grounding.py           # NLI grounding & dynamic RAG fallback
+│   ├── factual_grounding.py           # NLI grounding and dynamic RAG fallback
 │   ├── contradiction.py               # Cross-step semantic drift contradiction
-│   └── pipeline.py                    # 3-Layer Hybrid Cascade Fusion orchestrator
+│   └── pipeline.py                    # Three-layer hybrid cascade fusion orchestrator
 │
-├── attribution/                       # Root Cause Attribution (Ayaan)
-│   ├── localizer.py                   # Localization & signal-weighted ranking
+├── attribution/                       # Root cause attribution
+│   ├── localizer.py                   # Localization and signal-weighted ranking
 │   ├── causal_classifier.py           # Fine-tuned DistilBERT inference fallback
 │   └── train_causal_classifier.py     # Causal classifier trainer
 │
-├── intervention/                      # Active Correction (Ayaan)
-│   └── corrector.py                   # Tool requery, reasoning override & rollback
+├── intervention/                      # Active correction
+│   └── corrector.py                   # Tool requery, reasoning override, and rollback
 │
-├── evaluation/                        # Evaluation, Charts & Paper (Aman & Somnath)
+├── evaluation/                        # Evaluation, charts, and paper assets
 │   ├── metrics.py                     # Metric functions (Accuracy, Recall, Latency)
-│   ├── benchmark.py                   # Dataset evaluator & WandB logger
+│   ├── benchmark.py                   # Dataset evaluator and WandB logger
 │   ├── ablation.py                    # Component ablation evaluation
 │   └── visualizer.py                  # Visualizations and paper tables generator
 │
-├── data/                              # Datasets & Generators (Aman & Somnath)
+├── data/                              # Datasets and generators
 │   ├── trajectories/                  # Trajectory dataset storage (gitignored)
-│   ├── synthetic_generator.py         # 200 synthetic trajectories generator
-│   ├── agenthallu_loader.py           # Benchmark loader
+│   ├── synthetic_generator.py         # OpenRouter-based trajectory generator
+│   ├── agenthallu_loader.py           # Benchmark dataset loader
 │   └── real_trajectory_generator.py   # Real-world user trajectory capturer
 │
-├── indexes/                           # Retrieval Indexes (Somnath)
+├── indexes/                           # Retrieval indexes
 │   ├── build_index.py                 # FAISS vector builder
 │   ├── fact_index.faiss               # FAISS vector database
 │   └── fact_metadata.json             # Serialized source facts mapping
 │
-└── paper/                             # Project Publication (Aman)
+└── paper/                             # Project publication
     ├── main.tex                       # LaTeX source manuscript
     └── figures/                       # Generated charts and diagrams
 ```
@@ -87,22 +85,22 @@ AgentTrace/
 ## Status
 
 **Phase 2 Development - Complete**
-- ✅ **Nemotron Layer 3 judge** status exposed via `/health` API and Streamlit sidebar badge.
-- ✅ **3-Member Alignment**: All files & roles redistributed. Dustin Richard removed.
-- ✅ **FAISS Index built**: 651 unique facts serialized and stored.
-- ✅ **Dynamic RAG Grounding**: Factual grounding pipeline dynamically performs top-3 FAISS context lookup on missing/empty step premises.
-- ✅ **Benchmark verified**: Runs locally and inside Docker containers.
+- **Nemotron Layer 3 judge**: Status is exposed via the `/health` API and visualized on the Streamlit sidebar badge.
+- **Three-Member Alignment**: Cleaned up the author list and redistributed files and responsibilities across the three members.
+- **FAISS Index**: Built and serialized the index from 651 unique facts.
+- **Dynamic RAG Grounding**: The factual grounding pipeline automatically performs a top-3 FAISS context lookup when a step's premise is missing or empty.
+- **Benchmark Suite**: Verified functionality locally and inside Docker containers.
 
 ---
 
 ## SOTA Benchmark Performance
 
-Evaluating our **3-Layer Hybrid Ensemble Cascade** on the benchmark dataset yields state-of-the-art results:
+Evaluating our three-layer hybrid ensemble cascade on the benchmark dataset yields state-of-the-art results:
 
 | Metric | Value | AgentHallu SOTA | Delta |
 |---|---|---|---|
-| **Step Localization Accuracy** | **0.6550** | 0.411 | **+0.2440** (Massive improvement) |
-| **Average Latency** | **411.90 ms** | — | High-speed, under-budget |
+| **Step Localization Accuracy** | **0.6550** | 0.411 | **+0.2440** (Significant SOTA improvement) |
+| **Average Latency** | **411.90 ms** | — | Highly responsive and optimized |
 | **P95 Latency** | **574.30 ms** | — | — |
 
 ---
@@ -142,4 +140,4 @@ streamlit run ui/app.py --server.port 7860
 
 ## Tech Stack
 
-Python, FAISS Vector DB, Sentence-Transformers (`all-MiniLM-L6-v2`), DeBERTa (`nli-deberta-v3-small`), DistilBERT, FastAPI, Streamlit, Weights & Biases, Docker, HuggingFace Spaces.
+Python, FAISS Vector Database, Sentence-Transformers (all-MiniLM-L6-v2), DeBERTa (nli-deberta-v3-small), DistilBERT, FastAPI, Streamlit, Weights and Biases, Docker, HuggingFace Spaces.
