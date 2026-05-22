@@ -216,6 +216,156 @@ async def _log_requests(request: Request, call_next):
 
 
 # ---------------------------------------------------------------------------
+# Build trajectory from user query
+# ---------------------------------------------------------------------------
+
+def build_trajectory_from_query(task: str) -> list[dict[str, Any]]:
+    """
+    Convert a raw user query into a plausible multi-step agent trajectory.
+    The steps simulate what an LLM agent would do to answer this task.
+
+    Keyword-based template selection routes the query to one of 4 trajectory
+    templates (retrieval, tool, planning, reasoning).  The user's text is
+    woven into each step so the detection pipeline analyses something
+    semantically connected to what they typed.
+    """
+    task_lower = task.lower().strip()
+
+    # --- Guard: gibberish / too-short input ---
+    meaningful_tokens = [w for w in task_lower.split() if len(w) > 2]
+    if len(meaningful_tokens) < 2 or len(task.strip()) < 8:
+        return [{
+            "step": 0,
+            "action": "input_validation",
+            "tool_input": task,
+            "tool_output": "Query too short or ambiguous to form an agent trajectory.",
+            "agent_reasoning": "The user input does not constitute a valid agent task. "
+                               "No trajectory can be constructed.",
+            "ground_truth_label": False,
+            "hallucination_type": None
+        }]
+
+    # --- Keyword-based template selection ---
+    if any(k in task_lower for k in ["search", "find", "look up", "who is",
+                                      "what is", "when", "where"]):
+        template = "retrieval"
+    elif any(k in task_lower for k in ["calculate", "compute", "math", "sum",
+                                        "average", "how many"]):
+        template = "tool"
+    elif any(k in task_lower for k in ["plan", "schedule", "steps to",
+                                        "how to", "strategy", "roadmap"]):
+        template = "planning"
+    elif any(k in task_lower for k in ["write", "draft", "compose",
+                                        "generate", "create"]):
+        template = "reasoning"
+    else:
+        template = "reasoning"  # safest default
+
+    templates = {
+        "retrieval": [
+            {
+                "step": 0, "action": "task_decompose",
+                "tool_input": task,
+                "tool_output": f"Decomposed task: retrieve factual information about '{task}'",
+                "agent_reasoning": f"I need to search for information relevant to: {task}",
+                "ground_truth_label": False, "hallucination_type": None
+            },
+            {
+                "step": 1, "action": "web_search",
+                "tool_input": task,
+                "tool_output": f"Search results for '{task}': [Result 1] [Result 2] [Result 3]",
+                "agent_reasoning": f"Based on the search results, I found relevant information about {task}.",
+                "ground_truth_label": False, "hallucination_type": None
+            },
+            {
+                "step": 2, "action": "synthesize_answer",
+                "tool_input": "Summarize search results",
+                "tool_output": f"Synthesis complete for: {task}",
+                "agent_reasoning": f"The answer to '{task}' is derived from the retrieved documents.",
+                "ground_truth_label": False, "hallucination_type": None
+            }
+        ],
+        "tool": [
+            {
+                "step": 0, "action": "parse_expression",
+                "tool_input": task,
+                "tool_output": f"Parsed: numerical/computation task detected in '{task}'",
+                "agent_reasoning": f"This requires invoking a calculator or data tool for: {task}",
+                "ground_truth_label": False, "hallucination_type": None
+            },
+            {
+                "step": 1, "action": "calculator_call",
+                "tool_input": task,
+                "tool_output": "Tool returned: [computed value]",
+                "agent_reasoning": "The calculator returned a result. I will now verify it.",
+                "ground_truth_label": False, "hallucination_type": None
+            },
+            {
+                "step": 2, "action": "verify_result",
+                "tool_input": "Verify computed output",
+                "tool_output": "Verification: output matches expected range",
+                "agent_reasoning": f"The tool output is consistent with the input query: {task}",
+                "ground_truth_label": False, "hallucination_type": None
+            }
+        ],
+        "planning": [
+            {
+                "step": 0, "action": "goal_clarification",
+                "tool_input": task,
+                "tool_output": f"Goal identified: {task}",
+                "agent_reasoning": f"I need to break this planning task into subtasks: {task}",
+                "ground_truth_label": False, "hallucination_type": None
+            },
+            {
+                "step": 1, "action": "subtask_decompose",
+                "tool_input": "List subtasks",
+                "tool_output": "Subtasks: [Step A] [Step B] [Step C]",
+                "agent_reasoning": "I have identified the major subtasks required.",
+                "ground_truth_label": False, "hallucination_type": None
+            },
+            {
+                "step": 2, "action": "resource_lookup",
+                "tool_input": f"Resources for: {task}",
+                "tool_output": "Found: relevant tools and references",
+                "agent_reasoning": "Resources identified for each subtask.",
+                "ground_truth_label": False, "hallucination_type": None
+            },
+            {
+                "step": 3, "action": "plan_synthesis",
+                "tool_input": "Synthesize final plan",
+                "tool_output": "Final structured plan generated",
+                "agent_reasoning": f"Final plan for '{task}' is ready for execution.",
+                "ground_truth_label": False, "hallucination_type": None
+            }
+        ],
+        "reasoning": [
+            {
+                "step": 0, "action": "context_load",
+                "tool_input": task,
+                "tool_output": f"Context established for: {task}",
+                "agent_reasoning": f"I need to reason through this step by step: {task}",
+                "ground_truth_label": False, "hallucination_type": None
+            },
+            {
+                "step": 1, "action": "chain_of_thought",
+                "tool_input": "Apply reasoning chain",
+                "tool_output": "Intermediate reasoning: [premise] -> [inference] -> [conclusion]",
+                "agent_reasoning": "Following the chain of thought to derive an answer.",
+                "ground_truth_label": False, "hallucination_type": None
+            },
+            {
+                "step": 2, "action": "fact_check",
+                "tool_input": "Verify reasoning against known facts",
+                "tool_output": "Fact check: claims are consistent with available knowledge",
+                "agent_reasoning": "Reasoning chain validated. No contradictions found.",
+                "ground_truth_label": False, "hallucination_type": None
+            }
+        ]
+    }
+    return templates[template]
+
+
+# ---------------------------------------------------------------------------
 # Real trajectory data loader
 # ---------------------------------------------------------------------------
 
@@ -259,7 +409,9 @@ def _get_real_trajectory(task: str) -> list[dict[str, Any]]:
         else:
             traj = random.choice(data)
     else:
-        traj = random.choice(data)
+        # Build a trajectory from the user's actual query text
+        steps = build_trajectory_from_query(task)
+        return steps
         
     return traj.get("steps", [])
 

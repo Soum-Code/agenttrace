@@ -705,9 +705,15 @@ HTML_TEMPLATE = """<!DOCTYPE html>
         </select>
       </div>
       <div style="display:flex;gap:12px;align-items:stretch;">
-        <textarea id="task-input" placeholder="e.g. Find the population of Tokyo and compare it with Delhi, then calculate the ratio..."></textarea>
+        <textarea id="task-input" placeholder="Describe an agent task to analyze...
+Examples:
+  Search for the latest GDP of India
+  Calculate average sales for Q3
+  Plan a 3-day itinerary for Tokyo
+  Write a summary of climate change impacts"></textarea>
         <button id="analyze-btn" class="btn-primary">Analyze Trace</button>
       </div>
+      <p style="font-size:10px; color:var(--txt3); margin:4px 0 0 2px; opacity:0.7;">Your query becomes a simulated agent trajectory &mdash; the system constructs steps and analyzes each one for hallucinations.</p>
     </div>
   </div>
 
@@ -1533,6 +1539,17 @@ async function runAnalysis() {
   const taskInput = document.getElementById('task-input');
   const task = taskInput.value.trim();
   if (!task) return;
+
+  // Client-side guard for empty/gibberish input
+  if (task.length < 5) {
+    showToast('Please enter a meaningful task query (at least 5 characters).', 'red');
+    return;
+  }
+  const taskWords = task.split(/\s+/).filter(w => w.length > 2);
+  if (taskWords.length < 2 && !task.startsWith('SCENARIO: ')) {
+    showToast('Query too short. Try describing an agent task like "search for X" or "calculate Y".', 'red');
+    return;
+  }
   
   const btn = document.getElementById('analyze-btn');
   const resultsContainer = document.getElementById('results-container');
@@ -1589,7 +1606,23 @@ async function runAnalysis() {
 function renderSteps(steps, trajectoryId, targetContainerId = 'steps-list') {
   const list = document.getElementById(targetContainerId);
   list.innerHTML = '';
-  
+
+  // Handle input_validation sentinel (gibberish/invalid query)
+  if (steps.length === 1 && steps[0].action === 'input_validation') {
+    list.innerHTML = `
+      <div style="background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; padding:28px 24px; text-align:center;">
+        <div style="font-size:32px; margin-bottom:10px;">&#129300;</div>
+        <h3 style="color:var(--txt); font-size:15px; margin-bottom:8px;">Unrecognizable Task</h3>
+        <p style="color:var(--txt2); font-size:12px; margin-bottom:14px;">AgentTrace couldn't construct an agent trajectory from this input. Try a more specific task like:</p>
+        <ul style="color:var(--txt3); font-size:11px; text-align:left; display:inline-block; list-style:disc; padding-left:18px;">
+          <li><em>"Search for India's GDP in 2024"</em></li>
+          <li><em>"Calculate the compound interest on $5000"</em></li>
+          <li><em>"Plan a machine learning project roadmap"</em></li>
+        </ul>
+      </div>`;
+    return;
+  }
+
   steps.forEach(step => {
     const isHall = step.is_hallucinated;
     const cardClass = isHall ? 'step-hallucinated' : 'step-clean';
