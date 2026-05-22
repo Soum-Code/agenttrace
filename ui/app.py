@@ -1545,7 +1545,7 @@ async function runAnalysis() {
     showToast('Please enter a meaningful task query (at least 5 characters).', 'red');
     return;
   }
-  const taskWords = task.split(/\s+/).filter(w => w.length > 2);
+  const taskWords = task.split(/[ \t\r\n\v\f]+/).filter(w => w.length > 2);
   if (taskWords.length < 2 && !task.startsWith('SCENARIO: ')) {
     showToast('Query too short. Try describing an agent task like "search for X" or "calculate Y".', 'red');
     return;
