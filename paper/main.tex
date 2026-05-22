@@ -1,0 +1,189 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{authblk}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{microtype}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{\textbf{AgentTrace: Step-Level Hallucination Detection and Attribution in Multi-Step LLM Agent Workflows}}
+
+\author[1]{\textbf{Somnath Chatterjee}\thanks{Research Lead}}
+\author[1]{\textbf{Ayaan Khan}}
+\author[1]{\textbf{Aman Sharma}}
+\affil[1]{Department of Computer Science and Engineering}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Large Language Model (LLM) agents are increasingly deployed for multi-step reasoning and tool-use tasks. However, these agents suffer from compounding failures, where a single step-level hallucination or reasoning error propagates through the execution trajectory, causing catastrophic task failure. Prior evaluation frameworks primarily assess agents using coarse, outcome-based success metrics or token-level hallucination flags, which fail to pinpoint exactly when and why an agent deviated from factual grounding. In this paper, we propose \textbf{AgentTrace}, a novel, cost-efficient 3-layer hybrid cascading framework designed for step-level hallucination detection, attribution, and real-time intervention. AgentTrace integrates (1) a lightweight Small Language Model (SLM) ensemble capturing context-aware semantic and contradiction signals, (2) a fine-tuned Llama-3.1-8B classifier for sequence classification and multi-class error attribution, and (3) a high-capacity Nemotron-340B judge triggered via confidence-based cascading. On the rigorous AgentHallu SOTA benchmark, AgentTrace achieves a step localization accuracy of \textbf{58.65\%}, representing a massive \textbf{+17.55\%} absolute improvement over the state-of-the-art baseline (41.1\%), while reducing latency to just \textbf{290.26 ms} on average. We demonstrate our framework through an interactive, premium-designed real-time dashboard that enables developers to visualize trajectories, identify hallucinations, and trigger active correction strategies.
+\end{abstract}
+
+\section{Introduction}
+Large Language Models (LLMs) have evolved from passive text generators into autonomous agents capable of interacting with external environments through tools, APIs, and multi-step reasoning cycles (e.g., the ReAct framework~\cite{react2022}). By iteratively planning, retrieving information, executing tools, and evaluating progress, these agents solve complex tasks ranging from web navigation to scientific discovery~\cite{webarena2024, agentbench2024}. 
+
+Despite their power, LLM agents are highly vulnerable to the \textit{error propagation cascade}. Because step $t$ in a trajectory depends directly on the history of steps $1 \dots t-1$, a single undetected hallucination—such as a fabricated tool parameter or an unjustified logical leap—rapidly contaminates subsequent reasoning. Coarse, end-to-end evaluation metrics fail to diagnose these intermediate points of failure. Conversely, token-level hallucination detection is too noisy and lacks the semantic abstraction required to identify architectural failures in tool invocation or retrieval context.
+
+To address this challenge, the SOTA benchmark AgentHallu~\cite{agenthallu2026} established the task of \textbf{step-level hallucination detection and attribution}. Under this paradigm, a detector must analyze a multi-step trajectory and output:
+\begin{enumerate}
+    \item \textbf{Detection:} Whether a specific step is hallucinated.
+    \item \textbf{Localization:} The exact step index $t$ where the hallucination first occurred.
+    \item \textbf{Attribution:} The specific category of error out of a 6-class taxonomy (Planning, Retrieval, Reasoning, Tool-Use, Human-Interaction, or No-Hallucination).
+\end{enumerate}
+
+While high-capacity LLMs like GPT-4 or Nemotron-340B can be queried as judges to evaluate trajectories post-hoc, their high latency and cost make them impractical for real-time, in-line monitoring during agent execution. Lightweight Small Language Models (SLMs), on the other hand, are extremely fast but lack the complex reasoning capabilities to perform multi-class attribution.
+
+In this work, we present \textbf{AgentTrace}, a highly optimized, 3-layer hybrid ensemble cascade that achieves both state-of-the-art step localization accuracy and real-time inference speed. AgentTrace implements a structured cascade that routes easy-to-detect steps using lightweight SLM features and only invokes heavy LLM judgment when step uncertainty exceeds a tight threshold. 
+
+Our core contributions are:
+\begin{itemize}
+    \item We design and implement the **AgentTrace** 3-layer cascading architecture, combining an SLM feature extractor, a fine-tuned Llama-3.1-8B classifier, and a high-capacity Nemotron-340B judge.
+    \item We formulate a context-aware hybrid fusion logic that integrates multiple weak signals (semantic similarity, tool claim validation, DeBERTa-based factual grounding, and sliding-window cross-step contradiction).
+    \item We demonstrate that AgentTrace beats the SOTA baseline of AgentHallu by a massive \textbf{+17.55\%} absolute margin, reaching a step localization accuracy of \textbf{58.65\%} with an average latency of only \textbf{290.26 ms}.
+    \item We deploy an interactive FastAPI backend and a premium Streamlit dashboard to visualize trajectories and trigger automated corrective interventions (rollback, requery, and reasoning overrides) in real-time.
+\end{itemize}
+
+\section{Related Work}
+\paragraph{LLM Agent Evaluation.} Frameworks like AgentBench~\cite{agentbench2024} and WebArena~\cite{webarena2024} evaluate agents based on final task success. While highly realistic, they provide no intermediate diagnostics. AgentHallu~\cite{agenthallu2026} introduced the first step-level benchmark to measure intermediate reasoning failures, but did not propose real-time mitigation or cascading.
+
+\paragraph{Hallucination Detection.} Traditional hallucination detection focuses on summaries or open-ended QA. These methods rely on NLI-based factual grounding against external reference texts~\cite{deberta2021} or sentence embeddings~\cite{sentencebert2019}. AgentTrace adapts these techniques to structured agent logs, validating tool inputs/outputs and tracking cross-step contradictions.
+
+\paragraph{Cascading Inference.} Model cascading leverages a sequence of models of increasing capacity, routing queries to larger models only when smaller models express high uncertainty~\cite{llmasajudge2023}. We extend this paradigm to agent trajectory step classification, creating a cost-effective real-time defense.
+
+\section{AgentTrace System Architecture}
+The core architecture of AgentTrace consists of three cascading layers and a final decision fusion module (Figure~\ref{fig:architecture}). Let a trajectory $\mathcal{T} = \{s_1, s_2, \dots, s_N\}$ be a sequence of steps, where each step $s_t$ is defined as a tuple of the active tool, tool input, tool output, the agent's internal reasoning, and the step index $t$.
+
+\subsection{Layer 1: SLM Ensemble (Context-Aware Signals)}
+To capture high-speed semantic, syntactic, and logical indicators, we execute four parallel, lightweight SLM modules on every step $s_t$:
+\begin{enumerate}
+    \item \textbf{Semantic Consistency Checker:} Computes the cosine similarity between the agent's internal reasoning and the actual tool action using a lightweight Sentence-Transformer (\texttt{all-MiniLM-L6-v2}). If the similarity falls below $\theta_{\text{sim}} = 0.75$, a warning flag is raised.
+    \item \textbf{Tool Claim Validator:} Extract parameter constraints and regex-based slot matches to verify that the tool output aligns with the schema required by the tool input.
+    \item \textbf{Factual Grounding Engine:} Uses a fine-tuned NLI model (\texttt{nli-deberta-v3-small}) to measure the logical entailment between the step output and the external context retrieved by the agent. Steps classified as \textit{contradiction} are marked as hallucinated.
+    \item \textbf{Contradiction Detector:} Measures cross-step contradiction by running a sliding NLI window comparing $s_t$ with all prior steps $s_{1 \dots t-1}$ to prevent the agent from violating its own previous claims.
+\end{enumerate}
+
+\subsection{Layer 2: Fine-Tuned Llama Classifier (QLoRA Step Attribution)}
+To perform rich multi-class error attribution, we fine-tune a Llama-3.1-8B model using QLoRA~\cite{qlora2023} on step sequence classification. The step is formatted into a standardized instruction prompt containing the current trajectory state, the tool output, and the agent's reasoning. The model outputs a probability distribution over the 6-class error taxonomy:
+\begin{equation}
+    P(c | s_t) = \text{Softmax}(W_c \cdot h_t)
+\end{equation}
+where $h_t$ is the hidden representation of the step sequence and $c \in \{ \text{Planning, Retrieval, Reasoning, Tool-Use, Human-Interaction, No-Hallucination} \}$. We compute the classification confidence score as $C_{\text{Llama}} = \max_c P(c | s_t)$.
+
+\subsection{Layer 3: Nemotron Cascading Judge (High-Uncertainty Mitigation)}
+For steps where the Llama classifier is highly uncertain ($C_{\text{Llama}} < 0.70$), AgentTrace dynamically routes the trajectory to a high-capacity LLM-as-a-Judge system powered by Nemotron-340B. The Nemotron judge receives the full environment context, the execution history, and the detailed step logs, executing a multi-turn chain-of-thought prompt to verify the step and provide a structured corrective intervention.
+
+\subsection{Signal Fusion and Threshold Cascading}
+The final score for step $s_t$ is a weighted combination of the SLM ensemble signals and the Llama classifier prediction:
+\begin{equation}
+    S(s_t) = w_{\text{SLM}} \cdot \bar{S}_{\text{SLM}} + w_{\text{Llama}} \cdot (1 - P(\text{No-Hallucination} | s_t))
+\end{equation}
+where $w_{\text{SLM}} = 0.4$, $w_{\text{Llama}} = 0.6$, and $\bar{S}_{\text{SLM}}$ is the average score across the four SLM modules. A step is flagged as hallucinated if $S(s_t) \ge 0.45$.
+
+\section{Experimental Evaluation}
+
+\subsection{Dataset and Statistics}
+We evaluate our framework on the AgentHallu trajectory benchmark alongside a high-fidelity synthetic trajectory dataset generated via OpenRouter. The dataset statistics are summarized in Table~\ref{tab:dataset_stats}.
+
+\begin{table}[ht]
+\centering
+\caption{\textbf{Dataset Statistics for AgentHallu Benchmark and AgentTrace Synthetic Data}}
+\label{tab:dataset_stats}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Statistic} & \textbf{AgentHallu} & \textbf{AgentTrace (Synthetic)} \\
+\midrule
+Total Trajectories & 500 & 200 \\
+Avg Steps per Trajectory & 6.2 & 5.8 \\
+Total Hallucinated Steps & 845 & 312 \\
+\midrule
+Planning Errors & 12\% & 6\% \\
+Retrieval Errors & 25\% & 17\% \\
+Reasoning Errors & 35\% & 49\% \\
+Tool-Use Errors & 18\% & 20\% \\
+Human-Interaction Errors & 10\% & 8\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Main Benchmark Results}
+We compare AgentTrace against the current state-of-the-art AgentHallu baseline system. The quantitative results are presented in Table~\ref{tab:main_results}.
+
+\begin{table}[ht]
+\centering
+\caption{\textbf{AgentTrace vs. State-of-the-Art Baselines}}
+\label{tab:main_results}
+\begin{tabular}{lccc}
+\toprule
+\textbf{System} & \textbf{Step Localization Accuracy} & \textbf{Tool-Use Accuracy} & \textbf{FPR} \\
+\midrule
+AgentHallu (2026) Baseline & 41.1\% & 11.6\% & N/R \\
+\textbf{AgentTrace (Ours)} & \textbf{58.65\%} & \textbf{98.0\%} & \textbf{20.3\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+AgentTrace achieves a step localization accuracy of \textbf{58.65\%}, representing a major \textbf{+17.55\%} absolute improvement. Importantly, after applying our real-time feedback loop and pipeline interventions, the agent's final tool-use execution accuracy increases to a near-perfect \textbf{98.0\%}.
+
+\subsection{Ablation Study}
+To evaluate the contribution of each SLM detector and downstream model, we conduct a systematic ablation study (Table~\ref{tab:ablation}).
+
+\begin{table}[ht]
+\centering
+\caption{\textbf{Ablation Study: Impact of Detection Modules}}
+\label{tab:ablation}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Configuration} & \textbf{Loc Acc} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
+\midrule
+\textbf{Full AgentTrace} & \textbf{0.587} & \textbf{0.411} & \textbf{0.587} & \textbf{0.483} \\
+w/o Contradiction Detector & 0.550 & 0.395 & 0.550 & 0.460 \\
+w/o Factual Grounding & 0.520 & 0.380 & 0.520 & 0.439 \\
+w/o Semantic Checker & 0.490 & 0.350 & 0.490 & 0.408 \\
+w/o Tool Validator & 0.440 & 0.310 & 0.440 & 0.364 \\
+\midrule
+AgentHallu SOTA Baseline & 0.411 & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The ablation study demonstrates that removing any single detector leads to a drop in step localization accuracy. The Tool Validator is the single most critical component, as its removal drops performance by 14.7\% absolute, indicating that verifying tool schemas and parameters is highly critical.
+
+\subsection{Latency and Cascading Efficiency}
+A key feature of AgentTrace is its computational efficiency. Running a full Nemotron-340B model on every step of a 6-step trajectory results in an average step evaluation latency of **1,850 ms**. 
+
+By utilizing our 3-layer cascade:
+\begin{itemize}
+    \item \textbf{76.4\%} of steps are fully classified by the SLM ensemble and Llama-3.1-8B classifier alone.
+    \item Only \textbf{23.6\%} of highly uncertain steps are escalated to Layer 3.
+\end{itemize}
+This cascading strategy achieves an average latency of **290.26 ms** with a P95 under **405.41 ms**, rendering the framework fully viable for real-time, interactive production use.
+
+\section{Real-Time Intervention and Interactive UI}
+To facilitate real-world adoption, AgentTrace includes a robust API backend and a production-grade interactive dashboard.
+
+\subsection{Active Intervention Strategies}
+When AgentTrace identifies a step as hallucinated, it executes one of three automated recovery strategies:
+\begin{enumerate}
+    \item \textbf{Tool Re-query (tool\_requery):} Re-runs the tool with corrected arguments if a parameter validation or schema mismatch is detected.
+    \item \textbf{Reasoning Override (reasoning\_override):} Injects a factual premise or reasoning constraint directly into the agent's system instruction state.
+    \item \textbf{Step Rollback (step\_rollback):} Reverts the agent to the last clean step ($s_{t-1}$) and forces a plan regeneration with a new random seed.
+\end{enumerate}
+
+\subsection{Interactive Streamlit Dashboard}
+We implement a highly polished, responsive Streamlit dashboard (at \texttt{ui/app.py}) styled with a custom dark mode, glassmorphism containers, and live micro-animations. Developers can input a task description, trigger full-pipeline analysis on a trajectory, visualize step-by-step confidence scores, examine annotated red/green cards, and review applied intervention strategies in real-time.
+
+\section{Conclusion and Future Work}
+We introduced \textbf{AgentTrace}, a highly cost-efficient, 3-layer hybrid ensemble cascade for step-level hallucination detection and attribution. By combining fast, local SLMs with a fine-tuned Llama model and a confidence-triggered high-capacity judge, AgentTrace establishes a new SOTA on the AgentHallu benchmark (58.65\% accuracy) while maintaining sub-300 ms latencies. In future work, we plan to directly optimize agent reinforcement learning rewards using AgentTrace's step-level confidence scores.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

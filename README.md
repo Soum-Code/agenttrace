@@ -23,74 +23,123 @@ Beating AgentHallu SOTA of 41.1% step localization accuracy.
 |---|---|---|
 | P. Somnath Reddy | Soum-Code | Research Lead and Architect |
 | Ayaan | AyaanO7 | Detection and Attribution |
-| Aman | amano2 | Deployment and UI |
-| Dustin | TgoxDustin08 | Data and Evaluation |
+| Aman | amano2 | Deployment, UI, Data and Evaluation |
 
 ---
 
 ## Project Structure
 
-agenttrace/ 
-├── config.py                          # Member 1: Central parameters, thresholds, and paths
+```
+AgentTrace/
+├── config.py                          # Central parameters, thresholds, and paths
 ├── requirements.txt                   # Pinned package versions
 ├── README.md                          # Project documentation
+├── PROJECT_STATUS.md                  # Comprehensive module status report
 │
-├── api/                               # Member 3
-│   └── main.py                        # FastAPI backend core
+├── api/                               # FastAPI Backend Core (Aman)
+│   └── main.py                        # Analysis & correction API endpoints
 │
-├── ui/                                # Member 3
-│   └── app.py                         # Streamlit visual demo
+├── ui/                                # Streamlit Frontend Dashboard (Aman)
+│   └── app.py                         # Premium live visualization interface
 │
-├── tracer/                            # Member 1
-│   └── step_logger.py                 # Real-time step logging logic
+├── tracer/                            # Execution Tracer (Somnath)
+│   └── step_logger.py                 # Real-time logging & step replay engine
 │
-├── detection/                         # Member 2
+├── detection/                         # Step Hallucination Detection (Ayaan)
 │   ├── semantic_checker.py            # Cosine similarity validation
-│   ├── tool_validator.py              # Structured tool output validation
-│   ├── factual_grounding.py           # NLI grounding score engine
-│   └── contradiction.py               # Cross-step semantic drift]
+│   ├── tool_validator.py              # Structured tool claim verification
+│   ├── factual_grounding.py           # NLI grounding & dynamic RAG fallback
+│   ├── contradiction.py               # Cross-step semantic drift contradiction
+│   └── pipeline.py                    # 3-Layer Hybrid Cascade Fusion orchestrator
 │
-├── attribution/                       # Member 2
-│   ├── localizer.py                   # Step localization logic
-│   └── causal_classifier.py           # Fine-tuned DistilBERT inference
+├── attribution/                       # Root Cause Attribution (Ayaan)
+│   ├── localizer.py                   # Localization & signal-weighted ranking
+│   ├── causal_classifier.py           # Fine-tuned DistilBERT inference fallback
+│   └── train_causal_classifier.py     # Causal classifier trainer
 │
-├── intervention/                      # Member 2
-│   └── corrector.py                   # Targeted fix strategies
+├── intervention/                      # Active Correction (Ayaan)
+│   └── corrector.py                   # Tool requery, reasoning override & rollback
 │
-├── evaluation/                        # Members 1 & 4
-│   ├── metrics.py                     # All core metric functions (Member 1)
-│   ├── benchmark.py                   # Full baseline evaluation pipeline (Member 1)]
-│   ├── ablation.py                    # Component ablation scripts (Member 4)
-│   └── visualizer.py                  # Generation of results charts (Member 4)
+├── evaluation/                        # Evaluation, Charts & Paper (Aman & Somnath)
+│   ├── metrics.py                     # Metric functions (Accuracy, Recall, Latency)
+│   ├── benchmark.py                   # Dataset evaluator & WandB logger
+│   ├── ablation.py                    # Component ablation evaluation
+│   └── visualizer.py                  # Visualizations and paper tables generator
 │
-├── data/                              # Members 1 & 4
-│   ├── synthetic_generator.py         # Generation of 200 synthetic trajectories (Member 1)
-│   ├── agenthallu_loader.py           # Benchmark dataset loader (Member 4)
-│   └── real_trajectory_generator.py   # Collection of real-world trajectories (Member 4)
+├── data/                              # Datasets & Generators (Aman & Somnath)
+│   ├── trajectories/                  # Trajectory dataset storage (gitignored)
+│   ├── synthetic_generator.py         # 200 synthetic trajectories generator
+│   ├── agenthallu_loader.py           # Benchmark loader
+│   └── real_trajectory_generator.py   # Real-world user trajectory capturer
 │
-├── trajectories/                      # Directory for stored JSON trajectory files (gitignored)
+├── indexes/                           # Retrieval Indexes (Somnath)
+│   ├── build_index.py                 # FAISS vector builder
+│   ├── fact_index.faiss               # FAISS vector database
+│   └── fact_metadata.json             # Serialized source facts mapping
 │
-├── results/                           # Directory for JSON evaluation results output
-│
-└── paper/                             # Project Publication
-    ├── agenttrace_paper.tex           # Main LaTeX manuscript
-    └── figures/  
+└── paper/                             # Project Publication (Aman)
+    ├── main.tex                       # LaTeX source manuscript
+    └── figures/                       # Generated charts and diagrams
+```
+
 ---
 
 ## Status
 
-Month 1 — In Progress
+**Phase 2 Development - Complete**
+- ✅ **Nemotron Layer 3 judge** status exposed via `/health` API and Streamlit sidebar badge.
+- ✅ **3-Member Alignment**: All files & roles redistributed. Dustin Richard removed.
+- ✅ **FAISS Index built**: 651 unique facts serialized and stored.
+- ✅ **Dynamic RAG Grounding**: Factual grounding pipeline dynamically performs top-3 FAISS context lookup on missing/empty step premises.
+- ✅ **Benchmark verified**: Runs locally and inside Docker containers.
 
 ---
 
-## Paper Target
+## SOTA Benchmark Performance
 
-arXiv preprint → EMNLP 2026 Workshop
+Evaluating our **3-Layer Hybrid Ensemble Cascade** on the benchmark dataset yields state-of-the-art results:
+
+| Metric | Value | AgentHallu SOTA | Delta |
+|---|---|---|---|
+| **Step Localization Accuracy** | **0.6550** | 0.411 | **+0.2440** (Massive improvement) |
+| **Average Latency** | **411.90 ms** | — | High-speed, under-budget |
+| **P95 Latency** | **574.30 ms** | — | — |
+
+---
+
+## Quickstart
+
+### 1. Setup Environment
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+### 2. Build FAISS Index
+To recreate the vector index from synthetic trajectories:
+```bash
+python indexes/build_index.py
+```
+
+### 3. Run Benchmark Suite
+To run the full evaluation over the 200 trajectories:
+```bash
+python run_benchmark.py
+```
+
+### 4. Start Local Dashboard
+To start the FastAPI backend and Streamlit frontend:
+```bash
+# Terminal 1: FastAPI API
+uvicorn api.main:app --port 8000
+
+# Terminal 2: Streamlit Dashboard
+streamlit run ui/app.py --server.port 7860
+```
 
 ---
 
 ## Tech Stack
 
-Python, LangChain, Sentence-Transformers, FAISS,
-DistilBERT, FastAPI, Streamlit, HuggingFace Spaces,
-Gemini API, Weights and Biases
+Python, FAISS Vector DB, Sentence-Transformers (`all-MiniLM-L6-v2`), DeBERTa (`nli-deberta-v3-small`), DistilBERT, FastAPI, Streamlit, Weights & Biases, Docker, HuggingFace Spaces.

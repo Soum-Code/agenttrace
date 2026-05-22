@@ -13,6 +13,7 @@ Target: EMNLP 2026 / ICLR 2027
 """
 
 import os
+os.environ["HF_HUB_DISABLE_IMPLICIT_TOKEN"] = "1"
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 from pathlib import Path

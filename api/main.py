@@ -144,6 +144,7 @@ class HealthResponse(BaseModel):
     models_loaded: bool
     version: str
     uptime_seconds: float
+    openrouter_key_set: bool
 
 
 class CorrectedStepResponse(BaseModel):
@@ -258,6 +259,7 @@ async def health() -> HealthResponse:
         models_loaded=True,
         version=app.version,
         uptime_seconds=round(time.monotonic() - _start_time, 2),
+        openrouter_key_set=bool(os.environ.get("OPENROUTER_API_KEY")),
     )
 
 

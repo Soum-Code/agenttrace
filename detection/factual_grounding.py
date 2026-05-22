@@ -34,6 +34,7 @@ class FactualGrounder:
     def __init__(self):
         """
         Loads the NLI cross-encoder model and tokenizer from config.
+        Also loads the FAISS index if it exists.
         """
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(config.NLI_MODEL_NAME)
@@ -47,6 +48,34 @@ class FactualGrounder:
             print(f"Error loading NLI model: {e}")
             self.model = None
             self.tokenizer = None
+
+        # Load FAISS index and metadata for dynamic RAG factual grounding
+        self.faiss_index = None
+        self.faiss_metadata = None
+        self.embedding_model = None
+
+        index_path = os.path.join(config.CONFIG.paths.index_dir, "fact_index.faiss")
+        metadata_path = os.path.join(config.CONFIG.paths.index_dir, "fact_metadata.json")
+
+        if os.path.exists(index_path) and os.path.exists(metadata_path):
+            try:
+                import faiss
+                self.faiss_index = faiss.read_index(index_path)
+                with open(metadata_path, "r", encoding="utf-8") as f:
+                    self.faiss_metadata = json.load(f)
+                print(f"FactualGrounder: Loaded FAISS index from {index_path} with {self.faiss_index.ntotal} facts.")
+            except Exception as e:
+                print(f"FactualGrounder: Warning: Failed to load FAISS index: {e}")
+
+    def _lazy_load_embedding_model(self):
+        """Loads SentenceTransformer embedding model on-demand to save resources."""
+        if self.embedding_model is None:
+            try:
+                from sentence_transformers import SentenceTransformer
+                self.embedding_model = SentenceTransformer(config.SEMANTIC_MODEL_NAME)
+                print(f"FactualGrounder: Loaded SentenceTransformer model '{config.SEMANTIC_MODEL_NAME}' for RAG.")
+            except Exception as e:
+                print(f"FactualGrounder: Error loading embedding model: {e}")
 
     # ── public API ──────────────────────────────────────────────────────────
 
@@ -64,6 +93,33 @@ class FactualGrounder:
         agent_reasoning = step_data.get("agent_reasoning", "")
         # Use ground_truth as primary premise; fall back to tool_output
         premise = step_data.get("ground_truth") or step_data.get("tool_output", "")
+
+        retrieved_facts_list = []
+        is_rag_fallback = False
+
+        # RAG fallback: If primary premise is missing, retrieve top-3 facts from FAISS index
+        if not premise or not str(premise).strip():
+            if self.faiss_index is not None and self.faiss_metadata is not None:
+                try:
+                    self._lazy_load_embedding_model()
+                    if self.embedding_model is not None:
+                        query = agent_reasoning
+                        query_vector = self.embedding_model.encode([query], convert_to_numpy=True).astype("float32")
+                        
+                        k = min(3, len(self.faiss_metadata))
+                        distances, indices = self.faiss_index.search(query_vector, k)
+                        
+                        retrieved = []
+                        for idx in indices[0]:
+                            if 0 <= idx < len(self.faiss_metadata):
+                                retrieved.append(self.faiss_metadata[idx])
+                        
+                        if retrieved:
+                            premise = "\n".join(retrieved)
+                            retrieved_facts_list = retrieved
+                            is_rag_fallback = True
+                except Exception as e:
+                    print(f"FactualGrounder: Error retrieving facts from FAISS index: {e}")
 
         if not self.model or not self.tokenizer:
             return self._fallback(step_id, "NLI model not initialized")
@@ -104,6 +160,8 @@ class FactualGrounder:
                     "entailment": round(float(entailment_prob), 4),
                     "contradiction": round(float(contradiction_prob), 4),
                     "neutral": round(float(neutral_prob), 4),
+                    "is_rag_fallback": is_rag_fallback,
+                    "retrieved_facts": retrieved_facts_list
                 },
             }
 
@@ -175,6 +233,7 @@ class FactualGrounder:
 if __name__ == "__main__":
     grounder = FactualGrounder()
 
+    # Test 1: Standard NLI with ground_truth
     sample_input = {
         "step": 2,
         "action": "web_search",
@@ -184,5 +243,19 @@ if __name__ == "__main__":
         "ground_truth": "Argentina won FIFA 2022",
     }
 
+    print("\n--- Test 1: Standard Factual Grounding ---")
     result = grounder.ground(sample_input)
     print(json.dumps(result, indent=2))
+
+    # Test 2: Dynamic RAG fallback (no ground_truth, no tool_output)
+    sample_rag = {
+        "step": 3,
+        "action": "none",
+        "tool_input": None,
+        "tool_output": "",
+        "agent_reasoning": "Mount Everest is located on the border between Nepal and China.",
+    }
+
+    print("\n--- Test 2: Dynamic RAG Grounding Fallback ---")
+    result_rag = grounder.ground(sample_rag)
+    print(json.dumps(result_rag, indent=2))

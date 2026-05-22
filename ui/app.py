@@ -372,14 +372,12 @@ def call_correct(trajectory_id: str, step: int) -> dict[str, Any] | None:
 def render_header() -> None:
     """Render the main page header with title, subtitle, and version badge."""
     st.markdown(
-        """
-        <div class="main-header">
-            <h1>AgentTrace</h1>
-            <p>Step-Level Hallucination Detection &amp; Attribution
-               in Multi-Step LLM Agent Workflows</p>
-            <span class="badge">Research Preview v0.1</span>
-        </div>
-        """,
+        '<div class="main-header">'
+        '<h1>AgentTrace</h1>'
+        '<p>Step-Level Hallucination Detection &amp; Attribution'
+        ' in Multi-Step LLM Agent Workflows</p>'
+        '<span class="badge">Research Preview v0.1</span>'
+        '</div>',
         unsafe_allow_html=True,
     )
 
@@ -395,26 +393,24 @@ def render_metrics(data: dict[str, Any]) -> None:
     clean_count = data["num_steps"] - data["num_hallucinated"]
 
     st.markdown(
-        f"""
-        <div class="metric-row">
-            <div class="metric-card metric-blue">
-                <p class="metric-value">{data["num_steps"]}</p>
-                <p class="metric-label">Total Steps</p>
-            </div>
-            <div class="metric-card metric-green">
-                <p class="metric-value">{clean_count}</p>
-                <p class="metric-label">Clean Steps</p>
-            </div>
-            <div class="metric-card metric-red">
-                <p class="metric-value">{data["num_hallucinated"]}</p>
-                <p class="metric-label">Hallucinated</p>
-            </div>
-            <div class="metric-card metric-amber">
-                <p class="metric-value">{confidence_pct}%</p>
-                <p class="metric-label">Confidence</p>
-            </div>
-        </div>
-        """,
+        f'<div class="metric-row">'
+        f'<div class="metric-card metric-blue">'
+        f'<p class="metric-value">{data["num_steps"]}</p>'
+        f'<p class="metric-label">Total Steps</p>'
+        f'</div>'
+        f'<div class="metric-card metric-green">'
+        f'<p class="metric-value">{clean_count}</p>'
+        f'<p class="metric-label">Clean Steps</p>'
+        f'</div>'
+        f'<div class="metric-card metric-red">'
+        f'<p class="metric-value">{data["num_hallucinated"]}</p>'
+        f'<p class="metric-label">Hallucinated</p>'
+        f'</div>'
+        f'<div class="metric-card metric-amber">'
+        f'<p class="metric-value">{confidence_pct}%</p>'
+        f'<p class="metric-label">Confidence</p>'
+        f'</div>'
+        f'</div>',
         unsafe_allow_html=True,
     )
 
@@ -467,8 +463,8 @@ def render_step_card(step: dict[str, Any]) -> None:
     if is_hall and step.get("explanation"):
         explanation_html = (
             f'<div class="hallucination-explanation">'
-            f'  <span class="explain-icon">&#9888;</span>'
-            f'  {step["explanation"]}'
+            f'<span class="explain-icon">&#9888;</span>'
+            f' {step["explanation"]}'
             f'</div>'
         )
 
@@ -476,35 +472,33 @@ def render_step_card(step: dict[str, Any]) -> None:
     if is_hall and step.get("hallucination_type"):
         pretty_type = step["hallucination_type"].replace("_", " ").title()
         hall_type_html = (
-            f'<p class="step-detail">'
-            f'  <strong>Type:</strong> {pretty_type}'
-            f'</p>'
+            f'<p class="step-detail"><strong>Type:</strong> {pretty_type}</p>'
         )
 
-    st.markdown(
-        f"""
-        <div class="step-card {card_class}">
-            <div class="step-header">
-                <span class="step-title">Step {step["step_index"]}</span>
-                <span class="step-badge {badge_class}">{badge_text}</span>
-            </div>
-            <p class="step-detail"><strong>Tool:</strong> {step["tool_name"]}</p>
-            <p class="step-detail"><strong>Action:</strong> {step["action"]}</p>
-            <p class="step-detail"><strong>Input:</strong>
-               <code>{step["tool_input"]}</code></p>
-            <p class="step-detail"><strong>Output:</strong>
-               <code>{step["tool_output"]}</code></p>
-            <p class="step-detail"><strong>Reasoning:</strong>
-               {step["reasoning"]}</p>
-            {hall_type_html}
-            <p class="step-detail"><strong>Hallucination Score:</strong>
-               {score:.1%}</p>
-            {_score_bar_html(score)}
-            {explanation_html}
-        </div>
-        """,
-        unsafe_allow_html=True,
+    # Build the card HTML as a single non-indented string to prevent
+    # Streamlit's markdown parser from treating indented lines as code blocks.
+    card_html = (
+        f'<div class="step-card {card_class}">'
+        f'<div class="step-header">'
+        f'<span class="step-title">Step {step["step_index"]}</span>'
+        f'<span class="step-badge {badge_class}">{badge_text}</span>'
+        f'</div>'
+        f'<p class="step-detail"><strong>Tool:</strong> {step["tool_name"]}</p>'
+        f'<p class="step-detail"><strong>Action:</strong> {step["action"]}</p>'
+        f'<p class="step-detail"><strong>Input:</strong> '
+        f'<code>{step["tool_input"]}</code></p>'
+        f'<p class="step-detail"><strong>Output:</strong> '
+        f'<code>{step["tool_output"]}</code></p>'
+        f'<p class="step-detail"><strong>Reasoning:</strong> '
+        f'{step["reasoning"]}</p>'
+        f'{hall_type_html}'
+        f'<p class="step-detail"><strong>Hallucination Score:</strong> '
+        f'{score:.1%}</p>'
+        f'{_score_bar_html(score)}'
+        f'{explanation_html}'
+        f'</div>'
     )
+    st.markdown(card_html, unsafe_allow_html=True)
 
 
 def render_sidebar_confidence(steps: list[dict[str, Any]]) -> None:
@@ -532,19 +526,17 @@ def render_sidebar_confidence(steps: list[dict[str, Any]]) -> None:
         else:
             css_class = "conf-low"
 
-        st.sidebar.markdown(
-            f"""
-            <div class="confidence-item">
-                <span class="confidence-step">
-                    Step {step["step_index"]} &middot; {step["tool_name"]}
-                </span>
-                <span class="confidence-score {css_class}">
-                    {confidence:.0%}
-                </span>
-            </div>
-            """,
-            unsafe_allow_html=True,
+        sidebar_item_html = (
+            f'<div class="confidence-item">'
+            f'<span class="confidence-step">'
+            f'Step {step["step_index"]} &middot; {step["tool_name"]}'
+            f'</span>'
+            f'<span class="confidence-score {css_class}">'
+            f'{confidence:.0%}'
+            f'</span>'
+            f'</div>'
         )
+        st.sidebar.markdown(sidebar_item_html, unsafe_allow_html=True)
 
     # Overall stats in sidebar
     st.sidebar.markdown("---")
@@ -563,36 +555,20 @@ def render_correction_result(result: dict[str, Any]) -> None:
     Args:
         result: The /correct response dictionary.
     """
-    st.markdown(
-        f"""
-        <div class="correction-card">
-            <h4>Intervention Applied &mdash; Step {result["step_index"]}</h4>
-            <p class="step-detail">
-                <strong>Intervention Type:</strong>
-                {result["intervention_type"].replace("_", " ").title()}
-            </p>
-            <p class="step-detail">
-                <strong>Original Action:</strong> {result["original_action"]}
-            </p>
-            <p class="step-detail">
-                <strong>Original Output:</strong>
-                <code>{result["original_output"]}</code>
-            </p>
-            <p class="step-detail" style="color:#4ade80;">
-                <strong>Corrected Action:</strong> {result["corrected_action"]}
-            </p>
-            <p class="step-detail" style="color:#4ade80;">
-                <strong>Corrected Output:</strong>
-                <code>{result["corrected_output"]}</code>
-            </p>
-            <p class="step-detail">
-                <strong>Confidence After:</strong>
-                {result["confidence_after"]:.1%}
-            </p>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    intervention_type_pretty = result["intervention_type"].replace("_", " ").title()
+    correction_html = (
+        f'<div class="correction-card">'
+        f'<h4>Intervention Applied &mdash; Step {result["step_index"]}</h4>'
+        f'<p class="step-detail"><strong>Intervention Type:</strong> {intervention_type_pretty}</p>'
+        f'<p class="step-detail"><strong>Original Action:</strong> {result["original_action"]}</p>'
+        f'<p class="step-detail"><strong>Original Output:</strong> <code>{result["original_output"]}</code></p>'
+        f'<p class="step-detail" style="color:#4ade80;"><strong>Corrected Action:</strong> {result["corrected_action"]}</p>'
+        f'<p class="step-detail" style="color:#4ade80;"><strong>Corrected Output:</strong> <code>{result["corrected_output"]}</code></p>'
+        f'<p class="step-detail"><strong>Confidence After:</strong> {result["confidence_after"]:.1%}</p>'
+        f'</div>'
     )
+    st.markdown(correction_html, unsafe_allow_html=True)
+
 
 
 # ---------------------------------------------------------------------------
@@ -630,6 +606,17 @@ def main() -> None:
         st.sidebar.caption(
             f"Uptime: {health['uptime_seconds']:.0f}s "
             f"&middot; Models loaded: {'Yes' if health['models_loaded'] else 'No'}"
+        )
+        openrouter_status = "Connected" if health.get("openrouter_key_set") else "Unconfigured"
+        openrouter_class = "conf-high" if health.get("openrouter_key_set") else "conf-low"
+        st.sidebar.markdown(
+            f'<div class="confidence-item" style="margin-top: 5px; background: rgba(255,255,255,0.03); padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">'
+            f'<span class="confidence-step" style="font-size: 0.78rem; font-weight: 500;">Nemotron Layer 3</span>'
+            f'<span class="confidence-score {openrouter_class}" style="font-size: 0.72rem; padding: 2px 6px; border-radius: 4px;">'
+            f'{openrouter_status}'
+            f'</span>'
+            f'</div>',
+            unsafe_allow_html=True,
         )
     else:
         st.sidebar.markdown(
