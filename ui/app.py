@@ -1130,7 +1130,7 @@ const componentData = {
     file: 'detection/semantic_checker.py',
     loc: '133 LOC',
     type: 'Detection Module',
-    desc: 'Analyzes semantic alignment and detects gradual semantic drift between the agent\'s internal reasoning (thought), selected action, and the retrieved context.',
+    desc: "Analyzes semantic alignment and detects gradual semantic drift between the agent's internal reasoning (thought), selected action, and the retrieved context.",
     extra: '<h5>Configuration</h5><ul><li><strong>Model:</strong> <code>sentence-transformers/all-MiniLM-L6-v2</code></li><li><strong>Embedding Dimension:</strong> <code>384</code></li><li><strong>Similarity Cutoff:</strong> <code>0.75</code> (cosine sim below this flags drift)</li></ul>'
   },
   'tool-valid': {
@@ -1146,7 +1146,7 @@ const componentData = {
     file: 'detection/factual_grounding.py',
     loc: '189 LOC',
     type: 'Detection Module',
-    desc: 'Computes factual entailment and checks if the agent\'s reasoning statements are fully supported by the reference context.',
+    desc: "Computes factual entailment and checks if the agent's reasoning statements are fully supported by the reference context.",
     extra: '<h5>Configuration</h5><ul><li><strong>Model:</strong> <code>cross-encoder/nli-deberta-v3-small</code></li><li><strong>Contradiction Threshold:</strong> <code>0.80</code> (contradiction score above this flags hallucination)</li><li><strong>RAG Fallback:</strong> Top-3 context lookup from FAISS index when local context is empty</li></ul>'
   },
   'faiss-rag': {
@@ -1421,6 +1421,85 @@ function downloadHistoryJson() {
 }
 
 // ---------------------------------------------------------------------------
+// Pre-populate History with All 6 Scenarios
+// ---------------------------------------------------------------------------
+const SCENARIO_PROMPTS = [
+  { label: 'Clean Trajectory',                      task: 'SCENARIO: clean'     },
+  { label: 'Reasoning Hallucination',               task: 'SCENARIO: reasoning' },
+  { label: 'Tool-Use Hallucination',                task: 'SCENARIO: tool'      },
+  { label: 'Retrieval/Grounding Hallucination',     task: 'SCENARIO: retrieval' },
+  { label: 'Human-Interaction Hallucination',       task: 'SCENARIO: human'    },
+  { label: 'Planning Hallucination',                task: 'SCENARIO: planning'  },
+];
+
+function showToast(msg, color) {
+  let t = document.getElementById('prepop-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'prepop-toast';
+    t.style.cssText = [
+      'position:fixed', 'bottom:18px', 'left:50%', 'transform:translateX(-50%)',
+      'padding:9px 18px', 'border-radius:12px', 'font-size:11.5px', 'font-weight:600',
+      'z-index:99999', 'transition:opacity 0.4s', 'pointer-events:none',
+      'backdrop-filter:blur(12px)', 'box-shadow:0 4px 18px rgba(0,0,0,0.35)',
+      'display:flex', 'align-items:center', 'gap:8px'
+    ].join(';');
+    document.body.appendChild(t);
+  }
+  t.style.background = color === 'green' ? 'rgba(16,46,30,0.92)' :
+                        color === 'red'   ? 'rgba(60,10,10,0.92)' :
+                                            'rgba(10,20,50,0.92)';
+  t.style.border = color === 'green' ? '1px solid rgba(52,211,153,0.45)' :
+                   color === 'red'   ? '1px solid rgba(248,113,113,0.45)' :
+                                       '1px solid rgba(79,142,247,0.45)';
+  t.style.color = color === 'green' ? '#6EE7B7' :
+                  color === 'red'   ? '#FCA5A5' : '#93BBFF';
+  t.style.opacity = '1';
+  t.innerHTML = msg;
+}
+
+function hideToast() {
+  const t = document.getElementById('prepop-toast');
+  if (t) { t.style.opacity = '0'; setTimeout(() => t.remove(), 450); }
+}
+
+async function prepopulateHistory() {
+  // Only run if history is currently empty
+  if (getHistory().length > 0) return;
+
+  showToast('⚙️  Loading scenario logs into history panel&hellip;', 'blue');
+  let succeeded = 0;
+  let failed = 0;
+
+  for (const scenario of SCENARIO_PROMPTS) {
+    try {
+      showToast(`🔬 Running: <em>${scenario.label}</em>&hellip;`, 'blue');
+      const res = await fetch(`${API_BASE}/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task: scenario.task })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      // Override the task label with the human-readable name
+      data.task = scenario.label + ' — ' + scenario.task;
+      saveToHistory(data);
+      succeeded++;
+    } catch (err) {
+      console.warn('[prepopulateHistory] Failed for', scenario.task, err);
+      failed++;
+    }
+  }
+
+  if (succeeded > 0) {
+    showToast(`✅ ${succeeded} scenario logs added to History panel!`, 'green');
+  } else {
+    showToast(`❌ Could not load scenarios (API offline?)`, 'red');
+  }
+  setTimeout(hideToast, 3500);
+}
+
+// ---------------------------------------------------------------------------
 // API Integration
 // ---------------------------------------------------------------------------
 const API_BASE = "__API_BASE__";
@@ -1550,8 +1629,8 @@ function renderSteps(steps, trajectoryId, targetContainerId = 'steps-list') {
       scoreClass = 'score-bar-fill-amber';
     }
     
-    const prettyActualType = actualText.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    const prettyExpectedType = expectedText.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const prettyActualType = actualText.replace(/_/g, ' ').replace(/\\b\\w/g, c => c.toUpperCase());
+    const prettyExpectedType = expectedText.replace(/_/g, ' ').replace(/\\b\\w/g, c => c.toUpperCase());
     
     let explanationHtml = '';
     if (step.explanation) {
@@ -1633,7 +1712,7 @@ async function applyCorrection(trajectoryId, stepIndex, btn) {
     if (!res.ok) throw new Error("Correction request failed");
     const data = await res.json();
     
-    const prettyStrategy = data.intervention_type.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const prettyStrategy = data.intervention_type.replace('_', ' ').replace(/\\b\\w/g, c => c.toUpperCase());
     
     container.innerHTML = `
       <div class="correction-card">
@@ -1684,6 +1763,9 @@ function handleCorrectClick(e) {
 window.addEventListener('load', () => {
   // Check API health status
   checkApiHealth();
+  
+  // Pre-populate history panel with all 6 scenario categories on first load
+  prepopulateHistory();
   
   // Initialize navigation tabs
   initTabs();

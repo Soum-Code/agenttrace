@@ -97,15 +97,19 @@ class CausalClassifier:
 
             # If model predicts No-Hallucination, surface it as a
             # classifier-level override (detection still flagged it)
+            # only if the prediction is sufficiently confident.
             if best_label == config.TYPE_NO_HALLUCINATION:
-                return {
-                    "step": step_id,
-                    "causal_label": "No-Hallucination",
-                    "causal_confidence": best_conf,
-                    "all_label_probs": label_probs,
-                    "classifier_override": True,
-                    "message": "Classifier predicts this step is clean (detection disagrees)",
-                }
+                if best_conf >= self.confidence_threshold:
+                    return {
+                        "step": step_id,
+                        "causal_label": "No-Hallucination",
+                        "causal_confidence": best_conf,
+                        "all_label_probs": label_probs,
+                        "classifier_override": True,
+                        "message": "Classifier predicts this step is clean (detection disagrees)",
+                    }
+                else:
+                    return self._fallback_heuristic(step_data, detection_result)
 
             # Fall back to heuristic if model confidence is too low
             if best_conf < self.confidence_threshold:
