@@ -342,7 +342,65 @@ def false_positive_rate(
 
 
 # ════════════════════════════════════════════════════════════
-# 8. AVERAGE LATENCY
+# 8. EXPECTED CALIBRATION ERROR (ECE)
+# ════════════════════════════════════════════════════════════
+
+def expected_calibration_error(
+    confidences: List[float],
+    accuracies: List[int],
+    num_bins: int = 10,
+) -> Dict[str, float]:
+    """Compute Expected Calibration Error (ECE).
+
+    Bins confidence scores into num_bins equal-width bins between 0 and 1.
+    Computes absolute difference between average confidence and accuracy in each bin.
+
+    Args:
+        confidences: Predicted confidence scores.
+        accuracies: True labels (1 for hallucinated, 0 for clean).
+        num_bins: Number of bins. Defaults to 10.
+
+    Returns:
+        Dict with 'expected_calibration_error' as float.
+    """
+    if not confidences or not accuracies:
+        return {"expected_calibration_error": 0.0}
+
+    n = len(confidences)
+    ece = 0.0
+
+    bin_boundaries = [i / num_bins for i in range(num_bins + 1)]
+
+    for i in range(num_bins):
+        bin_lower = bin_boundaries[i]
+        bin_upper = bin_boundaries[i + 1]
+
+        # Determine indices in the current bin
+        bin_indices = []
+        for idx, conf in enumerate(confidences):
+            if i == num_bins - 1:
+                # Include upper boundary in the last bin
+                if bin_lower <= conf <= bin_upper:
+                    bin_indices.append(idx)
+            else:
+                if bin_lower <= conf < bin_upper:
+                    bin_indices.append(idx)
+
+        bin_size = len(bin_indices)
+        if bin_size > 0:
+            bin_confidences = [confidences[idx] for idx in bin_indices]
+            bin_accuracies = [accuracies[idx] for idx in bin_indices]
+
+            avg_confidence = sum(bin_confidences) / bin_size
+            avg_accuracy = sum(bin_accuracies) / bin_size
+
+            ece += (bin_size / n) * abs(avg_accuracy - avg_confidence)
+
+    return {"expected_calibration_error": round(ece, 4)}
+
+
+# ════════════════════════════════════════════════════════════
+# 9. AVERAGE LATENCY
 # ════════════════════════════════════════════════════════════
 
 def average_latency_ms(
@@ -386,7 +444,7 @@ def average_latency_ms(
 
 
 # ════════════════════════════════════════════════════════════
-# 9. AGGREGATE — compute all metrics at once
+# 10. AGGREGATE — compute all metrics at once
 # ════════════════════════════════════════════════════════════
 
 def compute_all_metrics(
@@ -396,6 +454,8 @@ def compute_all_metrics(
     predicted_types: Optional[List[Optional[str]]] = None,
     true_types: Optional[List[Optional[str]]] = None,
     detection_times: Optional[List[float]] = None,
+    confidences: Optional[List[float]] = None,
+    step_ground_truths: Optional[List[int]] = None,
 ) -> Dict[str, any]:
     """Compute all metrics in a single call.
 
@@ -408,6 +468,8 @@ def compute_all_metrics(
         predicted_types: Predicted hallucination types (optional).
         true_types: True hallucination types (optional).
         detection_times: Per-step latencies in ms (optional).
+        confidences: Predicted confidence scores (optional).
+        step_ground_truths: True labels (1 for hallucinated, 0 for clean) (optional).
 
     Returns:
         Dict containing all computed metrics.
@@ -440,6 +502,10 @@ def compute_all_metrics(
     # Latency (if timing data provided)
     if detection_times:
         results.update(average_latency_ms(detection_times))
+
+    # ECE (if confidences and step_ground_truths provided)
+    if confidences is not None and step_ground_truths is not None:
+        results.update(expected_calibration_error(confidences, step_ground_truths))
 
     return results
 

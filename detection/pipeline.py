@@ -45,35 +45,91 @@ class DetectionPipeline:
     # Minimum number of active signals required to make a decision
     MIN_SIGNALS_FOR_DETECTION = 2
 
-    def __init__(self):
-        """Initializes all detection sub-modules."""
-        print("Loading detection pipeline v2...")
+    # Class-level model cache to prevent duplicate loading across instantiations (e.g. in ablation study)
+    _cached_semantic_model = None
+    _cached_nli_model = None
+    _cached_nli_tokenizer = None
+    _cached_llama_classifier = None
+    _cached_nemotron_judge = None
+    _cached_causal_classifier = None
+    _cached_localizer = None
+    _step_signals_cache = {}
+
+    def __init__(self, enable_layer2: bool = True, enable_layer3: bool = True, active_modules: list = None):
+        """Initializes all detection sub-modules with preloaded shared models."""
+        print(f"Loading detection pipeline v2 (layer2={enable_layer2}, layer3={enable_layer3}, active_modules={active_modules})...")
+        self.enable_layer2 = enable_layer2
+        self.enable_layer3 = enable_layer3
+        self.active_modules = active_modules
+        self.calibration_temperature = CONFIG.thresholds.calibration_temperature
+
+        # Pre-load shared models once to prevent duplicate loading and reduce memory overhead
+        self.shared_semantic_model = None
+        self.shared_nli_model = None
+        self.shared_nli_tokenizer = None
+
+        import config
+        
+        need_semantic = active_modules is None or any(m in active_modules for m in ["semantic", "tool", "factual"])
+        need_nli = active_modules is None or any(m in active_modules for m in ["factual", "contradiction"])
+
+        if need_semantic:
+            if DetectionPipeline._cached_semantic_model is not None:
+                self.shared_semantic_model = DetectionPipeline._cached_semantic_model
+            else:
+                print("Pre-loading shared models (Semantic)...")
+                try:
+                    from sentence_transformers import SentenceTransformer
+                    self.shared_semantic_model = SentenceTransformer(config.SEMANTIC_MODEL_NAME)
+                    DetectionPipeline._cached_semantic_model = self.shared_semantic_model
+                    print("  [+] Shared Semantic Model (SentenceTransformer) pre-loaded")
+                except Exception as e:
+                    print(f"  [-] Failed to pre-load shared Semantic Model: {e}")
+
+        if need_nli:
+            if DetectionPipeline._cached_nli_model is not None:
+                self.shared_nli_model = DetectionPipeline._cached_nli_model
+                self.shared_nli_tokenizer = DetectionPipeline._cached_nli_tokenizer
+            else:
+                print("Pre-loading shared models (NLI)...")
+                try:
+                    from transformers import AutoTokenizer, AutoModelForSequenceClassification
+                    self.shared_nli_tokenizer = AutoTokenizer.from_pretrained(config.NLI_MODEL_NAME)
+                    self.shared_nli_model = AutoModelForSequenceClassification.from_pretrained(config.NLI_MODEL_NAME)
+                    self.shared_nli_model.eval()
+                    DetectionPipeline._cached_nli_model = self.shared_nli_model
+                    DetectionPipeline._cached_nli_tokenizer = self.shared_nli_tokenizer
+                    print("  [+] Shared NLI Model & Tokenizer pre-loaded")
+                except Exception as e:
+                    print(f"  [-] Failed to pre-load shared NLI Model: {e}")
 
         # Semantic checker (sentence-transformers)
         self.semantic_checker = None
-        try:
-            from detection.semantic_checker import SemanticChecker
-            sc = SemanticChecker()
-            if sc.model is not None:  # verify model actually loaded
-                self.semantic_checker = sc
-                print("  [+] SemanticChecker loaded")
-            else:
-                print("  [-] SemanticChecker: model failed to load")
-        except Exception as e:
-            print(f"  [-] SemanticChecker failed: {e}")
+        if active_modules is None or "semantic" in active_modules:
+            try:
+                from detection.semantic_checker import SemanticChecker
+                sc = SemanticChecker(model=self.shared_semantic_model)
+                if sc.model is not None:  # verify model actually loaded
+                    self.semantic_checker = sc
+                    print("  [+] SemanticChecker loaded")
+                else:
+                    print("  [-] SemanticChecker: model failed to load")
+            except Exception as e:
+                print(f"  [-] SemanticChecker failed: {e}")
 
         # Tool validator (sentence-transformers)
         self.tool_validator = None
-        try:
-            from detection.tool_validator import ToolValidator
-            tv = ToolValidator()
-            if tv.model is not None:  # verify model actually loaded
-                self.tool_validator = tv
-                print("  [+] ToolValidator loaded")
-            else:
-                print("  [-] ToolValidator: model failed to load")
-        except Exception as e:
-            print(f"  [-] ToolValidator failed: {e}")
+        if active_modules is None or "tool" in active_modules:
+            try:
+                from detection.tool_validator import ToolValidator
+                tv = ToolValidator(model=self.shared_semantic_model)
+                if tv.model is not None:  # verify model actually loaded
+                    self.tool_validator = tv
+                    print("  [+] ToolValidator loaded")
+                else:
+                    print("  [-] ToolValidator: model failed to load")
+            except Exception as e:
+                print(f"  [-] ToolValidator failed: {e}")
 
         # NLI-based modules
         self.factual_grounder = None
@@ -82,6 +138,7 @@ class DetectionPipeline:
 
         self.weights = LOCALIZATION_SIGNAL_WEIGHTS
         self._history = []  # tracks previous steps for contradiction detection
+        self._detection_history = []  # tracks step detection results for localizer
 
         # Count how many models actually loaded
         self._loaded_count = sum(1 for m in [
@@ -92,46 +149,89 @@ class DetectionPipeline:
         if self._loaded_count == 0:
             print("  WARNING: No models loaded! Install: pip install sentence-transformers transformers torch")
 
-        print("Initializing Hybrid Layers...")
-        try:
-            from attribution.llama_classifier import LlamaClassifier
-            self.llama_classifier = LlamaClassifier()
-            print("  [+] LlamaClassifier initialized")
-        except Exception as e:
-            print(f"  [-] LlamaClassifier failed: {e}")
-            self.llama_classifier = None
+        self.llama_classifier = None
+        if enable_layer2:
+            if DetectionPipeline._cached_llama_classifier is not None:
+                self.llama_classifier = DetectionPipeline._cached_llama_classifier
+            else:
+                print("Initializing Hybrid Layers...")
+                try:
+                    from attribution.llama_classifier import LlamaClassifier
+                    self.llama_classifier = LlamaClassifier()
+                    DetectionPipeline._cached_llama_classifier = self.llama_classifier
+                    print("  [+] LlamaClassifier initialized")
+                except Exception as e:
+                    print(f"  [-] LlamaClassifier failed: {e}")
             
-        try:
-            from attribution.nemotron_judge import NemotronJudge
-            self.nemotron_judge = NemotronJudge()
-            print("  [+] NemotronJudge initialized")
-        except Exception as e:
-            print(f"  [-] NemotronJudge failed: {e}")
-            self.nemotron_judge = None
+        self.nemotron_judge = None
+        if enable_layer3:
+            if DetectionPipeline._cached_nemotron_judge is not None:
+                self.nemotron_judge = DetectionPipeline._cached_nemotron_judge
+            else:
+                try:
+                    from attribution.nemotron_judge import NemotronJudge
+                    self.nemotron_judge = NemotronJudge()
+                    DetectionPipeline._cached_nemotron_judge = self.nemotron_judge
+                    print("  [+] NemotronJudge initialized")
+                except Exception as e:
+                    print(f"  [-] NemotronJudge failed: {e}")
+
+        if DetectionPipeline._cached_causal_classifier is not None:
+            self.causal_classifier = DetectionPipeline._cached_causal_classifier
+        else:
+            try:
+                from attribution.causal_classifier import CausalClassifier
+                self.causal_classifier = CausalClassifier()
+                DetectionPipeline._cached_causal_classifier = self.causal_classifier
+                print("  [+] CausalClassifier initialized")
+            except Exception as e:
+                print(f"  [-] CausalClassifier failed: {e}")
+                self.causal_classifier = None
+
+        if DetectionPipeline._cached_localizer is not None:
+            self.localizer = DetectionPipeline._cached_localizer
+        else:
+            try:
+                from attribution.localizer import Localizer
+                self.localizer = Localizer()
+                DetectionPipeline._cached_localizer = self.localizer
+                print("  [+] Localizer initialized")
+            except Exception as e:
+                print(f"  [-] Localizer failed: {e}")
+                self.localizer = None
 
     def _load_nli_modules(self):
-        """Lazy-loads NLI-based modules with model health verification."""
-        try:
-            from detection.factual_grounding import FactualGrounder
-            fg = FactualGrounder()
-            if fg.model is not None:  # verify model actually loaded
-                self.factual_grounder = fg
-                print("  [+] FactualGrounder loaded")
-            else:
-                print("  [-] FactualGrounder: model failed to load")
-        except Exception as e:
-            print(f"  [-] FactualGrounder failed: {e}")
+        """Lazy-loads NLI-based modules using preloaded shared models."""
+        if self.active_modules is None or "factual" in self.active_modules:
+            try:
+                from detection.factual_grounding import FactualGrounder
+                fg = FactualGrounder(
+                    model=self.shared_nli_model,
+                    tokenizer=self.shared_nli_tokenizer,
+                    embedding_model=self.shared_semantic_model
+                )
+                if fg.model is not None:  # verify model actually loaded
+                    self.factual_grounder = fg
+                    print("  [+] FactualGrounder loaded")
+                else:
+                    print("  [-] FactualGrounder: model failed to load")
+            except Exception as e:
+                print(f"  [-] FactualGrounder failed: {e}")
 
-        try:
-            from detection.contradiction import ContradictionDetector
-            cd = ContradictionDetector()
-            if cd.model is not None:  # verify model actually loaded
-                self.contradiction_detector = cd
-                print("  [+] ContradictionDetector loaded")
-            else:
-                print("  [-] ContradictionDetector: model failed to load")
-        except Exception as e:
-            print(f"  [-] ContradictionDetector failed: {e}")
+        if self.active_modules is None or "contradiction" in self.active_modules:
+            try:
+                from detection.contradiction import ContradictionDetector
+                cd = ContradictionDetector(
+                    model=self.shared_nli_model,
+                    tokenizer=self.shared_nli_tokenizer
+                )
+                if cd.model is not None:  # verify model actually loaded
+                    self.contradiction_detector = cd
+                    print("  [+] ContradictionDetector loaded")
+                else:
+                    print("  [-] ContradictionDetector: model failed to load")
+            except Exception as e:
+                print(f"  [-] ContradictionDetector failed: {e}")
 
     def _slm_detect(self, step: dict) -> dict:
         """
@@ -152,56 +252,77 @@ class DetectionPipeline:
         # ONLY uses observable fields — no ground truth leakage
         step_data = self._normalize_step(step)
 
-        # ── Run all 4 detectors ─────────────────────────────────────────
-        signals = {}
-        detector_results = {}
+        # Generate a unique key for this step based on observable inputs and active modules
+        cache_key = (
+            step.get("action", ""),
+            step.get("tool_input", ""),
+            step.get("tool_output", ""),
+            step.get("agent_reasoning", ""),
+            len(self._history),
+            tuple(self.active_modules) if self.active_modules is not None else None
+        )
 
-        # 1. Semantic similarity (reasoning vs tool_output)
-        if self.semantic_checker:
-            sem_result = self.semantic_checker.check(step_data)
-            signals["semantic_similarity"] = sem_result.get(
-                "detection_signals", {}
-            ).get("semantic_similarity")
-            detector_results["semantic"] = sem_result
+        if cache_key in DetectionPipeline._step_signals_cache:
+            signals_cached, detector_results_cached = DetectionPipeline._step_signals_cache[cache_key]
+            # Make copies to prevent shared mutations
+            signals = dict(signals_cached)
+            detector_results = {k: dict(v) for k, v in detector_results_cached.items()}
+            # Track history for contradiction detection
+            self._history.append(step_data)
         else:
-            detector_results["semantic"] = {}
+            # ── Run all 4 detectors ─────────────────────────────────────────
+            signals = {}
+            detector_results = {}
 
-        # 2. Tool claim validation
-        if self.tool_validator:
-            tool_result = self.tool_validator.validate(step_data)
-            signals["tool_claim_match"] = tool_result.get(
-                "detection_signals", {}
-            ).get("tool_claim_match")
-            detector_results["tool"] = tool_result
-        else:
-            detector_results["tool"] = {}
+            # 1. Semantic similarity (reasoning vs tool_output)
+            if self.semantic_checker:
+                sem_result = self.semantic_checker.check(step_data)
+                signals["semantic_similarity"] = sem_result.get(
+                    "detection_signals", {}
+                ).get("semantic_similarity")
+                detector_results["semantic"] = sem_result
+            else:
+                detector_results["semantic"] = {}
 
-        # 3. NLI factual grounding
-        if self.factual_grounder:
-            nli_result = self.factual_grounder.ground(step_data)
-            signals["nli_score"] = nli_result.get(
-                "detection_signals", {}
-            ).get("nli_score")
-            detector_results["nli"] = nli_result
-        else:
-            detector_results["nli"] = {}
-            signals["nli_score"] = None
+            # 2. Tool claim validation
+            if self.tool_validator:
+                tool_result = self.tool_validator.validate(step_data)
+                signals["tool_claim_match"] = tool_result.get(
+                    "detection_signals", {}
+                ).get("tool_claim_match")
+                detector_results["tool"] = tool_result
+            else:
+                detector_results["tool"] = {}
 
-        # 4. Contradiction with previous steps
-        if self.contradiction_detector and self._history:
-            contra_result = self.contradiction_detector.detect(
-                step_data, self._history
-            )
-            signals["contradiction_with_prev"] = contra_result.get(
-                "detection_signals", {}
-            ).get("contradiction_with_prev")
-            detector_results["contradiction"] = contra_result
-        else:
-            detector_results["contradiction"] = {}
-            signals["contradiction_with_prev"] = None
+            # 3. NLI factual grounding
+            if self.factual_grounder:
+                nli_result = self.factual_grounder.ground(step_data)
+                signals["nli_score"] = nli_result.get(
+                    "detection_signals", {}
+                ).get("nli_score")
+                detector_results["nli"] = nli_result
+            else:
+                detector_results["nli"] = {}
+                signals["nli_score"] = None
 
-        # Track history for contradiction detection
-        self._history.append(step_data)
+            # 4. Contradiction with previous steps
+            if self.contradiction_detector and self._history:
+                contra_result = self.contradiction_detector.detect(
+                    step_data, self._history
+                )
+                signals["contradiction_with_prev"] = contra_result.get(
+                    "detection_signals", {}
+                ).get("contradiction_with_prev")
+                detector_results["contradiction"] = contra_result
+            else:
+                detector_results["contradiction"] = {}
+                signals["contradiction_with_prev"] = None
+
+            # Track history for contradiction detection
+            self._history.append(step_data)
+
+            # Save to class-level cache
+            DetectionPipeline._step_signals_cache[cache_key] = (dict(signals), {k: dict(v) for k, v in detector_results.items()})
 
         # ── Tuned Hybrid Fusion ─────────────────────────────────────────
         fused_score = self._fuse_signals(signals)
@@ -235,6 +356,15 @@ class DetectionPipeline:
 
         # Confidence = fused score
         confidence = round(min(max(fused_score, 0.0), 1.0), 4)
+
+        # Apply temperature scaling if T != 1.0
+        import math
+        T = getattr(self, "calibration_temperature", 1.0)
+        if T != 1.0:
+            fs_clamped = min(max(fused_score, 1e-7), 1.0 - 1e-7)
+            logit = math.log(fs_clamped / (1.0 - fs_clamped))
+            calibrated = 1.0 / (1.0 + math.exp(-logit / T))
+            confidence = round(min(max(calibrated, 0.0), 1.0), 4)
 
         # Determine type using multi-signal classification
         hallucination_type = None
@@ -275,21 +405,33 @@ class DetectionPipeline:
         Layer 2: Llama 8B classifier (always runs)
         Layer 3: Nemotron judge (only if confidence < 0.70)
         """
+        import time
+        t_total_start = time.perf_counter()
+
         # Layer 1: Run SLM ensemble
+        t_l1_start = time.perf_counter()
         slm_result = self._slm_detect(step)
-        
+        t_l1_end = time.perf_counter()
+        t_layer1_ms = (t_l1_end - t_l1_start) * 1000.0
+
         # Layer 2: Llama classification
+        t_l2_start = time.perf_counter()
         llama_result = None
         if self.llama_classifier:
             llama_result = self.llama_classifier.classify(step, slm_result)
-            
+        t_l2_end = time.perf_counter()
+        t_layer2_ms = ((t_l2_end - t_l2_start) * 1000.0) if self.llama_classifier else 0.0
+
         primary_confidence = llama_result.get("confidence", slm_result.get("confidence", 0.0)) if llama_result else slm_result.get("confidence", 0.0)
-        
+
         # Layer 3: Nemotron verification (conditional)
+        t_l3_start = time.perf_counter()
         nemotron_result = None
         if self.nemotron_judge:
             nemotron_result = self.nemotron_judge.judge(step, primary_confidence)
-            
+        t_l3_end = time.perf_counter()
+        t_layer3_ms = ((t_l3_end - t_l3_start) * 1000.0) if nemotron_result else 0.0
+
         # Final decision fusing layers
         if nemotron_result:
             # Nemotron was called — use weighted average
@@ -301,11 +443,42 @@ class DetectionPipeline:
             final_confidence = primary_confidence
             final_detected = slm_result.get("hallucination_detected", False)
             final_type = llama_result.get("causal_label") if llama_result else slm_result.get("hallucination_type_predicted")
-            
+
         # Severity from base SLM
         severity = slm_result.get("severity")
         if final_detected and not severity:
             severity = self._determine_severity(final_confidence, final_detected)
+
+        # Attribution layer (Localizer + CausalClassifier) timing
+        t_attr_start = time.perf_counter()
+        if self.causal_classifier and final_detected:
+            temp_res = {
+                "hallucination_detected": final_detected,
+                "confidence": final_confidence,
+                "hallucination_type": final_type,
+            }
+            _ = self.causal_classifier.classify(step, temp_res)
+
+        if self.localizer:
+            step_num = step.get("step", 0)
+            self._detection_history.append({
+                "step": step_num,
+                "detection_signals": slm_result.get("detection_signals", {}),
+            })
+            _ = self.localizer.localize(self._detection_history)
+        t_attr_end = time.perf_counter()
+        t_attribution_ms = (t_attr_end - t_attr_start) * 1000.0
+
+        t_total_end = time.perf_counter()
+        t_total_ms = (t_total_end - t_total_start) * 1000.0
+
+        latency_breakdown = {
+            "t_layer1_ms": round(t_layer1_ms, 2),
+            "t_layer2_ms": round(t_layer2_ms, 2),
+            "t_layer3_ms": round(t_layer3_ms, 2),
+            "t_attribution_ms": round(t_attribution_ms, 2),
+            "t_total_ms": round(t_total_ms, 2)
+        }
 
         return {
             "hallucination_detected": final_detected,
@@ -320,12 +493,80 @@ class DetectionPipeline:
                 "slm_ensemble": True,
                 "llama_8b": self.llama_classifier is not None,
                 "nemotron_340b": nemotron_result is not None
-            }
+            },
+            "latency_breakdown": latency_breakdown
         }
+
+    def calibrate_temperature(self, val_trajectories: list) -> float:
+        """
+        Optimizes calibration_temperature (T) on validation trajectories using Scipy.
+        Minimizes Negative Log-Likelihood (NLL).
+        """
+        import math
+        from scipy.optimize import minimize_scalar
+
+        # Gather raw fused scores and true labels
+        fused_scores = []
+        labels = []
+        
+        # Store the original temp to restore later
+        orig_temp = self.calibration_temperature
+        # Temporarily set to 1.0 to get raw fused_score as confidence
+        self.calibration_temperature = 1.0
+        
+        for traj in val_trajectories:
+            self.reset_history()
+            for step in traj.get("steps", []):
+                res = self._slm_detect(step)
+                # Clamp confidence to compute logit
+                conf = min(max(res['confidence'], 1e-7), 1.0 - 1e-7)
+                logit = math.log(conf / (1.0 - conf))
+                
+                # Ground truth label is step.get("ground_truth_label", False)
+                label = 1 if step.get("ground_truth_label", False) else 0
+                
+                fused_scores.append(logit)
+                labels.append(label)
+                
+        # Restore original temperature
+        self.calibration_temperature = orig_temp
+        
+        if not fused_scores:
+            print("No validation steps found for temperature calibration.")
+            return orig_temp
+
+        # Objective function: compute NLL for a given T
+        def objective(t):
+            if t <= 0:
+                return 1e9
+            nll = 0.0
+            for logit, label in zip(fused_scores, labels):
+                p = 1.0 / (1.0 + math.exp(-logit / t))
+                p = min(max(p, 1e-7), 1.0 - 1e-7)
+                if label == 1:
+                    nll -= math.log(p)
+                else:
+                    nll -= math.log(1.0 - p)
+            return nll / len(fused_scores)
+
+        # Minimize NLL for T in bounds e.g. [0.1, 10.0]
+        res = minimize_scalar(objective, bounds=(0.1, 10.0), method='bounded')
+        optimal_t = float(res.x)
+        print(f"Optimal calibration temperature T: {optimal_t:.4f} (NLL: {res.fun:.4f})")
+        
+        # Update current temperature
+        self.calibration_temperature = optimal_t
+        
+        # Also update global config
+        import config
+        config.CONFIG.thresholds.calibration_temperature = optimal_t
+        
+        return optimal_t
 
     def reset_history(self):
         """Clears step history. Call between trajectories."""
         self._history = []
+        self._detection_history = []
 
     def _normalize_step(self, step: dict) -> dict:
         """

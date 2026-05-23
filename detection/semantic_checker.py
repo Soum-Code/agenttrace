@@ -22,12 +22,15 @@ class SemanticChecker:
      to identify potential hallucinations.
     """
 
-    def __init__(self):
+    def __init__(self, model=None):
         """
-        Initializes the SentenceTransformer model using the name provided in config.
+        Initializes the SentenceTransformer model.
         """
         try:
-            self.model = SentenceTransformer(config.SEMANTIC_MODEL_NAME)
+            if model is not None:
+                self.model = model
+            else:
+                self.model = SentenceTransformer(config.SEMANTIC_MODEL_NAME)
             self.threshold = config.SEMANTIC_SIMILARITY_THRESHOLD
         except Exception as e:
             print(f"Error loading semantic model: {e}")

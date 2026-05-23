@@ -14,6 +14,9 @@ Target: EMNLP 2026 / ICLR 2027
 
 import os
 os.environ["HF_HUB_DISABLE_IMPLICIT_TOKEN"] = "1"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 from pathlib import Path
@@ -238,6 +241,7 @@ class ThresholdConfig:
         }
     )
     drift_window: int = 3                # number of past steps to compare for drift
+    calibration_temperature: float = 1.5
 
 
 # ════════════════════════════════════════════════════════════
@@ -630,6 +634,7 @@ CONTRADICTION_WINDOW_SIZE = CONFIG.thresholds.drift_window
 CAUSAL_MODEL_NAME = os.path.join(CONFIG.paths.project_root, "models", "causal_classifier_finetuned")
 CAUSAL_LABELS = CONFIG.classifier.categories
 CAUSAL_CONFIDENCE_THRESHOLD = CONFIG.thresholds.confidence_cutoff
+CALIBRATION_TEMPERATURE = CONFIG.thresholds.calibration_temperature
 LOCALIZATION_SIGNAL_WEIGHTS = {
     "semantic_similarity": 0.25,
     "tool_claim_match": 0.20,

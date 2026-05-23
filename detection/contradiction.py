@@ -27,12 +27,16 @@ class ContradictionDetector:
 
     _LABEL_MAP = {"contradiction": 0, "entailment": 1, "neutral": 2}
 
-    def __init__(self):
+    def __init__(self, model=None, tokenizer=None):
         """Loads the NLI model for inter-step contradiction detection."""
         try:
-            self.tokenizer = AutoTokenizer.from_pretrained(config.NLI_MODEL_NAME)
-            self.model = AutoModelForSequenceClassification.from_pretrained(config.NLI_MODEL_NAME)
-            self.model.eval()
+            if model is not None:
+                self.model = model
+                self.tokenizer = tokenizer
+            else:
+                self.tokenizer = AutoTokenizer.from_pretrained(config.NLI_MODEL_NAME)
+                self.model = AutoModelForSequenceClassification.from_pretrained(config.NLI_MODEL_NAME)
+                self.model.eval()
             self.window_size = config.CONTRADICTION_WINDOW_SIZE
             self.contradiction_threshold = config.NLI_CONTRADICTION_THRESHOLD
         except Exception as e:

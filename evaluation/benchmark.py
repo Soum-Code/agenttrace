@@ -28,6 +28,7 @@ from evaluation.metrics import (
     false_positive_rate,
     average_latency_ms,
     compute_all_metrics,
+    expected_calibration_error,
 )
 
 # Import real detector pipeline (lazy — only used when explicitly passed)
@@ -203,6 +204,14 @@ class BenchmarkRunner:
         all_predicted_types = []    # predicted hallucination types per step
         all_true_types = []         # true hallucination types per step
         all_latencies = []          # detection time per step
+        all_confidences = []
+        all_step_ground_truths = []
+        all_t_layer1 = []
+        all_t_layer2 = []
+        all_t_layer3 = []
+        all_t_attribution = []
+        all_t_total = []
+        nemotron_calls_count = 0
         self.per_trajectory_results = []
 
         for i, traj in enumerate(self.trajectories):
@@ -227,6 +236,20 @@ class BenchmarkRunner:
                 t1 = time.perf_counter()
                 latency_ms = (t1 - t0) * 1000.0
                 all_latencies.append(latency_ms)
+
+                breakdown = detection.get("latency_breakdown", {})
+                all_t_layer1.append(breakdown.get("t_layer1_ms", latency_ms))
+                all_t_layer2.append(breakdown.get("t_layer2_ms", 0.0))
+                all_t_layer3.append(breakdown.get("t_layer3_ms", 0.0))
+                all_t_attribution.append(breakdown.get("t_attribution_ms", 0.0))
+                all_t_total.append(breakdown.get("t_total_ms", latency_ms))
+                if detection.get("nemotron_called", False):
+                    nemotron_calls_count += 1
+
+                conf = detection.get("confidence", 0.0)
+                all_confidences.append(conf)
+                gt_label = 1 if step.get("ground_truth_label", False) else 0
+                all_step_ground_truths.append(gt_label)
 
                 # Store detection result in the step
                 step["detection_result"] = detection
@@ -266,8 +289,8 @@ class BenchmarkRunner:
             all_total_steps += total
 
             # Progress indicator
-            if (i + 1) % 50 == 0 or i == len(self.trajectories) - 1:
-                print(f"  [{i+1}/{len(self.trajectories)}] processed")
+            if (i + 1) % 10 == 0 or i == len(self.trajectories) - 1:
+                print(f"  [{i+1}/{len(self.trajectories)}] processed", flush=True)
 
         # ── Aggregate metrics across all trajectories ──
 
@@ -294,6 +317,14 @@ class BenchmarkRunner:
 
         # Latency stats
         latency_stats = average_latency_ms(all_latencies)
+        l1_stats = average_latency_ms(all_t_layer1)
+        l2_stats = average_latency_ms(all_t_layer2)
+        l3_stats = average_latency_ms(all_t_layer3)
+        attr_stats = average_latency_ms(all_t_attribution)
+        total_stats = average_latency_ms(all_t_total)
+
+        ece_res = expected_calibration_error(all_confidences, all_step_ground_truths)
+        ece = ece_res.get("expected_calibration_error", 0.0)
 
         # Precision@k (global)
         pak_results = {}
@@ -314,6 +345,7 @@ class BenchmarkRunner:
             "precision": round(avg_prec, 4),
             "recall": round(avg_rec, 4),
             "false_positive_rate": round(avg_fpr, 4),
+            "expected_calibration_error": ece,
 
             # Precision@k
             **pak_results,
@@ -324,6 +356,17 @@ class BenchmarkRunner:
 
             # Latency
             **latency_stats,
+            "t_layer1_avg_ms": l1_stats["avg_latency_ms"],
+            "t_layer1_p95_ms": l1_stats["p95_latency_ms"],
+            "t_layer2_avg_ms": l2_stats["avg_latency_ms"],
+            "t_layer2_p95_ms": l2_stats["p95_latency_ms"],
+            "t_layer3_avg_ms": l3_stats["avg_latency_ms"],
+            "t_layer3_p95_ms": l3_stats["p95_latency_ms"],
+            "t_attribution_avg_ms": attr_stats["avg_latency_ms"],
+            "t_attribution_p95_ms": attr_stats["p95_latency_ms"],
+            "t_total_avg_ms": total_stats["avg_latency_ms"],
+            "t_total_p95_ms": total_stats["p95_latency_ms"],
+            "nemotron_call_rate": round(nemotron_calls_count / all_total_steps, 4) if all_total_steps > 0 else 0.0,
 
             # Baselines
             "agenthallu_baseline": CONFIG.evaluation.agenthallu_baseline,
@@ -373,6 +416,7 @@ class BenchmarkRunner:
             f"| Recall | {r['recall']:.4f} | - |",
             f"| False Positive Rate | {r['false_positive_rate']:.4f} | - |",
             f"| Macro F1 | {r['macro_f1']:.4f} | - |",
+            f"| Expected Calibration Error (ECE) | {r.get('expected_calibration_error', 0.0):.4f} | - |",
             f"| Delta vs Baseline | **{r['delta_vs_baseline']:+.4f}** | - |",
             "",
             "### Precision@K",
@@ -405,13 +449,17 @@ class BenchmarkRunner:
 
         lines.extend([
             "",
-            "### Latency",
+            "### Latency Breakdown by Layer",
             "",
-            "| Metric | Value |",
-            "|---|---|",
-            f"| Avg Latency | {r['avg_latency_ms']:.2f} ms |",
-            f"| P95 Latency | {r['p95_latency_ms']:.2f} ms |",
-            f"| Max Latency | {r['max_latency_ms']:.2f} ms |",
+            "| Layer | Avg Latency (ms) | P95 Latency (ms) |",
+            "|---|---|---|",
+            f"| Layer 1 (SLM) | {r.get('t_layer1_avg_ms', 0.0):.2f} ms | {r.get('t_layer1_p95_ms', 0.0):.2f} ms |",
+            f"| Layer 2 (Llama) | {r.get('t_layer2_avg_ms', 0.0):.2f} ms | {r.get('t_layer2_p95_ms', 0.0):.2f} ms |",
+            f"| Layer 3 (Nemotron) | {r.get('t_layer3_avg_ms', 0.0):.2f} ms | {r.get('t_layer3_p95_ms', 0.0):.2f} ms |",
+            f"| Attribution | {r.get('t_attribution_avg_ms', 0.0):.2f} ms | {r.get('t_attribution_p95_ms', 0.0):.2f} ms |",
+            f"| Total | {r.get('t_total_avg_ms', 0.0):.2f} ms | {r.get('t_total_p95_ms', 0.0):.2f} ms |",
+            "",
+            f"**Nemotron Call Rate:** {r.get('nemotron_call_rate', 0.0)*100:.2f}%",
             "",
         ])
 
@@ -508,6 +556,18 @@ class BenchmarkRunner:
                 "macro_f1": self.results["macro_f1"],
                 "avg_latency_ms": self.results["avg_latency_ms"],
                 "delta_vs_baseline": self.results["delta_vs_baseline"],
+                "expected_calibration_error": self.results.get("expected_calibration_error", 0.0),
+                "t_layer1_avg_ms": self.results.get("t_layer1_avg_ms", 0.0),
+                "t_layer1_p95_ms": self.results.get("t_layer1_p95_ms", 0.0),
+                "t_layer2_avg_ms": self.results.get("t_layer2_avg_ms", 0.0),
+                "t_layer2_p95_ms": self.results.get("t_layer2_p95_ms", 0.0),
+                "t_layer3_avg_ms": self.results.get("t_layer3_avg_ms", 0.0),
+                "t_layer3_p95_ms": self.results.get("t_layer3_p95_ms", 0.0),
+                "t_attribution_avg_ms": self.results.get("t_attribution_avg_ms", 0.0),
+                "t_attribution_p95_ms": self.results.get("t_attribution_p95_ms", 0.0),
+                "t_total_avg_ms": self.results.get("t_total_avg_ms", 0.0),
+                "t_total_p95_ms": self.results.get("t_total_p95_ms", 0.0),
+                "nemotron_call_rate": self.results.get("nemotron_call_rate", 0.0),
             })
 
             # Log F1 per category

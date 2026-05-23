@@ -1,0 +1,16 @@
+\begin{table*}[t]
+\centering
+\caption{Qualitative Error Analysis: Representative False Positives and False Negatives}
+\begin{tabular}{lp{6cm}lp{3cm}p{5cm}}
+\toprule
+ID & Step Reasoning & Type & Dominant Signal & Error Cause (Rule-Based) \\
+\midrule
+traj_071\_5 & Multiplying by 100 gives me the percentage. & FP & Tool Claim Mismatch & NLI model flagged benign semantic mismatch as factual contradiction. \\
+traj_109\_5 & The fund has 5,000 outstanding shares. I'm dividing the net asset value by the number of shares t... & FP & Tool Claim Mismatch & NLI model flagged benign semantic mismatch as factual contradiction. \\
+traj_133\_6 & Just making sure the calculator works as intended. I don't need it for the main task. & FP & Tool Claim Mismatch & NLI model flagged benign semantic mismatch as factual contradiction. \\
+traj_011\_3 & The population of Luxembourg City is around 129,000. This tool output confirms that Luxembourg Ci... & FN & High Semantic Similarity (0.90) & The hallucination was linguistically subtle or used matching terminology, bypassing the SLM ensemble. \\
+traj_175\_4 & Approximately 15\% of Luxembourg's population is over 65. I will now calculate 15\% of the popula... & FN & High Semantic Similarity (0.84) & The hallucination was linguistically subtle or used matching terminology, bypassing the SLM ensemble. \\
+traj_012\_7 & The user might need to know the currency for some reason. The currency in Japan is the Japanese Yen. & FN & High Semantic Similarity (0.83) & The hallucination was linguistically subtle or used matching terminology, bypassing the SLM ensemble. \\
+\bottomrule
+\end{tabular}
+\end{table*}

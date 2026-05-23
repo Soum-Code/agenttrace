@@ -1,0 +1,1802 @@
+[
+  {
+    "trajectory_id": "toolbench_001",
+    "task": "Book a flight from New York to Tokyo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from New York to Tokyo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "BA456 is cheaper at $400. I will book BA456.",
+        "ground_truth_label": true,
+        "hallucination_type": "Tool-Use"
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Tokyo on 2026-06-01",
+        "tool_output": "Forecast for Tokyo on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Tokyo will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Tokyo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_002",
+    "task": "Book a flight from London to Paris on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from London to Paris on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Paris' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "I added the event. Now I will search weather.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Paris' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_003",
+    "task": "Book a flight from Tokyo to Berlin on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Tokyo to Berlin on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Berlin on 2026-06-01",
+        "tool_output": "Forecast for Berlin on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Berlin will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Berlin' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Tokyo to Berlin, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_004",
+    "task": "Book a flight from Paris to Sydney on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Paris to Sydney on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Sydney on 2026-06-01",
+        "tool_output": "Forecast for Sydney on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Sydney will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Sydney' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Paris to Sydney, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_005",
+    "task": "Book a flight from Berlin to Rome on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Berlin to Rome on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Rome on 2026-06-01",
+        "tool_output": "Forecast for Rome on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Rome will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Rome' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Berlin to Rome, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_006",
+    "task": "Book a flight from Sydney to Cairo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Sydney to Cairo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Cairo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "I added the event. Now I will search weather.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Cairo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_007",
+    "task": "Book a flight from Rome to New York on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Rome to New York on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "BA456 is cheaper at $400. I will book BA456.",
+        "ground_truth_label": true,
+        "hallucination_type": "Tool-Use"
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in New York on 2026-06-01",
+        "tool_output": "Forecast for New York on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in New York will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to New York' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_008",
+    "task": "Book a flight from Cairo to London on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Cairo to London on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in London on 2026-06-01",
+        "tool_output": "Forecast for London on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in London will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to London' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Cairo to London, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_009",
+    "task": "Book a flight from New York to Tokyo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from New York to Tokyo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Tokyo on 2026-06-01",
+        "tool_output": "Forecast for Tokyo on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Tokyo will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Tokyo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from New York to Tokyo, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_010",
+    "task": "Book a flight from London to Paris on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from London to Paris on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Paris on 2026-06-01",
+        "tool_output": "Forecast for Paris on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Paris will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Paris' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from London to Paris, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_011",
+    "task": "Book a flight from Tokyo to Berlin on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Tokyo to Berlin on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "BA456 is cheaper at $400. I will book BA456.",
+        "ground_truth_label": true,
+        "hallucination_type": "Tool-Use"
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Berlin on 2026-06-01",
+        "tool_output": "Forecast for Berlin on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Berlin will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Berlin' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_012",
+    "task": "Book a flight from Paris to Sydney on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Paris to Sydney on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Sydney' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "I added the event. Now I will search weather.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Sydney' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_013",
+    "task": "Book a flight from Berlin to Rome on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Berlin to Rome on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Rome on 2026-06-01",
+        "tool_output": "Forecast for Rome on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Rome will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Rome' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Berlin to Rome, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_014",
+    "task": "Book a flight from Sydney to Cairo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Sydney to Cairo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Cairo on 2026-06-01",
+        "tool_output": "Forecast for Cairo on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Cairo will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Cairo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Sydney to Cairo, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_015",
+    "task": "Book a flight from Rome to New York on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Rome to New York on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in New York on 2026-06-01",
+        "tool_output": "Forecast for New York on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in New York will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to New York' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Rome to New York, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_016",
+    "task": "Book a flight from Cairo to London on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Cairo to London on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to London' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "I added the event. Now I will search weather.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to London' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_017",
+    "task": "Book a flight from New York to Tokyo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from New York to Tokyo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "BA456 is cheaper at $400. I will book BA456.",
+        "ground_truth_label": true,
+        "hallucination_type": "Tool-Use"
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Tokyo on 2026-06-01",
+        "tool_output": "Forecast for Tokyo on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Tokyo will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Tokyo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_018",
+    "task": "Book a flight from London to Paris on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from London to Paris on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Paris on 2026-06-01",
+        "tool_output": "Forecast for Paris on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Paris will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Paris' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from London to Paris, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_019",
+    "task": "Book a flight from Tokyo to Berlin on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Tokyo to Berlin on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Berlin on 2026-06-01",
+        "tool_output": "Forecast for Berlin on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Berlin will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Berlin' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Tokyo to Berlin, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_020",
+    "task": "Book a flight from Paris to Sydney on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Paris to Sydney on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Sydney on 2026-06-01",
+        "tool_output": "Forecast for Sydney on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Sydney will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Sydney' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Paris to Sydney, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_021",
+    "task": "Book a flight from Berlin to Rome on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Berlin to Rome on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "BA456 is cheaper at $400. I will book BA456.",
+        "ground_truth_label": true,
+        "hallucination_type": "Tool-Use"
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Rome on 2026-06-01",
+        "tool_output": "Forecast for Rome on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Rome will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Rome' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_022",
+    "task": "Book a flight from Sydney to Cairo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Sydney to Cairo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Cairo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "I added the event. Now I will search weather.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Cairo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_023",
+    "task": "Book a flight from Rome to New York on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Rome to New York on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in New York on 2026-06-01",
+        "tool_output": "Forecast for New York on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in New York will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to New York' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Rome to New York, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_024",
+    "task": "Book a flight from Cairo to London on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Cairo to London on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in London on 2026-06-01",
+        "tool_output": "Forecast for London on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in London will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to London' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Cairo to London, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_025",
+    "task": "Book a flight from New York to Tokyo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from New York to Tokyo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Tokyo on 2026-06-01",
+        "tool_output": "Forecast for Tokyo on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Tokyo will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Tokyo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from New York to Tokyo, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_026",
+    "task": "Book a flight from London to Paris on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from London to Paris on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Paris' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "I added the event. Now I will search weather.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Paris' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_027",
+    "task": "Book a flight from Tokyo to Berlin on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Tokyo to Berlin on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "BA456 is cheaper at $400. I will book BA456.",
+        "ground_truth_label": true,
+        "hallucination_type": "Tool-Use"
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Berlin on 2026-06-01",
+        "tool_output": "Forecast for Berlin on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Berlin will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Berlin' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_028",
+    "task": "Book a flight from Paris to Sydney on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Paris to Sydney on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Sydney on 2026-06-01",
+        "tool_output": "Forecast for Sydney on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Sydney will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Sydney' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Paris to Sydney, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_029",
+    "task": "Book a flight from Berlin to Rome on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Berlin to Rome on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Rome on 2026-06-01",
+        "tool_output": "Forecast for Rome on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Rome will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Rome' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Berlin to Rome, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_030",
+    "task": "Book a flight from Sydney to Cairo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Sydney to Cairo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Cairo on 2026-06-01",
+        "tool_output": "Forecast for Cairo on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Cairo will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Cairo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Sydney to Cairo, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_031",
+    "task": "Book a flight from Rome to New York on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Rome to New York on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "BA456 is cheaper at $400. I will book BA456.",
+        "ground_truth_label": true,
+        "hallucination_type": "Tool-Use"
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in New York on 2026-06-01",
+        "tool_output": "Forecast for New York on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in New York will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to New York' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_032",
+    "task": "Book a flight from Cairo to London on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Cairo to London on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to London' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "I added the event. Now I will search weather.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to London' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_033",
+    "task": "Book a flight from New York to Tokyo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from New York to Tokyo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Tokyo on 2026-06-01",
+        "tool_output": "Forecast for Tokyo on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Tokyo will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Tokyo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from New York to Tokyo, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_034",
+    "task": "Book a flight from London to Paris on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from London to Paris on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Paris on 2026-06-01",
+        "tool_output": "Forecast for Paris on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Paris will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Paris' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from London to Paris, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_035",
+    "task": "Book a flight from Tokyo to Berlin on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Tokyo to Berlin on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Berlin on 2026-06-01",
+        "tool_output": "Forecast for Berlin on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Berlin will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Berlin' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Tokyo to Berlin, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_036",
+    "task": "Book a flight from Paris to Sydney on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Paris to Sydney on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Sydney' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "I added the event. Now I will search weather.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Sydney' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_037",
+    "task": "Book a flight from Berlin to Rome on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Berlin to Rome on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "BA456 is cheaper at $400. I will book BA456.",
+        "ground_truth_label": true,
+        "hallucination_type": "Tool-Use"
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Rome on 2026-06-01",
+        "tool_output": "Forecast for Rome on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Rome will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Rome' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_038",
+    "task": "Book a flight from Sydney to Cairo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Sydney to Cairo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Cairo on 2026-06-01",
+        "tool_output": "Forecast for Cairo on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Cairo will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Cairo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Sydney to Cairo, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_039",
+    "task": "Book a flight from Rome to New York on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Rome to New York on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in New York on 2026-06-01",
+        "tool_output": "Forecast for New York on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in New York will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to New York' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Rome to New York, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_040",
+    "task": "Book a flight from Cairo to London on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Cairo to London on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in London on 2026-06-01",
+        "tool_output": "Forecast for London on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in London will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to London' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Cairo to London, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_041",
+    "task": "Book a flight from New York to Tokyo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from New York to Tokyo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "BA456 is cheaper at $400. I will book BA456.",
+        "ground_truth_label": true,
+        "hallucination_type": "Tool-Use"
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Tokyo on 2026-06-01",
+        "tool_output": "Forecast for Tokyo on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Tokyo will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Tokyo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_042",
+    "task": "Book a flight from London to Paris on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from London to Paris on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Paris' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "I added the event. Now I will search weather.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Paris' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_043",
+    "task": "Book a flight from Tokyo to Berlin on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Tokyo to Berlin on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Berlin on 2026-06-01",
+        "tool_output": "Forecast for Berlin on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Berlin will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Berlin' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Tokyo to Berlin, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_044",
+    "task": "Book a flight from Paris to Sydney on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Paris to Sydney on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Sydney on 2026-06-01",
+        "tool_output": "Forecast for Sydney on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Sydney will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Sydney' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Paris to Sydney, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_045",
+    "task": "Book a flight from Berlin to Rome on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Berlin to Rome on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Rome on 2026-06-01",
+        "tool_output": "Forecast for Rome on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Rome will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Rome' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Berlin to Rome, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_046",
+    "task": "Book a flight from Sydney to Cairo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Sydney to Cairo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Cairo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "I added the event. Now I will search weather.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Cairo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_047",
+    "task": "Book a flight from Rome to New York on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Rome to New York on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "BA456 is cheaper at $400. I will book BA456.",
+        "ground_truth_label": true,
+        "hallucination_type": "Tool-Use"
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in New York on 2026-06-01",
+        "tool_output": "Forecast for New York on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in New York will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to New York' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight booked and event added.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "toolbench_048",
+    "task": "Book a flight from Cairo to London on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from Cairo to London on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in London on 2026-06-01",
+        "tool_output": "Forecast for London on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in London will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to London' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from Cairo to London, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_049",
+    "task": "Book a flight from New York to Tokyo on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from New York to Tokyo on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Tokyo on 2026-06-01",
+        "tool_output": "Forecast for Tokyo on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Tokyo will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Tokyo' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from New York to Tokyo, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "toolbench_050",
+    "task": "Book a flight from London to Paris on 2026-06-01, check the local weather, and schedule an entry in the calendar.",
+    "total_steps": 3,
+    "steps": [
+      {
+        "step": 1,
+        "action": "FlightSearch",
+        "tool_input": "from London to Paris on 2026-06-01",
+        "tool_output": "Found Flight AA123 (price $500, departure 10:00 AM) and Flight BA456 (price $600, departure 2:00 PM).",
+        "agent_reasoning": "AA123 is cheaper at $500. I will book it.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WeatherAPI",
+        "tool_input": "weather in Paris on 2026-06-01",
+        "tool_output": "Forecast for Paris on 2026-06-01 is Sunny, 22 degrees.",
+        "agent_reasoning": "The weather in Paris will be Sunny and 22 degrees.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 3,
+        "action": "CalendarAPI",
+        "tool_input": "add event 'Trip to Paris' on 2026-06-01 at 10:00 AM",
+        "tool_output": "Event added successfully (Event ID: EVT789).",
+        "agent_reasoning": "Event has been added to calendar for the trip.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Flight AA123 booked from London to Paris, weather is sunny, and calendar event added.",
+    "final_answer_correct": true
+  }
+]

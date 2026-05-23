@@ -36,3 +36,12 @@ indexes/
 
 # Models
 models/
+
+# Persistence
+data/trajectories.db
+
+# Scratch files
+scratch*.py
+
+# Dynamically generated static UI files
+ui/static/

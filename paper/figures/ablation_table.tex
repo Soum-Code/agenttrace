@@ -1,0 +1,17 @@
+\begin{table}[h]
+\centering
+\caption{Combinatorial Ablation Study of AgentTrace Configurations}
+\begin{tabular}{lccccc}
+\toprule
+Configuration & Loc Acc & Precision & Recall & Macro F1 & Avg Latency (ms) \\
+\midrule
+Semantic-only & 0.515 & 0.297 & 0.515 & 0.015 & 110.1 \\
+NLI-only & 0.193 & 0.174 & 0.193 & 0.029 & 272.4 \\
+Tool-validator-only & 0.897 & 0.365 & 0.897 & 0.033 & 184.7 \\
+Layer 1 SLM Ensemble & 0.675 & 0.286 & 0.675 & 0.045 & 1964.5 \\
+Layer 1 + Layer 2 Llama & 0.675 & 0.286 & 0.675 & 0.040 & 65.3 \\
+Layer 1 + Layer 3 Nemotron & 0.675 & 0.286 & 0.675 & 0.045 & 68.1 \\
+Full 3-Layer Cascade & 0.675 & 0.286 & 0.675 & 0.040 & 66.6 \\
+\bottomrule
+\end{tabular}
+\end{table}

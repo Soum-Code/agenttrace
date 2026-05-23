@@ -1545,7 +1545,7 @@ async function runAnalysis() {
     showToast('Please enter a meaningful task query (at least 5 characters).', 'red');
     return;
   }
-  const taskWords = task.split(/[ \t\r\n\v\f]+/).filter(w => w.length > 2);
+  const taskWords = task.split(/\\s+/).filter(w => w.length > 2);
   if (taskWords.length < 2 && !task.startsWith('SCENARIO: ')) {
     showToast('Query too short. Try describing an agent task like "search for X" or "calculate Y".', 'red');
     return;
@@ -1910,4 +1910,14 @@ window.addEventListener('load', () => {
 # ---------------------------------------------------------------------------
 # Inject base URL dynamically and render the component
 html_rendered = HTML_TEMPLATE.replace("__API_BASE__", API_BASE)
-components.html(html_rendered, height=1380, scrolling=True)
+
+# Write index.html dynamically to the static folder for serving
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+os.makedirs(static_dir, exist_ok=True)
+static_path = os.path.join(static_dir, "index.html")
+with open(static_path, "w", encoding="utf-8") as f:
+    f.write(html_rendered)
+
+# Render the static HTML via iframe component
+components.iframe("/app/static/index.html", height=1380, scrolling=True)
+

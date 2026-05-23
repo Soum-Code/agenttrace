@@ -28,12 +28,15 @@ class ToolValidator:
     against tool output via cosine similarity.
     """
 
-    def __init__(self):
+    def __init__(self, model=None):
         """
         Initializes the SentenceTransformer model for claim matching.
         """
         try:
-            self.model = SentenceTransformer(config.SEMANTIC_MODEL_NAME)
+            if model is not None:
+                self.model = model
+            else:
+                self.model = SentenceTransformer(config.SEMANTIC_MODEL_NAME)
             self.threshold = config.TOOL_CLAIM_SIMILARITY_THRESHOLD
             self.max_claims = config.MAX_CLAIMS_PER_REASONING
         except Exception as e:

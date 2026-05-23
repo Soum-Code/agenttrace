@@ -1,0 +1,1352 @@
+[
+  {
+    "trajectory_id": "heldout_001",
+    "task": "Solve multi-step puzzle trace number 1 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 1",
+        "tool_output": "Result for puzzle 1: parameter val is 0.",
+        "agent_reasoning": "Found value 0. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "0 * 2",
+        "tool_output": "0",
+        "agent_reasoning": "Moving to step 3 before calculating.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 1.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_002",
+    "task": "Solve multi-step puzzle trace number 2 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 2",
+        "tool_output": "Result for puzzle 2: parameter val is 10.",
+        "agent_reasoning": "Found value 10. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "10 * 2",
+        "tool_output": "20",
+        "agent_reasoning": "Result of search was 15 which is incorrect.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 2.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_003",
+    "task": "Solve multi-step puzzle trace number 3 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 3",
+        "tool_output": "Result for puzzle 3: parameter val is 20.",
+        "agent_reasoning": "Found value 20. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "20 * 2",
+        "tool_output": "40",
+        "agent_reasoning": "Double of 20 is 40.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 3 solved with final value 40.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_004",
+    "task": "Solve multi-step puzzle trace number 4 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 4",
+        "tool_output": "Result for puzzle 4: parameter val is 30.",
+        "agent_reasoning": "Found value 30. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "30 * 2",
+        "tool_output": "60",
+        "agent_reasoning": "Double of 30 is 60.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 4 solved with final value 60.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_005",
+    "task": "Solve multi-step puzzle trace number 5 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 5",
+        "tool_output": "Result for puzzle 5: parameter val is 40.",
+        "agent_reasoning": "Found value 40. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "40 * 2",
+        "tool_output": "80",
+        "agent_reasoning": "Double of 40 is 80.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 5 solved with final value 80.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_006",
+    "task": "Solve multi-step puzzle trace number 6 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 6",
+        "tool_output": "Result for puzzle 6: parameter val is 50.",
+        "agent_reasoning": "Found value 50. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "50 * 2",
+        "tool_output": "100",
+        "agent_reasoning": "Moving to step 3 before calculating.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 6.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_007",
+    "task": "Solve multi-step puzzle trace number 7 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 7",
+        "tool_output": "Result for puzzle 7: parameter val is 60.",
+        "agent_reasoning": "Found value 60. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "60 * 2",
+        "tool_output": "120",
+        "agent_reasoning": "Result of search was 65 which is incorrect.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 7.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_008",
+    "task": "Solve multi-step puzzle trace number 8 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 8",
+        "tool_output": "Result for puzzle 8: parameter val is 70.",
+        "agent_reasoning": "Found value 70. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "70 * 2",
+        "tool_output": "140",
+        "agent_reasoning": "Double of 70 is 140.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 8 solved with final value 140.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_009",
+    "task": "Solve multi-step puzzle trace number 9 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 9",
+        "tool_output": "Result for puzzle 9: parameter val is 80.",
+        "agent_reasoning": "Found value 80. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "80 * 2",
+        "tool_output": "160",
+        "agent_reasoning": "Double of 80 is 160.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 9 solved with final value 160.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_010",
+    "task": "Solve multi-step puzzle trace number 10 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 10",
+        "tool_output": "Result for puzzle 10: parameter val is 90.",
+        "agent_reasoning": "Found value 90. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "90 * 2",
+        "tool_output": "180",
+        "agent_reasoning": "Double of 90 is 180.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 10 solved with final value 180.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_011",
+    "task": "Solve multi-step puzzle trace number 11 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 11",
+        "tool_output": "Result for puzzle 11: parameter val is 100.",
+        "agent_reasoning": "Found value 100. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "100 * 2",
+        "tool_output": "200",
+        "agent_reasoning": "Moving to step 3 before calculating.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 11.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_012",
+    "task": "Solve multi-step puzzle trace number 12 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 12",
+        "tool_output": "Result for puzzle 12: parameter val is 110.",
+        "agent_reasoning": "Found value 110. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "110 * 2",
+        "tool_output": "220",
+        "agent_reasoning": "Result of search was 115 which is incorrect.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 12.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_013",
+    "task": "Solve multi-step puzzle trace number 13 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 13",
+        "tool_output": "Result for puzzle 13: parameter val is 120.",
+        "agent_reasoning": "Found value 120. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "120 * 2",
+        "tool_output": "240",
+        "agent_reasoning": "Double of 120 is 240.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 13 solved with final value 240.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_014",
+    "task": "Solve multi-step puzzle trace number 14 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 14",
+        "tool_output": "Result for puzzle 14: parameter val is 130.",
+        "agent_reasoning": "Found value 130. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "130 * 2",
+        "tool_output": "260",
+        "agent_reasoning": "Double of 130 is 260.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 14 solved with final value 260.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_015",
+    "task": "Solve multi-step puzzle trace number 15 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 15",
+        "tool_output": "Result for puzzle 15: parameter val is 140.",
+        "agent_reasoning": "Found value 140. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "140 * 2",
+        "tool_output": "280",
+        "agent_reasoning": "Double of 140 is 280.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 15 solved with final value 280.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_016",
+    "task": "Solve multi-step puzzle trace number 16 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 16",
+        "tool_output": "Result for puzzle 16: parameter val is 150.",
+        "agent_reasoning": "Found value 150. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "150 * 2",
+        "tool_output": "300",
+        "agent_reasoning": "Moving to step 3 before calculating.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 16.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_017",
+    "task": "Solve multi-step puzzle trace number 17 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 17",
+        "tool_output": "Result for puzzle 17: parameter val is 160.",
+        "agent_reasoning": "Found value 160. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "160 * 2",
+        "tool_output": "320",
+        "agent_reasoning": "Result of search was 165 which is incorrect.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 17.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_018",
+    "task": "Solve multi-step puzzle trace number 18 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 18",
+        "tool_output": "Result for puzzle 18: parameter val is 170.",
+        "agent_reasoning": "Found value 170. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "170 * 2",
+        "tool_output": "340",
+        "agent_reasoning": "Double of 170 is 340.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 18 solved with final value 340.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_019",
+    "task": "Solve multi-step puzzle trace number 19 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 19",
+        "tool_output": "Result for puzzle 19: parameter val is 180.",
+        "agent_reasoning": "Found value 180. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "180 * 2",
+        "tool_output": "360",
+        "agent_reasoning": "Double of 180 is 360.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 19 solved with final value 360.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_020",
+    "task": "Solve multi-step puzzle trace number 20 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 20",
+        "tool_output": "Result for puzzle 20: parameter val is 190.",
+        "agent_reasoning": "Found value 190. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "190 * 2",
+        "tool_output": "380",
+        "agent_reasoning": "Double of 190 is 380.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 20 solved with final value 380.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_021",
+    "task": "Solve multi-step puzzle trace number 21 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 21",
+        "tool_output": "Result for puzzle 21: parameter val is 200.",
+        "agent_reasoning": "Found value 200. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "200 * 2",
+        "tool_output": "400",
+        "agent_reasoning": "Moving to step 3 before calculating.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 21.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_022",
+    "task": "Solve multi-step puzzle trace number 22 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 22",
+        "tool_output": "Result for puzzle 22: parameter val is 210.",
+        "agent_reasoning": "Found value 210. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "210 * 2",
+        "tool_output": "420",
+        "agent_reasoning": "Result of search was 215 which is incorrect.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 22.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_023",
+    "task": "Solve multi-step puzzle trace number 23 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 23",
+        "tool_output": "Result for puzzle 23: parameter val is 220.",
+        "agent_reasoning": "Found value 220. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "220 * 2",
+        "tool_output": "440",
+        "agent_reasoning": "Double of 220 is 440.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 23 solved with final value 440.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_024",
+    "task": "Solve multi-step puzzle trace number 24 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 24",
+        "tool_output": "Result for puzzle 24: parameter val is 230.",
+        "agent_reasoning": "Found value 230. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "230 * 2",
+        "tool_output": "460",
+        "agent_reasoning": "Double of 230 is 460.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 24 solved with final value 460.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_025",
+    "task": "Solve multi-step puzzle trace number 25 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 25",
+        "tool_output": "Result for puzzle 25: parameter val is 240.",
+        "agent_reasoning": "Found value 240. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "240 * 2",
+        "tool_output": "480",
+        "agent_reasoning": "Double of 240 is 480.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 25 solved with final value 480.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_026",
+    "task": "Solve multi-step puzzle trace number 26 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 26",
+        "tool_output": "Result for puzzle 26: parameter val is 250.",
+        "agent_reasoning": "Found value 250. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "250 * 2",
+        "tool_output": "500",
+        "agent_reasoning": "Moving to step 3 before calculating.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 26.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_027",
+    "task": "Solve multi-step puzzle trace number 27 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 27",
+        "tool_output": "Result for puzzle 27: parameter val is 260.",
+        "agent_reasoning": "Found value 260. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "260 * 2",
+        "tool_output": "520",
+        "agent_reasoning": "Result of search was 265 which is incorrect.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 27.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_028",
+    "task": "Solve multi-step puzzle trace number 28 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 28",
+        "tool_output": "Result for puzzle 28: parameter val is 270.",
+        "agent_reasoning": "Found value 270. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "270 * 2",
+        "tool_output": "540",
+        "agent_reasoning": "Double of 270 is 540.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 28 solved with final value 540.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_029",
+    "task": "Solve multi-step puzzle trace number 29 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 29",
+        "tool_output": "Result for puzzle 29: parameter val is 280.",
+        "agent_reasoning": "Found value 280. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "280 * 2",
+        "tool_output": "560",
+        "agent_reasoning": "Double of 280 is 560.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 29 solved with final value 560.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_030",
+    "task": "Solve multi-step puzzle trace number 30 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 30",
+        "tool_output": "Result for puzzle 30: parameter val is 290.",
+        "agent_reasoning": "Found value 290. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "290 * 2",
+        "tool_output": "580",
+        "agent_reasoning": "Double of 290 is 580.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 30 solved with final value 580.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_031",
+    "task": "Solve multi-step puzzle trace number 31 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 31",
+        "tool_output": "Result for puzzle 31: parameter val is 300.",
+        "agent_reasoning": "Found value 300. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "300 * 2",
+        "tool_output": "600",
+        "agent_reasoning": "Moving to step 3 before calculating.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 31.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_032",
+    "task": "Solve multi-step puzzle trace number 32 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 32",
+        "tool_output": "Result for puzzle 32: parameter val is 310.",
+        "agent_reasoning": "Found value 310. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "310 * 2",
+        "tool_output": "620",
+        "agent_reasoning": "Result of search was 315 which is incorrect.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 32.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_033",
+    "task": "Solve multi-step puzzle trace number 33 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 33",
+        "tool_output": "Result for puzzle 33: parameter val is 320.",
+        "agent_reasoning": "Found value 320. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "320 * 2",
+        "tool_output": "640",
+        "agent_reasoning": "Double of 320 is 640.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 33 solved with final value 640.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_034",
+    "task": "Solve multi-step puzzle trace number 34 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 34",
+        "tool_output": "Result for puzzle 34: parameter val is 330.",
+        "agent_reasoning": "Found value 330. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "330 * 2",
+        "tool_output": "660",
+        "agent_reasoning": "Double of 330 is 660.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 34 solved with final value 660.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_035",
+    "task": "Solve multi-step puzzle trace number 35 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 35",
+        "tool_output": "Result for puzzle 35: parameter val is 340.",
+        "agent_reasoning": "Found value 340. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "340 * 2",
+        "tool_output": "680",
+        "agent_reasoning": "Double of 340 is 680.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 35 solved with final value 680.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_036",
+    "task": "Solve multi-step puzzle trace number 36 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 36",
+        "tool_output": "Result for puzzle 36: parameter val is 350.",
+        "agent_reasoning": "Found value 350. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "350 * 2",
+        "tool_output": "700",
+        "agent_reasoning": "Moving to step 3 before calculating.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 36.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_037",
+    "task": "Solve multi-step puzzle trace number 37 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 37",
+        "tool_output": "Result for puzzle 37: parameter val is 360.",
+        "agent_reasoning": "Found value 360. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "360 * 2",
+        "tool_output": "720",
+        "agent_reasoning": "Result of search was 365 which is incorrect.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 37.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_038",
+    "task": "Solve multi-step puzzle trace number 38 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 38",
+        "tool_output": "Result for puzzle 38: parameter val is 370.",
+        "agent_reasoning": "Found value 370. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "370 * 2",
+        "tool_output": "740",
+        "agent_reasoning": "Double of 370 is 740.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 38 solved with final value 740.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_039",
+    "task": "Solve multi-step puzzle trace number 39 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 39",
+        "tool_output": "Result for puzzle 39: parameter val is 380.",
+        "agent_reasoning": "Found value 380. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "380 * 2",
+        "tool_output": "760",
+        "agent_reasoning": "Double of 380 is 760.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 39 solved with final value 760.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_040",
+    "task": "Solve multi-step puzzle trace number 40 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 40",
+        "tool_output": "Result for puzzle 40: parameter val is 390.",
+        "agent_reasoning": "Found value 390. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "390 * 2",
+        "tool_output": "780",
+        "agent_reasoning": "Double of 390 is 780.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 40 solved with final value 780.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_041",
+    "task": "Solve multi-step puzzle trace number 41 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 41",
+        "tool_output": "Result for puzzle 41: parameter val is 400.",
+        "agent_reasoning": "Found value 400. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "400 * 2",
+        "tool_output": "800",
+        "agent_reasoning": "Moving to step 3 before calculating.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 41.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_042",
+    "task": "Solve multi-step puzzle trace number 42 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 42",
+        "tool_output": "Result for puzzle 42: parameter val is 410.",
+        "agent_reasoning": "Found value 410. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "410 * 2",
+        "tool_output": "820",
+        "agent_reasoning": "Result of search was 415 which is incorrect.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 42.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_043",
+    "task": "Solve multi-step puzzle trace number 43 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 43",
+        "tool_output": "Result for puzzle 43: parameter val is 420.",
+        "agent_reasoning": "Found value 420. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "420 * 2",
+        "tool_output": "840",
+        "agent_reasoning": "Double of 420 is 840.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 43 solved with final value 840.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_044",
+    "task": "Solve multi-step puzzle trace number 44 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 44",
+        "tool_output": "Result for puzzle 44: parameter val is 430.",
+        "agent_reasoning": "Found value 430. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "430 * 2",
+        "tool_output": "860",
+        "agent_reasoning": "Double of 430 is 860.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 44 solved with final value 860.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_045",
+    "task": "Solve multi-step puzzle trace number 45 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 45",
+        "tool_output": "Result for puzzle 45: parameter val is 440.",
+        "agent_reasoning": "Found value 440. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "440 * 2",
+        "tool_output": "880",
+        "agent_reasoning": "Double of 440 is 880.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 45 solved with final value 880.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_046",
+    "task": "Solve multi-step puzzle trace number 46 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 46",
+        "tool_output": "Result for puzzle 46: parameter val is 450.",
+        "agent_reasoning": "Found value 450. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "450 * 2",
+        "tool_output": "900",
+        "agent_reasoning": "Moving to step 3 before calculating.",
+        "ground_truth_label": true,
+        "hallucination_type": "Planning"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 46.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_047",
+    "task": "Solve multi-step puzzle trace number 47 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 47",
+        "tool_output": "Result for puzzle 47: parameter val is 460.",
+        "agent_reasoning": "Found value 460. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "460 * 2",
+        "tool_output": "920",
+        "agent_reasoning": "Result of search was 465 which is incorrect.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "Failed to solve puzzle 47.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "heldout_048",
+    "task": "Solve multi-step puzzle trace number 48 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 48",
+        "tool_output": "Result for puzzle 48: parameter val is 470.",
+        "agent_reasoning": "Found value 470. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "470 * 2",
+        "tool_output": "940",
+        "agent_reasoning": "Double of 470 is 940.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 48 solved with final value 940.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_049",
+    "task": "Solve multi-step puzzle trace number 49 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 49",
+        "tool_output": "Result for puzzle 49: parameter val is 480.",
+        "agent_reasoning": "Found value 480. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "480 * 2",
+        "tool_output": "960",
+        "agent_reasoning": "Double of 480 is 960.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 49 solved with final value 960.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "heldout_050",
+    "task": "Solve multi-step puzzle trace number 50 on seed 999.",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "web_search",
+        "tool_input": "query puzzle 50",
+        "tool_output": "Result for puzzle 50: parameter val is 490.",
+        "agent_reasoning": "Found value 490. Moving to step 2.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "calculator",
+        "tool_input": "490 * 2",
+        "tool_output": "980",
+        "agent_reasoning": "Double of 490 is 980.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "Puzzle 50 solved with final value 980.",
+    "final_answer_correct": true
+  }
+]

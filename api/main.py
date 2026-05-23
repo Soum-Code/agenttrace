@@ -41,6 +41,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+# Database Persistence
+from api.db import save_trajectory, get_trajectory, list_trajectories
+
 # ---------------------------------------------------------------------------
 # Logging
 # ---------------------------------------------------------------------------
@@ -168,6 +171,7 @@ class ErrorResponse(BaseModel):
     status: str = "error"
     message: str
     detail: str | None = None
+    suggestions: list[str] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -219,150 +223,178 @@ async def _log_requests(request: Request, call_next):
 # Build trajectory from user query
 # ---------------------------------------------------------------------------
 
+def validate_query(task: str) -> dict | None:
+    """
+    Validates a task query.
+    Enforces task length >= 8 and at least 2 words with length > 2.
+    """
+    task_stripped = task.strip()
+    words = [w for w in task_stripped.split() if len(w) > 2]
+    
+    if len(task_stripped) < 8 or len(words) < 2:
+        return {
+            "error": "Task description is too short or ambiguous.",
+            "suggestions": [
+                "Find the population of Tokyo and compare it with Delhi",
+                "Compute the average of 45, 68, 92, and 104",
+                "Create a study plan for learning machine learning in 3 months",
+                "Write a python function to compute the Fibonacci sequence"
+            ]
+        }
+    return None
+
+
 def build_trajectory_from_query(task: str) -> list[dict[str, Any]]:
     """
     Convert a raw user query into a plausible multi-step agent trajectory.
     The steps simulate what an LLM agent would do to answer this task.
 
     Keyword-based template selection routes the query to one of 4 trajectory
-    templates (retrieval, tool, planning, reasoning).  The user's text is
+    templates (retrieval, tool, planning, reasoning). The user's text is
     woven into each step so the detection pipeline analyses something
     semantically connected to what they typed.
     """
     task_lower = task.lower().strip()
 
-    # --- Guard: gibberish / too-short input ---
-    meaningful_tokens = [w for w in task_lower.split() if len(w) > 2]
-    if len(meaningful_tokens) < 2 or len(task.strip()) < 8:
-        return [{
-            "step": 0,
-            "action": "input_validation",
-            "tool_input": task,
-            "tool_output": "Query too short or ambiguous to form an agent trajectory.",
-            "agent_reasoning": "The user input does not constitute a valid agent task. "
-                               "No trajectory can be constructed.",
-            "ground_truth_label": False,
-            "hallucination_type": None
-        }]
-
     # --- Keyword-based template selection ---
-    if any(k in task_lower for k in ["search", "find", "look up", "who is",
-                                      "what is", "when", "where"]):
+    if any(k in task_lower for k in ["search", "find", "look up", "who is", "what is", "when", "where"]):
         template = "retrieval"
-    elif any(k in task_lower for k in ["calculate", "compute", "math", "sum",
-                                        "average", "how many"]):
+    elif any(k in task_lower for k in ["calculate", "compute", "math", "sum", "average", "how many"]):
         template = "tool"
-    elif any(k in task_lower for k in ["plan", "schedule", "steps to",
-                                        "how to", "strategy", "roadmap"]):
+    elif any(k in task_lower for k in ["plan", "schedule", "steps to", "how to", "strategy", "roadmap"]):
         template = "planning"
-    elif any(k in task_lower for k in ["write", "draft", "compose",
-                                        "generate", "create"]):
-        template = "reasoning"
     else:
-        template = "reasoning"  # safest default
+        template = "reasoning"  # default
 
-    templates = {
-        "retrieval": [
+    if template == "retrieval":
+        return [
             {
-                "step": 0, "action": "task_decompose",
-                "tool_input": task,
-                "tool_output": f"Decomposed task: retrieve factual information about '{task}'",
-                "agent_reasoning": f"I need to search for information relevant to: {task}",
-                "ground_truth_label": False, "hallucination_type": None
+                "step": 0,
+                "action": "task_decompose",
+                "tool_input": f"Decompose query: {task}",
+                "tool_output": f"Sub-targets: 1. Identify key search terms for '{task}'. 2. Retrieve relevant statistics. 3. Synthesize factual response.",
+                "agent_reasoning": f"To address '{task}', I need to decompose the goal into factual search targets and execute web queries.",
+                "ground_truth_label": False,
+                "hallucination_type": None
             },
             {
-                "step": 1, "action": "web_search",
-                "tool_input": task,
-                "tool_output": f"Search results for '{task}': [Result 1] [Result 2] [Result 3]",
-                "agent_reasoning": f"Based on the search results, I found relevant information about {task}.",
-                "ground_truth_label": False, "hallucination_type": None
+                "step": 1,
+                "action": "web_search",
+                "tool_input": f"Search query: '{task}'",
+                "tool_output": f"Search Results: Found document matching key terms of '{task}'. Details: Verified data point indicates 42 units.",
+                "agent_reasoning": f"I will perform a web search to fetch raw factual documents matching the query '{task}'.",
+                "ground_truth_label": False,
+                "hallucination_type": None
             },
             {
-                "step": 2, "action": "synthesize_answer",
-                "tool_input": "Summarize search results",
-                "tool_output": f"Synthesis complete for: {task}",
-                "agent_reasoning": f"The answer to '{task}' is derived from the retrieved documents.",
-                "ground_truth_label": False, "hallucination_type": None
-            }
-        ],
-        "tool": [
-            {
-                "step": 0, "action": "parse_expression",
-                "tool_input": task,
-                "tool_output": f"Parsed: numerical/computation task detected in '{task}'",
-                "agent_reasoning": f"This requires invoking a calculator or data tool for: {task}",
-                "ground_truth_label": False, "hallucination_type": None
-            },
-            {
-                "step": 1, "action": "calculator_call",
-                "tool_input": task,
-                "tool_output": "Tool returned: [computed value]",
-                "agent_reasoning": "The calculator returned a result. I will now verify it.",
-                "ground_truth_label": False, "hallucination_type": None
-            },
-            {
-                "step": 2, "action": "verify_result",
-                "tool_input": "Verify computed output",
-                "tool_output": "Verification: output matches expected range",
-                "agent_reasoning": f"The tool output is consistent with the input query: {task}",
-                "ground_truth_label": False, "hallucination_type": None
-            }
-        ],
-        "planning": [
-            {
-                "step": 0, "action": "goal_clarification",
-                "tool_input": task,
-                "tool_output": f"Goal identified: {task}",
-                "agent_reasoning": f"I need to break this planning task into subtasks: {task}",
-                "ground_truth_label": False, "hallucination_type": None
-            },
-            {
-                "step": 1, "action": "subtask_decompose",
-                "tool_input": "List subtasks",
-                "tool_output": "Subtasks: [Step A] [Step B] [Step C]",
-                "agent_reasoning": "I have identified the major subtasks required.",
-                "ground_truth_label": False, "hallucination_type": None
-            },
-            {
-                "step": 2, "action": "resource_lookup",
-                "tool_input": f"Resources for: {task}",
-                "tool_output": "Found: relevant tools and references",
-                "agent_reasoning": "Resources identified for each subtask.",
-                "ground_truth_label": False, "hallucination_type": None
-            },
-            {
-                "step": 3, "action": "plan_synthesis",
-                "tool_input": "Synthesize final plan",
-                "tool_output": "Final structured plan generated",
-                "agent_reasoning": f"Final plan for '{task}' is ready for execution.",
-                "ground_truth_label": False, "hallucination_type": None
-            }
-        ],
-        "reasoning": [
-            {
-                "step": 0, "action": "context_load",
-                "tool_input": task,
-                "tool_output": f"Context established for: {task}",
-                "agent_reasoning": f"I need to reason through this step by step: {task}",
-                "ground_truth_label": False, "hallucination_type": None
-            },
-            {
-                "step": 1, "action": "chain_of_thought",
-                "tool_input": "Apply reasoning chain",
-                "tool_output": "Intermediate reasoning: [premise] -> [inference] -> [conclusion]",
-                "agent_reasoning": "Following the chain of thought to derive an answer.",
-                "ground_truth_label": False, "hallucination_type": None
-            },
-            {
-                "step": 2, "action": "fact_check",
-                "tool_input": "Verify reasoning against known facts",
-                "tool_output": "Fact check: claims are consistent with available knowledge",
-                "agent_reasoning": "Reasoning chain validated. No contradictions found.",
-                "ground_truth_label": False, "hallucination_type": None
+                "step": 2,
+                "action": "synthesize_answer",
+                "tool_input": f"Synthesize information for: {task}",
+                "tool_output": f"Synthesized Answer: Based on web records, the answer to '{task}' is 42.",
+                "agent_reasoning": f"I am summarizing the search findings to construct the final factual answer for '{task}'.",
+                "ground_truth_label": False,
+                "hallucination_type": None
             }
         ]
-    }
-    return templates[template]
+    elif template == "tool":
+        return [
+            {
+                "step": 0,
+                "action": "parse_expression",
+                "tool_input": f"Extract mathematical terms from '{task}'",
+                "tool_output": f"Parsed elements: expressions related to '{task}' mapped to calculator compatible format.",
+                "agent_reasoning": f"I need to extract the raw numbers and operators from the query '{task}' to call the computation tool.",
+                "ground_truth_label": False,
+                "hallucination_type": None
+            },
+            {
+                "step": 1,
+                "action": "calculator_call",
+                "tool_input": f"Calculate expression parsed from '{task}'",
+                "tool_output": "Calculator result: 15.0",
+                "agent_reasoning": f"Executing the calculator tool with the parsed values to compute the answer for '{task}'.",
+                "ground_truth_label": False,
+                "hallucination_type": None
+            },
+            {
+                "step": 2,
+                "action": "verify_result",
+                "tool_input": f"Verify computation result: 15.0 against query '{task}'",
+                "tool_output": f"Result 15.0 verified successfully for query '{task}'.",
+                "agent_reasoning": f"Verifying if the calculated result 15.0 is mathematically consistent with the query '{task}'.",
+                "ground_truth_label": False,
+                "hallucination_type": None
+            }
+        ]
+    elif template == "planning":
+        return [
+            {
+                "step": 0,
+                "action": "goal_clarification",
+                "tool_input": f"Clarify objectives for planning task: {task}",
+                "tool_output": f"Planning Goal: Create structured approach for '{task}'. Scope: All dependencies mapped.",
+                "agent_reasoning": f"I need to establish the exact scope and boundary conditions for planning '{task}'.",
+                "ground_truth_label": False,
+                "hallucination_type": None
+            },
+            {
+                "step": 1,
+                "action": "subtask_decompose",
+                "tool_input": f"Decompose plan for '{task}' into steps",
+                "tool_output": f"Steps for '{task}': 1. Initialization. 2. Core Implementation. 3. Verification.",
+                "agent_reasoning": f"I will now break down the plan for '{task}' into sequential subtasks.",
+                "ground_truth_label": False,
+                "hallucination_type": None
+            },
+            {
+                "step": 2,
+                "action": "resource_lookup",
+                "tool_input": f"Identify resources/tools for steps of '{task}'",
+                "tool_output": f"Required resources for '{task}': system tools, external APIs, and local environment setup.",
+                "agent_reasoning": f"Listing required tooling and environmental dependencies for the plan '{task}'.",
+                "ground_truth_label": False,
+                "hallucination_type": None
+            },
+            {
+                "step": 3,
+                "action": "plan_synthesis",
+                "tool_input": f"Synthesize final structured plan for '{task}'",
+                "tool_output": f"Plan: 1. Setup environment. 2. Implement steps for '{task}'. 3. Verify correctness.",
+                "agent_reasoning": f"Synthesizing subtasks and resource maps into a final cohesive roadmap for '{task}'.",
+                "ground_truth_label": False,
+                "hallucination_type": None
+            }
+        ]
+    else:  # reasoning template
+        return [
+            {
+                "step": 0,
+                "action": "context_load",
+                "tool_input": f"Load context variables for query: {task}",
+                "tool_output": f"Loaded context containing rules, parameters, and assumptions for '{task}'.",
+                "agent_reasoning": f"I will load all relevant logical assumptions and constraints to reason about '{task}'.",
+                "ground_truth_label": False,
+                "hallucination_type": None
+            },
+            {
+                "step": 1,
+                "action": "chain_of_thought",
+                "tool_input": f"Reason step-by-step for '{task}'",
+                "tool_output": f"Logical deduction chain: premise -> logical inference -> derived conclusion for '{task}'.",
+                "agent_reasoning": f"Formulating step-by-step logical reasoning to draft a response for '{task}'.",
+                "ground_truth_label": False,
+                "hallucination_type": None
+            },
+            {
+                "step": 2,
+                "action": "fact_check",
+                "tool_input": f"Verify logical chain for '{task}' against context rules",
+                "tool_output": f"Fact Check: derived reasoning for '{task}' is logically consistent.",
+                "agent_reasoning": f"Performing sanity checks on my logical steps for '{task}' to ensure consistency.",
+                "ground_truth_label": False,
+                "hallucination_type": None
+            }
+        ]
 
 
 # ---------------------------------------------------------------------------
@@ -467,6 +499,19 @@ async def analyze(payload: AnalyzeRequest) -> TrajectoryResponse:
     Returns:
         Full trajectory with per-step hallucination scores.
     """
+    # 1. Validation check
+    val_err = validate_query(payload.task)
+    if val_err and not payload.task.startswith("SCENARIO: "):
+        return JSONResponse(
+            status_code=400,
+            content={
+                "status": "error",
+                "message": val_err["error"],
+                "detail": "Input validation failed. Please check the suggestions.",
+                "suggestions": val_err["suggestions"]
+            }
+        )
+
     try:
         steps_raw = _get_real_trajectory(payload.task)
         
@@ -538,11 +583,17 @@ async def analyze(payload: AnalyzeRequest) -> TrajectoryResponse:
             steps=steps,
         )
 
-        # Persist for /correct to reference later
-        _trajectory_store[trajectory_id] = {
-            "response": result.model_dump(),
-            "steps_raw": steps_raw,
-        }
+        # Persist to SQLite
+        save_trajectory(
+            trajectory_id=trajectory_id,
+            task=payload.task,
+            num_steps=len(steps),
+            num_hallucinated=num_hallucinated,
+            overall_confidence=overall,
+            created_at=result.created_at,
+            response=result.model_dump(),
+            steps_raw=steps_raw
+        )
 
         logger.info(
             "Analyzed task=%r  steps=%d  hallucinated=%d",
@@ -554,6 +605,24 @@ async def analyze(payload: AnalyzeRequest) -> TrajectoryResponse:
 
     except Exception as exc:
         logger.exception("Error in /analyze")
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@app.get(
+    "/trajectories",
+    response_model=list[TrajectoryResponse],
+    tags=["detection"],
+    summary="List all stored trajectories",
+)
+async def list_stored_trajectories() -> list[TrajectoryResponse]:
+    """
+    List all previously analyzed trajectories stored in SQLite.
+    """
+    try:
+        trajs = list_trajectories()
+        return [TrajectoryResponse(**t) for t in trajs]
+    except Exception as exc:
+        logger.exception("Error in /trajectories")
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
@@ -581,7 +650,7 @@ async def correct(payload: CorrectRequest) -> CorrectedStepResponse:
         Original vs. corrected step data with intervention metadata.
     """
     try:
-        record = _trajectory_store.get(payload.trajectory_id)
+        record = get_trajectory(payload.trajectory_id)
         if record is None:
             raise HTTPException(
                 status_code=404,
@@ -660,6 +729,6 @@ if __name__ == "__main__":
         "api.main:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,
+        reload=False,
         log_level="info",
     )

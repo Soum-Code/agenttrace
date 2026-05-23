@@ -31,17 +31,21 @@ class FactualGrounder:
     # NLI label indices for cross-encoder/nli-deberta-v3-small
     _LABEL_MAP = {"contradiction": 0, "entailment": 1, "neutral": 2}
 
-    def __init__(self):
+    def __init__(self, model=None, tokenizer=None, embedding_model=None):
         """
         Loads the NLI cross-encoder model and tokenizer from config.
         Also loads the FAISS index if it exists.
         """
         try:
-            self.tokenizer = AutoTokenizer.from_pretrained(config.NLI_MODEL_NAME)
-            self.model = AutoModelForSequenceClassification.from_pretrained(
-                config.NLI_MODEL_NAME
-            )
-            self.model.eval()
+            if model is not None:
+                self.model = model
+                self.tokenizer = tokenizer
+            else:
+                self.tokenizer = AutoTokenizer.from_pretrained(config.NLI_MODEL_NAME)
+                self.model = AutoModelForSequenceClassification.from_pretrained(
+                    config.NLI_MODEL_NAME
+                )
+                self.model.eval()
             self.entailment_threshold = config.NLI_ENTAILMENT_THRESHOLD
             self.contradiction_threshold = config.NLI_CONTRADICTION_THRESHOLD
         except Exception as e:
@@ -52,7 +56,7 @@ class FactualGrounder:
         # Load FAISS index and metadata for dynamic RAG factual grounding
         self.faiss_index = None
         self.faiss_metadata = None
-        self.embedding_model = None
+        self.embedding_model = embedding_model
 
         index_path = os.path.join(config.CONFIG.paths.index_dir, "fact_index.faiss")
         metadata_path = os.path.join(config.CONFIG.paths.index_dir, "fact_metadata.json")

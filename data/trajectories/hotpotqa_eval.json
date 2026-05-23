@@ -1,0 +1,1352 @@
+[
+  {
+    "trajectory_id": "hotpotqa_001",
+    "task": "Who directed the movie starring Keanu Reeves that was released in 1999, and what other movie did they direct in 1972?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Keanu Reeves in 1999",
+        "tool_output": "The Matrix is a 1999 science fiction film starring Keanu Reeves and directed by Lana and Lilly Wachowski.",
+        "agent_reasoning": "Found movie: The Matrix. It was directed by Lana and Lilly Wachowski.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Lana and Lilly Wachowski in 1972",
+        "tool_output": "In 1972, Lana and Lilly Wachowski directed the film The Godfather starring Al Pacino.",
+        "agent_reasoning": "In 1972, Lana and Lilly Wachowski directed a movie called Interstellar.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "The director is Lana and Lilly Wachowski and they directed Interstellar in 1972.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_002",
+    "task": "Who directed the movie starring Leonardo DiCaprio that was released in 2010, and what other movie did they direct in 2001?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Leonardo DiCaprio in 2010",
+        "tool_output": "Inception is a 2010 science fiction film starring Leonardo DiCaprio and directed by Christopher Nolan.",
+        "agent_reasoning": "Found movie: Inception. It was directed by Christopher Nolan.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Christopher Nolan in 2001",
+        "tool_output": "In 2001, Christopher Nolan directed the film Spirited Away starring Rumi Hiiragi.",
+        "agent_reasoning": "Since Christopher Nolan directed Spirited Away in 2001, it must mean Christopher Nolan directed no other movies before 2001.",
+        "ground_truth_label": true,
+        "hallucination_type": "Reasoning"
+      }
+    ],
+    "final_answer": "The director is Christopher Nolan and they directed Interstellar in 2001.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_003",
+    "task": "Who directed the movie starring John Travolta that was released in 1994, and what other movie did they direct in 2019?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring John Travolta in 1994",
+        "tool_output": "Pulp Fiction is a 1994 science fiction film starring John Travolta and directed by Quentin Tarantino.",
+        "agent_reasoning": "Found movie: Pulp Fiction. It was directed by Quentin Tarantino.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Quentin Tarantino in 2019",
+        "tool_output": "In 2019, Quentin Tarantino directed the film Parasite starring Song Kang-ho.",
+        "agent_reasoning": "In 2019, Quentin Tarantino directed Parasite.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Pulp Fiction is Quentin Tarantino, who also directed Parasite in 2019.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_004",
+    "task": "Who directed the movie starring Al Pacino that was released in 1972, and what other movie did they direct in 2014?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Al Pacino in 1972",
+        "tool_output": "The Godfather is a 1972 science fiction film starring Al Pacino and directed by Francis Ford Coppola.",
+        "agent_reasoning": "Found movie: The Godfather. It was directed by Francis Ford Coppola.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Francis Ford Coppola in 2014",
+        "tool_output": "In 2014, Francis Ford Coppola directed the film Interstellar starring Matthew McConaughey.",
+        "agent_reasoning": "In 2014, Francis Ford Coppola directed Interstellar.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of The Godfather is Francis Ford Coppola, who also directed Interstellar in 2014.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_005",
+    "task": "Who directed the movie starring Rumi Hiiragi that was released in 2001, and what other movie did they direct in 2014?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Rumi Hiiragi in 2001",
+        "tool_output": "Spirited Away is a 2001 science fiction film starring Rumi Hiiragi and directed by Hayao Miyazaki.",
+        "agent_reasoning": "Found movie: Spirited Away. It was directed by Hayao Miyazaki.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Hayao Miyazaki in 2014",
+        "tool_output": "In 2014, Hayao Miyazaki directed the film Whiplash starring Miles Teller.",
+        "agent_reasoning": "In 2014, Hayao Miyazaki directed Whiplash.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Spirited Away is Hayao Miyazaki, who also directed Whiplash in 2014.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_006",
+    "task": "Who directed the movie starring Song Kang-ho that was released in 2019, and what other movie did they direct in 1980?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Song Kang-ho in 2019",
+        "tool_output": "Parasite is a 2019 science fiction film starring Song Kang-ho and directed by Bong Joon-ho.",
+        "agent_reasoning": "Found movie: Parasite. It was directed by Bong Joon-ho.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Bong Joon-ho in 1980",
+        "tool_output": "In 1980, Bong Joon-ho directed the film The Shining starring Jack Nicholson.",
+        "agent_reasoning": "Since Bong Joon-ho directed The Shining in 1980, it must mean Bong Joon-ho directed no other movies before 1980.",
+        "ground_truth_label": true,
+        "hallucination_type": "Reasoning"
+      }
+    ],
+    "final_answer": "The director is Bong Joon-ho and they directed Interstellar in 1980.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_007",
+    "task": "Who directed the movie starring Matthew McConaughey that was released in 2014, and what other movie did they direct in 2017?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Matthew McConaughey in 2014",
+        "tool_output": "Interstellar is a 2014 science fiction film starring Matthew McConaughey and directed by Christopher Nolan.",
+        "agent_reasoning": "Found movie: Interstellar. It was directed by Christopher Nolan.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Christopher Nolan in 2017",
+        "tool_output": "In 2017, Christopher Nolan directed the film Get Out starring Daniel Kaluuya.",
+        "agent_reasoning": "In 2017, Christopher Nolan directed a movie called Interstellar.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "The director is Christopher Nolan and they directed Interstellar in 2017.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_008",
+    "task": "Who directed the movie starring Miles Teller that was released in 2014, and what other movie did they direct in 1999?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Miles Teller in 2014",
+        "tool_output": "Whiplash is a 2014 science fiction film starring Miles Teller and directed by Damien Chazelle.",
+        "agent_reasoning": "Found movie: Whiplash. It was directed by Damien Chazelle.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Damien Chazelle in 1999",
+        "tool_output": "In 1999, Damien Chazelle directed the film The Matrix starring Keanu Reeves.",
+        "agent_reasoning": "In 1999, Damien Chazelle directed The Matrix.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Whiplash is Damien Chazelle, who also directed The Matrix in 1999.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_009",
+    "task": "Who directed the movie starring Jack Nicholson that was released in 1980, and what other movie did they direct in 2010?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Jack Nicholson in 1980",
+        "tool_output": "The Shining is a 1980 science fiction film starring Jack Nicholson and directed by Stanley Kubrick.",
+        "agent_reasoning": "Found movie: The Shining. It was directed by Stanley Kubrick.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Stanley Kubrick in 2010",
+        "tool_output": "In 2010, Stanley Kubrick directed the film Inception starring Leonardo DiCaprio.",
+        "agent_reasoning": "In 2010, Stanley Kubrick directed Inception.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of The Shining is Stanley Kubrick, who also directed Inception in 2010.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_010",
+    "task": "Who directed the movie starring Daniel Kaluuya that was released in 2017, and what other movie did they direct in 1994?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Daniel Kaluuya in 2017",
+        "tool_output": "Get Out is a 2017 science fiction film starring Daniel Kaluuya and directed by Jordan Peele.",
+        "agent_reasoning": "Found movie: Get Out. It was directed by Jordan Peele.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Jordan Peele in 1994",
+        "tool_output": "In 1994, Jordan Peele directed the film Pulp Fiction starring John Travolta.",
+        "agent_reasoning": "In 1994, Jordan Peele directed Pulp Fiction.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Get Out is Jordan Peele, who also directed Pulp Fiction in 1994.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_011",
+    "task": "Who directed the movie starring Keanu Reeves that was released in 1999, and what other movie did they direct in 1972?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Keanu Reeves in 1999",
+        "tool_output": "The Matrix is a 1999 science fiction film starring Keanu Reeves and directed by Lana and Lilly Wachowski.",
+        "agent_reasoning": "Found movie: The Matrix. It was directed by Lana and Lilly Wachowski.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Lana and Lilly Wachowski in 1972",
+        "tool_output": "In 1972, Lana and Lilly Wachowski directed the film The Godfather starring Al Pacino.",
+        "agent_reasoning": "In 1972, Lana and Lilly Wachowski directed a movie called Interstellar.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "The director is Lana and Lilly Wachowski and they directed Interstellar in 1972.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_012",
+    "task": "Who directed the movie starring Leonardo DiCaprio that was released in 2010, and what other movie did they direct in 2001?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Leonardo DiCaprio in 2010",
+        "tool_output": "Inception is a 2010 science fiction film starring Leonardo DiCaprio and directed by Christopher Nolan.",
+        "agent_reasoning": "Found movie: Inception. It was directed by Christopher Nolan.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Christopher Nolan in 2001",
+        "tool_output": "In 2001, Christopher Nolan directed the film Spirited Away starring Rumi Hiiragi.",
+        "agent_reasoning": "Since Christopher Nolan directed Spirited Away in 2001, it must mean Christopher Nolan directed no other movies before 2001.",
+        "ground_truth_label": true,
+        "hallucination_type": "Reasoning"
+      }
+    ],
+    "final_answer": "The director is Christopher Nolan and they directed Interstellar in 2001.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_013",
+    "task": "Who directed the movie starring John Travolta that was released in 1994, and what other movie did they direct in 2019?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring John Travolta in 1994",
+        "tool_output": "Pulp Fiction is a 1994 science fiction film starring John Travolta and directed by Quentin Tarantino.",
+        "agent_reasoning": "Found movie: Pulp Fiction. It was directed by Quentin Tarantino.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Quentin Tarantino in 2019",
+        "tool_output": "In 2019, Quentin Tarantino directed the film Parasite starring Song Kang-ho.",
+        "agent_reasoning": "In 2019, Quentin Tarantino directed Parasite.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Pulp Fiction is Quentin Tarantino, who also directed Parasite in 2019.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_014",
+    "task": "Who directed the movie starring Al Pacino that was released in 1972, and what other movie did they direct in 2014?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Al Pacino in 1972",
+        "tool_output": "The Godfather is a 1972 science fiction film starring Al Pacino and directed by Francis Ford Coppola.",
+        "agent_reasoning": "Found movie: The Godfather. It was directed by Francis Ford Coppola.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Francis Ford Coppola in 2014",
+        "tool_output": "In 2014, Francis Ford Coppola directed the film Interstellar starring Matthew McConaughey.",
+        "agent_reasoning": "In 2014, Francis Ford Coppola directed Interstellar.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of The Godfather is Francis Ford Coppola, who also directed Interstellar in 2014.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_015",
+    "task": "Who directed the movie starring Rumi Hiiragi that was released in 2001, and what other movie did they direct in 2014?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Rumi Hiiragi in 2001",
+        "tool_output": "Spirited Away is a 2001 science fiction film starring Rumi Hiiragi and directed by Hayao Miyazaki.",
+        "agent_reasoning": "Found movie: Spirited Away. It was directed by Hayao Miyazaki.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Hayao Miyazaki in 2014",
+        "tool_output": "In 2014, Hayao Miyazaki directed the film Whiplash starring Miles Teller.",
+        "agent_reasoning": "In 2014, Hayao Miyazaki directed Whiplash.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Spirited Away is Hayao Miyazaki, who also directed Whiplash in 2014.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_016",
+    "task": "Who directed the movie starring Song Kang-ho that was released in 2019, and what other movie did they direct in 1980?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Song Kang-ho in 2019",
+        "tool_output": "Parasite is a 2019 science fiction film starring Song Kang-ho and directed by Bong Joon-ho.",
+        "agent_reasoning": "Found movie: Parasite. It was directed by Bong Joon-ho.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Bong Joon-ho in 1980",
+        "tool_output": "In 1980, Bong Joon-ho directed the film The Shining starring Jack Nicholson.",
+        "agent_reasoning": "Since Bong Joon-ho directed The Shining in 1980, it must mean Bong Joon-ho directed no other movies before 1980.",
+        "ground_truth_label": true,
+        "hallucination_type": "Reasoning"
+      }
+    ],
+    "final_answer": "The director is Bong Joon-ho and they directed Interstellar in 1980.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_017",
+    "task": "Who directed the movie starring Matthew McConaughey that was released in 2014, and what other movie did they direct in 2017?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Matthew McConaughey in 2014",
+        "tool_output": "Interstellar is a 2014 science fiction film starring Matthew McConaughey and directed by Christopher Nolan.",
+        "agent_reasoning": "Found movie: Interstellar. It was directed by Christopher Nolan.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Christopher Nolan in 2017",
+        "tool_output": "In 2017, Christopher Nolan directed the film Get Out starring Daniel Kaluuya.",
+        "agent_reasoning": "In 2017, Christopher Nolan directed a movie called Interstellar.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "The director is Christopher Nolan and they directed Interstellar in 2017.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_018",
+    "task": "Who directed the movie starring Miles Teller that was released in 2014, and what other movie did they direct in 1999?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Miles Teller in 2014",
+        "tool_output": "Whiplash is a 2014 science fiction film starring Miles Teller and directed by Damien Chazelle.",
+        "agent_reasoning": "Found movie: Whiplash. It was directed by Damien Chazelle.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Damien Chazelle in 1999",
+        "tool_output": "In 1999, Damien Chazelle directed the film The Matrix starring Keanu Reeves.",
+        "agent_reasoning": "In 1999, Damien Chazelle directed The Matrix.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Whiplash is Damien Chazelle, who also directed The Matrix in 1999.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_019",
+    "task": "Who directed the movie starring Jack Nicholson that was released in 1980, and what other movie did they direct in 2010?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Jack Nicholson in 1980",
+        "tool_output": "The Shining is a 1980 science fiction film starring Jack Nicholson and directed by Stanley Kubrick.",
+        "agent_reasoning": "Found movie: The Shining. It was directed by Stanley Kubrick.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Stanley Kubrick in 2010",
+        "tool_output": "In 2010, Stanley Kubrick directed the film Inception starring Leonardo DiCaprio.",
+        "agent_reasoning": "In 2010, Stanley Kubrick directed Inception.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of The Shining is Stanley Kubrick, who also directed Inception in 2010.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_020",
+    "task": "Who directed the movie starring Daniel Kaluuya that was released in 2017, and what other movie did they direct in 1994?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Daniel Kaluuya in 2017",
+        "tool_output": "Get Out is a 2017 science fiction film starring Daniel Kaluuya and directed by Jordan Peele.",
+        "agent_reasoning": "Found movie: Get Out. It was directed by Jordan Peele.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Jordan Peele in 1994",
+        "tool_output": "In 1994, Jordan Peele directed the film Pulp Fiction starring John Travolta.",
+        "agent_reasoning": "In 1994, Jordan Peele directed Pulp Fiction.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Get Out is Jordan Peele, who also directed Pulp Fiction in 1994.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_021",
+    "task": "Who directed the movie starring Keanu Reeves that was released in 1999, and what other movie did they direct in 1972?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Keanu Reeves in 1999",
+        "tool_output": "The Matrix is a 1999 science fiction film starring Keanu Reeves and directed by Lana and Lilly Wachowski.",
+        "agent_reasoning": "Found movie: The Matrix. It was directed by Lana and Lilly Wachowski.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Lana and Lilly Wachowski in 1972",
+        "tool_output": "In 1972, Lana and Lilly Wachowski directed the film The Godfather starring Al Pacino.",
+        "agent_reasoning": "In 1972, Lana and Lilly Wachowski directed a movie called Interstellar.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "The director is Lana and Lilly Wachowski and they directed Interstellar in 1972.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_022",
+    "task": "Who directed the movie starring Leonardo DiCaprio that was released in 2010, and what other movie did they direct in 2001?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Leonardo DiCaprio in 2010",
+        "tool_output": "Inception is a 2010 science fiction film starring Leonardo DiCaprio and directed by Christopher Nolan.",
+        "agent_reasoning": "Found movie: Inception. It was directed by Christopher Nolan.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Christopher Nolan in 2001",
+        "tool_output": "In 2001, Christopher Nolan directed the film Spirited Away starring Rumi Hiiragi.",
+        "agent_reasoning": "Since Christopher Nolan directed Spirited Away in 2001, it must mean Christopher Nolan directed no other movies before 2001.",
+        "ground_truth_label": true,
+        "hallucination_type": "Reasoning"
+      }
+    ],
+    "final_answer": "The director is Christopher Nolan and they directed Interstellar in 2001.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_023",
+    "task": "Who directed the movie starring John Travolta that was released in 1994, and what other movie did they direct in 2019?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring John Travolta in 1994",
+        "tool_output": "Pulp Fiction is a 1994 science fiction film starring John Travolta and directed by Quentin Tarantino.",
+        "agent_reasoning": "Found movie: Pulp Fiction. It was directed by Quentin Tarantino.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Quentin Tarantino in 2019",
+        "tool_output": "In 2019, Quentin Tarantino directed the film Parasite starring Song Kang-ho.",
+        "agent_reasoning": "In 2019, Quentin Tarantino directed Parasite.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Pulp Fiction is Quentin Tarantino, who also directed Parasite in 2019.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_024",
+    "task": "Who directed the movie starring Al Pacino that was released in 1972, and what other movie did they direct in 2014?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Al Pacino in 1972",
+        "tool_output": "The Godfather is a 1972 science fiction film starring Al Pacino and directed by Francis Ford Coppola.",
+        "agent_reasoning": "Found movie: The Godfather. It was directed by Francis Ford Coppola.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Francis Ford Coppola in 2014",
+        "tool_output": "In 2014, Francis Ford Coppola directed the film Interstellar starring Matthew McConaughey.",
+        "agent_reasoning": "In 2014, Francis Ford Coppola directed Interstellar.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of The Godfather is Francis Ford Coppola, who also directed Interstellar in 2014.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_025",
+    "task": "Who directed the movie starring Rumi Hiiragi that was released in 2001, and what other movie did they direct in 2014?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Rumi Hiiragi in 2001",
+        "tool_output": "Spirited Away is a 2001 science fiction film starring Rumi Hiiragi and directed by Hayao Miyazaki.",
+        "agent_reasoning": "Found movie: Spirited Away. It was directed by Hayao Miyazaki.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Hayao Miyazaki in 2014",
+        "tool_output": "In 2014, Hayao Miyazaki directed the film Whiplash starring Miles Teller.",
+        "agent_reasoning": "In 2014, Hayao Miyazaki directed Whiplash.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Spirited Away is Hayao Miyazaki, who also directed Whiplash in 2014.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_026",
+    "task": "Who directed the movie starring Song Kang-ho that was released in 2019, and what other movie did they direct in 1980?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Song Kang-ho in 2019",
+        "tool_output": "Parasite is a 2019 science fiction film starring Song Kang-ho and directed by Bong Joon-ho.",
+        "agent_reasoning": "Found movie: Parasite. It was directed by Bong Joon-ho.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Bong Joon-ho in 1980",
+        "tool_output": "In 1980, Bong Joon-ho directed the film The Shining starring Jack Nicholson.",
+        "agent_reasoning": "Since Bong Joon-ho directed The Shining in 1980, it must mean Bong Joon-ho directed no other movies before 1980.",
+        "ground_truth_label": true,
+        "hallucination_type": "Reasoning"
+      }
+    ],
+    "final_answer": "The director is Bong Joon-ho and they directed Interstellar in 1980.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_027",
+    "task": "Who directed the movie starring Matthew McConaughey that was released in 2014, and what other movie did they direct in 2017?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Matthew McConaughey in 2014",
+        "tool_output": "Interstellar is a 2014 science fiction film starring Matthew McConaughey and directed by Christopher Nolan.",
+        "agent_reasoning": "Found movie: Interstellar. It was directed by Christopher Nolan.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Christopher Nolan in 2017",
+        "tool_output": "In 2017, Christopher Nolan directed the film Get Out starring Daniel Kaluuya.",
+        "agent_reasoning": "In 2017, Christopher Nolan directed a movie called Interstellar.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "The director is Christopher Nolan and they directed Interstellar in 2017.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_028",
+    "task": "Who directed the movie starring Miles Teller that was released in 2014, and what other movie did they direct in 1999?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Miles Teller in 2014",
+        "tool_output": "Whiplash is a 2014 science fiction film starring Miles Teller and directed by Damien Chazelle.",
+        "agent_reasoning": "Found movie: Whiplash. It was directed by Damien Chazelle.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Damien Chazelle in 1999",
+        "tool_output": "In 1999, Damien Chazelle directed the film The Matrix starring Keanu Reeves.",
+        "agent_reasoning": "In 1999, Damien Chazelle directed The Matrix.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Whiplash is Damien Chazelle, who also directed The Matrix in 1999.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_029",
+    "task": "Who directed the movie starring Jack Nicholson that was released in 1980, and what other movie did they direct in 2010?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Jack Nicholson in 1980",
+        "tool_output": "The Shining is a 1980 science fiction film starring Jack Nicholson and directed by Stanley Kubrick.",
+        "agent_reasoning": "Found movie: The Shining. It was directed by Stanley Kubrick.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Stanley Kubrick in 2010",
+        "tool_output": "In 2010, Stanley Kubrick directed the film Inception starring Leonardo DiCaprio.",
+        "agent_reasoning": "In 2010, Stanley Kubrick directed Inception.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of The Shining is Stanley Kubrick, who also directed Inception in 2010.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_030",
+    "task": "Who directed the movie starring Daniel Kaluuya that was released in 2017, and what other movie did they direct in 1994?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Daniel Kaluuya in 2017",
+        "tool_output": "Get Out is a 2017 science fiction film starring Daniel Kaluuya and directed by Jordan Peele.",
+        "agent_reasoning": "Found movie: Get Out. It was directed by Jordan Peele.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Jordan Peele in 1994",
+        "tool_output": "In 1994, Jordan Peele directed the film Pulp Fiction starring John Travolta.",
+        "agent_reasoning": "In 1994, Jordan Peele directed Pulp Fiction.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Get Out is Jordan Peele, who also directed Pulp Fiction in 1994.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_031",
+    "task": "Who directed the movie starring Keanu Reeves that was released in 1999, and what other movie did they direct in 1972?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Keanu Reeves in 1999",
+        "tool_output": "The Matrix is a 1999 science fiction film starring Keanu Reeves and directed by Lana and Lilly Wachowski.",
+        "agent_reasoning": "Found movie: The Matrix. It was directed by Lana and Lilly Wachowski.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Lana and Lilly Wachowski in 1972",
+        "tool_output": "In 1972, Lana and Lilly Wachowski directed the film The Godfather starring Al Pacino.",
+        "agent_reasoning": "In 1972, Lana and Lilly Wachowski directed a movie called Interstellar.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "The director is Lana and Lilly Wachowski and they directed Interstellar in 1972.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_032",
+    "task": "Who directed the movie starring Leonardo DiCaprio that was released in 2010, and what other movie did they direct in 2001?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Leonardo DiCaprio in 2010",
+        "tool_output": "Inception is a 2010 science fiction film starring Leonardo DiCaprio and directed by Christopher Nolan.",
+        "agent_reasoning": "Found movie: Inception. It was directed by Christopher Nolan.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Christopher Nolan in 2001",
+        "tool_output": "In 2001, Christopher Nolan directed the film Spirited Away starring Rumi Hiiragi.",
+        "agent_reasoning": "Since Christopher Nolan directed Spirited Away in 2001, it must mean Christopher Nolan directed no other movies before 2001.",
+        "ground_truth_label": true,
+        "hallucination_type": "Reasoning"
+      }
+    ],
+    "final_answer": "The director is Christopher Nolan and they directed Interstellar in 2001.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_033",
+    "task": "Who directed the movie starring John Travolta that was released in 1994, and what other movie did they direct in 2019?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring John Travolta in 1994",
+        "tool_output": "Pulp Fiction is a 1994 science fiction film starring John Travolta and directed by Quentin Tarantino.",
+        "agent_reasoning": "Found movie: Pulp Fiction. It was directed by Quentin Tarantino.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Quentin Tarantino in 2019",
+        "tool_output": "In 2019, Quentin Tarantino directed the film Parasite starring Song Kang-ho.",
+        "agent_reasoning": "In 2019, Quentin Tarantino directed Parasite.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Pulp Fiction is Quentin Tarantino, who also directed Parasite in 2019.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_034",
+    "task": "Who directed the movie starring Al Pacino that was released in 1972, and what other movie did they direct in 2014?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Al Pacino in 1972",
+        "tool_output": "The Godfather is a 1972 science fiction film starring Al Pacino and directed by Francis Ford Coppola.",
+        "agent_reasoning": "Found movie: The Godfather. It was directed by Francis Ford Coppola.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Francis Ford Coppola in 2014",
+        "tool_output": "In 2014, Francis Ford Coppola directed the film Interstellar starring Matthew McConaughey.",
+        "agent_reasoning": "In 2014, Francis Ford Coppola directed Interstellar.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of The Godfather is Francis Ford Coppola, who also directed Interstellar in 2014.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_035",
+    "task": "Who directed the movie starring Rumi Hiiragi that was released in 2001, and what other movie did they direct in 2014?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Rumi Hiiragi in 2001",
+        "tool_output": "Spirited Away is a 2001 science fiction film starring Rumi Hiiragi and directed by Hayao Miyazaki.",
+        "agent_reasoning": "Found movie: Spirited Away. It was directed by Hayao Miyazaki.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Hayao Miyazaki in 2014",
+        "tool_output": "In 2014, Hayao Miyazaki directed the film Whiplash starring Miles Teller.",
+        "agent_reasoning": "In 2014, Hayao Miyazaki directed Whiplash.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Spirited Away is Hayao Miyazaki, who also directed Whiplash in 2014.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_036",
+    "task": "Who directed the movie starring Song Kang-ho that was released in 2019, and what other movie did they direct in 1980?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Song Kang-ho in 2019",
+        "tool_output": "Parasite is a 2019 science fiction film starring Song Kang-ho and directed by Bong Joon-ho.",
+        "agent_reasoning": "Found movie: Parasite. It was directed by Bong Joon-ho.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Bong Joon-ho in 1980",
+        "tool_output": "In 1980, Bong Joon-ho directed the film The Shining starring Jack Nicholson.",
+        "agent_reasoning": "Since Bong Joon-ho directed The Shining in 1980, it must mean Bong Joon-ho directed no other movies before 1980.",
+        "ground_truth_label": true,
+        "hallucination_type": "Reasoning"
+      }
+    ],
+    "final_answer": "The director is Bong Joon-ho and they directed Interstellar in 1980.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_037",
+    "task": "Who directed the movie starring Matthew McConaughey that was released in 2014, and what other movie did they direct in 2017?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Matthew McConaughey in 2014",
+        "tool_output": "Interstellar is a 2014 science fiction film starring Matthew McConaughey and directed by Christopher Nolan.",
+        "agent_reasoning": "Found movie: Interstellar. It was directed by Christopher Nolan.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Christopher Nolan in 2017",
+        "tool_output": "In 2017, Christopher Nolan directed the film Get Out starring Daniel Kaluuya.",
+        "agent_reasoning": "In 2017, Christopher Nolan directed a movie called Interstellar.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "The director is Christopher Nolan and they directed Interstellar in 2017.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_038",
+    "task": "Who directed the movie starring Miles Teller that was released in 2014, and what other movie did they direct in 1999?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Miles Teller in 2014",
+        "tool_output": "Whiplash is a 2014 science fiction film starring Miles Teller and directed by Damien Chazelle.",
+        "agent_reasoning": "Found movie: Whiplash. It was directed by Damien Chazelle.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Damien Chazelle in 1999",
+        "tool_output": "In 1999, Damien Chazelle directed the film The Matrix starring Keanu Reeves.",
+        "agent_reasoning": "In 1999, Damien Chazelle directed The Matrix.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Whiplash is Damien Chazelle, who also directed The Matrix in 1999.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_039",
+    "task": "Who directed the movie starring Jack Nicholson that was released in 1980, and what other movie did they direct in 2010?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Jack Nicholson in 1980",
+        "tool_output": "The Shining is a 1980 science fiction film starring Jack Nicholson and directed by Stanley Kubrick.",
+        "agent_reasoning": "Found movie: The Shining. It was directed by Stanley Kubrick.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Stanley Kubrick in 2010",
+        "tool_output": "In 2010, Stanley Kubrick directed the film Inception starring Leonardo DiCaprio.",
+        "agent_reasoning": "In 2010, Stanley Kubrick directed Inception.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of The Shining is Stanley Kubrick, who also directed Inception in 2010.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_040",
+    "task": "Who directed the movie starring Daniel Kaluuya that was released in 2017, and what other movie did they direct in 1994?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Daniel Kaluuya in 2017",
+        "tool_output": "Get Out is a 2017 science fiction film starring Daniel Kaluuya and directed by Jordan Peele.",
+        "agent_reasoning": "Found movie: Get Out. It was directed by Jordan Peele.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Jordan Peele in 1994",
+        "tool_output": "In 1994, Jordan Peele directed the film Pulp Fiction starring John Travolta.",
+        "agent_reasoning": "In 1994, Jordan Peele directed Pulp Fiction.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Get Out is Jordan Peele, who also directed Pulp Fiction in 1994.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_041",
+    "task": "Who directed the movie starring Keanu Reeves that was released in 1999, and what other movie did they direct in 1972?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Keanu Reeves in 1999",
+        "tool_output": "The Matrix is a 1999 science fiction film starring Keanu Reeves and directed by Lana and Lilly Wachowski.",
+        "agent_reasoning": "Found movie: The Matrix. It was directed by Lana and Lilly Wachowski.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Lana and Lilly Wachowski in 1972",
+        "tool_output": "In 1972, Lana and Lilly Wachowski directed the film The Godfather starring Al Pacino.",
+        "agent_reasoning": "In 1972, Lana and Lilly Wachowski directed a movie called Interstellar.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "The director is Lana and Lilly Wachowski and they directed Interstellar in 1972.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_042",
+    "task": "Who directed the movie starring Leonardo DiCaprio that was released in 2010, and what other movie did they direct in 2001?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Leonardo DiCaprio in 2010",
+        "tool_output": "Inception is a 2010 science fiction film starring Leonardo DiCaprio and directed by Christopher Nolan.",
+        "agent_reasoning": "Found movie: Inception. It was directed by Christopher Nolan.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Christopher Nolan in 2001",
+        "tool_output": "In 2001, Christopher Nolan directed the film Spirited Away starring Rumi Hiiragi.",
+        "agent_reasoning": "Since Christopher Nolan directed Spirited Away in 2001, it must mean Christopher Nolan directed no other movies before 2001.",
+        "ground_truth_label": true,
+        "hallucination_type": "Reasoning"
+      }
+    ],
+    "final_answer": "The director is Christopher Nolan and they directed Interstellar in 2001.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_043",
+    "task": "Who directed the movie starring John Travolta that was released in 1994, and what other movie did they direct in 2019?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring John Travolta in 1994",
+        "tool_output": "Pulp Fiction is a 1994 science fiction film starring John Travolta and directed by Quentin Tarantino.",
+        "agent_reasoning": "Found movie: Pulp Fiction. It was directed by Quentin Tarantino.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Quentin Tarantino in 2019",
+        "tool_output": "In 2019, Quentin Tarantino directed the film Parasite starring Song Kang-ho.",
+        "agent_reasoning": "In 2019, Quentin Tarantino directed Parasite.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Pulp Fiction is Quentin Tarantino, who also directed Parasite in 2019.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_044",
+    "task": "Who directed the movie starring Al Pacino that was released in 1972, and what other movie did they direct in 2014?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Al Pacino in 1972",
+        "tool_output": "The Godfather is a 1972 science fiction film starring Al Pacino and directed by Francis Ford Coppola.",
+        "agent_reasoning": "Found movie: The Godfather. It was directed by Francis Ford Coppola.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Francis Ford Coppola in 2014",
+        "tool_output": "In 2014, Francis Ford Coppola directed the film Interstellar starring Matthew McConaughey.",
+        "agent_reasoning": "In 2014, Francis Ford Coppola directed Interstellar.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of The Godfather is Francis Ford Coppola, who also directed Interstellar in 2014.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_045",
+    "task": "Who directed the movie starring Rumi Hiiragi that was released in 2001, and what other movie did they direct in 2014?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Rumi Hiiragi in 2001",
+        "tool_output": "Spirited Away is a 2001 science fiction film starring Rumi Hiiragi and directed by Hayao Miyazaki.",
+        "agent_reasoning": "Found movie: Spirited Away. It was directed by Hayao Miyazaki.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Hayao Miyazaki in 2014",
+        "tool_output": "In 2014, Hayao Miyazaki directed the film Whiplash starring Miles Teller.",
+        "agent_reasoning": "In 2014, Hayao Miyazaki directed Whiplash.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Spirited Away is Hayao Miyazaki, who also directed Whiplash in 2014.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_046",
+    "task": "Who directed the movie starring Song Kang-ho that was released in 2019, and what other movie did they direct in 1980?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Song Kang-ho in 2019",
+        "tool_output": "Parasite is a 2019 science fiction film starring Song Kang-ho and directed by Bong Joon-ho.",
+        "agent_reasoning": "Found movie: Parasite. It was directed by Bong Joon-ho.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Bong Joon-ho in 1980",
+        "tool_output": "In 1980, Bong Joon-ho directed the film The Shining starring Jack Nicholson.",
+        "agent_reasoning": "Since Bong Joon-ho directed The Shining in 1980, it must mean Bong Joon-ho directed no other movies before 1980.",
+        "ground_truth_label": true,
+        "hallucination_type": "Reasoning"
+      }
+    ],
+    "final_answer": "The director is Bong Joon-ho and they directed Interstellar in 1980.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_047",
+    "task": "Who directed the movie starring Matthew McConaughey that was released in 2014, and what other movie did they direct in 2017?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Matthew McConaughey in 2014",
+        "tool_output": "Interstellar is a 2014 science fiction film starring Matthew McConaughey and directed by Christopher Nolan.",
+        "agent_reasoning": "Found movie: Interstellar. It was directed by Christopher Nolan.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Christopher Nolan in 2017",
+        "tool_output": "In 2017, Christopher Nolan directed the film Get Out starring Daniel Kaluuya.",
+        "agent_reasoning": "In 2017, Christopher Nolan directed a movie called Interstellar.",
+        "ground_truth_label": true,
+        "hallucination_type": "Retrieval"
+      }
+    ],
+    "final_answer": "The director is Christopher Nolan and they directed Interstellar in 2017.",
+    "final_answer_correct": false
+  },
+  {
+    "trajectory_id": "hotpotqa_048",
+    "task": "Who directed the movie starring Miles Teller that was released in 2014, and what other movie did they direct in 1999?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Miles Teller in 2014",
+        "tool_output": "Whiplash is a 2014 science fiction film starring Miles Teller and directed by Damien Chazelle.",
+        "agent_reasoning": "Found movie: Whiplash. It was directed by Damien Chazelle.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Damien Chazelle in 1999",
+        "tool_output": "In 1999, Damien Chazelle directed the film The Matrix starring Keanu Reeves.",
+        "agent_reasoning": "In 1999, Damien Chazelle directed The Matrix.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Whiplash is Damien Chazelle, who also directed The Matrix in 1999.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_049",
+    "task": "Who directed the movie starring Jack Nicholson that was released in 1980, and what other movie did they direct in 2010?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Jack Nicholson in 1980",
+        "tool_output": "The Shining is a 1980 science fiction film starring Jack Nicholson and directed by Stanley Kubrick.",
+        "agent_reasoning": "Found movie: The Shining. It was directed by Stanley Kubrick.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Stanley Kubrick in 2010",
+        "tool_output": "In 2010, Stanley Kubrick directed the film Inception starring Leonardo DiCaprio.",
+        "agent_reasoning": "In 2010, Stanley Kubrick directed Inception.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of The Shining is Stanley Kubrick, who also directed Inception in 2010.",
+    "final_answer_correct": true
+  },
+  {
+    "trajectory_id": "hotpotqa_050",
+    "task": "Who directed the movie starring Daniel Kaluuya that was released in 2017, and what other movie did they direct in 1994?",
+    "total_steps": 2,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WikiSearch",
+        "tool_input": "movie starring Daniel Kaluuya in 2017",
+        "tool_output": "Get Out is a 2017 science fiction film starring Daniel Kaluuya and directed by Jordan Peele.",
+        "agent_reasoning": "Found movie: Get Out. It was directed by Jordan Peele.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      },
+      {
+        "step": 2,
+        "action": "WikiSearch",
+        "tool_input": "movies directed by Jordan Peele in 1994",
+        "tool_output": "In 1994, Jordan Peele directed the film Pulp Fiction starring John Travolta.",
+        "agent_reasoning": "In 1994, Jordan Peele directed Pulp Fiction.",
+        "ground_truth_label": false,
+        "hallucination_type": null
+      }
+    ],
+    "final_answer": "The director of Get Out is Jordan Peele, who also directed Pulp Fiction in 1994.",
+    "final_answer_correct": true
+  }
+]
